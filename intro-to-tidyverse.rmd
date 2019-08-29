@@ -1,0 +1,1472 @@
+---
+title: "Intro to the Tidyverse"
+author: "Thomas Mock"
+institute: "RStudio, Inc."
+date: "updated: `r Sys.Date()`"
+output:
+  xaringan::moon_reader:
+    css: xaringan-themer.css
+    nature:
+      highlightStyle: github
+      highlightLines: TRUE
+      countIncrementalSlides: FALSE
+---
+
+# Today's Agenda
+
+- RStudio
+  - Writing code
+  - File manipulation
+  - Package control
+
+--
+
+- R coding basics
+  - Math
+  - Assignment
+  - Functions
+  - Load and install packages
+
+--
+
+- `Tidyverse`
+  - Read data in with `readr`
+  - Tidy data with`tidyr`
+  - Transform data with `dplyr`
+  - Plot data with `ggplot2`
+  
+
+
+---
+
+# RStudio
+
+RStudio is an IDE (integrated development environment)  
+
+- A place to write  
+  - Console
+  - R Scripts
+  - R Markdown
+  - Code Completion
+  - Debugging
+  
+--
+
+- A place to open *things*  
+  - File and path exploration
+  - Open plots, data, .R/.Rmd file
+  
+--
+
+- A place for projects  
+  - Self-contained structure
+  - Consistent/easy pathing
+  - Keep relevant files/code together with output
+  
+  
+
+---
+
+class: center, middle, inverse
+
+.large[RStudio Basics]
+
+---
+
+![](static-img/rstudio-editor.png)  
+
+---
+
+![](static-img/R-file.png)
+
+---
+
+![](static-img/rmd-file.png)
+
+---
+
+# RStudio Diagnostics
+
+The script editor highlights syntax errors
+
+![](static-img/rstudio-diagnostic.png)  
+
+--
+
+Hover over the cross to see the problem
+![](static-img/rstudio-diagnostic-tip.png)  
+
+--
+
+RStudio also warns about potential problems
+![](static-img/rstudio-diagnostic-warn.png)  
+  
+  
+
+---
+
+
+# Everyone makes mistakes!
+
+Errors are *ok*, it happens to everyone!
+
+```{r, eval = FALSE}
+my_variable <- x * 3.14
+
+my_variab1e
+```
+
+```{r, echo = FALSE}
+x <- 10
+my_variable <- x * 3.14
+```
+
+```{r, echo = FALSE}
+warning("# Error: object 'my_variab1e' not found")
+```
+
+--
+
+```{r}
+my_variable
+```
+
+
+--
+
+* R is essentially the most aggressive spell-checker of all time!
+
+--
+
+* Focus on what the error says and if you don't understand it, Googling can often help!
+
+---
+
+class: center, middle, inverse
+
+.large[R Code Basics]
+
+---
+
+# R Code Basics
+
+Assignment
+
+.pull-left[
+```{r, eval = TRUE}
+x <- 3 * 4
+x
+```
+
+
+
+
+```{r}
+y <- 5
+y * x
+```
+
+]
+
+--
+
+.pull-right[
+```{r}
+tmp_df <- data.frame(
+  col_1 = c(1, 2, 3), 
+  col_2 = c("a", "b", "c")
+  )
+
+tmp_df
+```
+
+
+]
+  
+  
+
+
+---
+
+# Functions
+
+A function is essentially shorthand to call specific code
+
+```{r, echo = FALSE}
+suppressWarnings(suppressPackageStartupMessages(library(tidyverse)))
+```
+
+
+```{r, eval = FALSE}
+function_name(arg1, arg2, arg3)
+```
+  
+--
+
+```{r, eval = FALSE}
+seq(from, to, by, 
+    length.out, along.with)
+```
+
+
+--
+
+```{r}
+seq(from = 10, to = 100, by = 10)  
+```
+
+--
+
+```{r}
+seq(10, 100, 10)  
+```
+
+--
+
+```{r}
+result_out <- seq(10, 100, length.out = 5)  
+
+result_out
+```
+
+
+---
+
+# The `%>%` `==` and then
+
+Rather than multiple assignment or nesting functions
+
+```{r, eval = FALSE}
+
+did_something <- do_something(data)
+
+did_another_thing <- do_another_thing(did_something)
+
+final_thing <- do_last_thing(did_another_thing)
+
+```
+
+--
+
+```{r, eval = FALSE}
+final_thing <- do_last_thing(
+  do_another_thing(
+    do_something(
+      data
+      )
+    )
+  )
+```
+
+
+--
+
+```{r, eval = FALSE}
+final_thing <- data %>% 
+      do_something() %>% 
+      do_another_thing() %>% 
+      do_last_thing()
+```
+
+
+---
+
+# The Pipe `%>%`
+
+ 
+```{r, eval = FALSE}
+data %>% 
+  do_something(.) %>% 
+  do_another_thing(.) %>% 
+  do_last_thing(.)
+```
+
+--
+
+`do_something(data)` is equivalent to:  
+
+--
+
+* `data %>% do_something(data = .)`  
+
+--
+
+* `data %>% do_something(.)`  
+
+--
+
+* `data %>% do_something()`  
+
+---
+
+```{r}
+data_in <- seq(10, 100, by = 10)
+
+result_out <- mean(data_in)
+
+result_out
+```
+
+
+--
+
+```{r}
+mean(seq(10,100, by = 10))
+```
+
+--
+
+
+```{r}
+seq(10, 100, by = 10) %>%
+  mean()
+```
+
+--
+
+```{r}
+mean_output <- seq(10, 100, by = 10) %>%
+  mean()
+
+mean_output
+```
+
+
+
+---
+
+# More Complex example
+
+```{r, echo = FALSE}
+data <- tibble(
+  year = rep(2018, 10),
+  gender = rep(c("Male", "Female"), each = 5),
+  age_group = rep(c("< 18", "18-30", "31-50", "51-60", "> 60"), each = 2),
+  income = c(20000, 22000, 35000, 36000, 40000, 50000, 60000, 62000, 72000, 75000)
+) %>% 
+  mutate(age_group = factor(age_group, levels = c("< 18", "18-30", "31-50", "51-60", "> 60")
+                            )
+  )
+
+data <- bind_rows(data, data) %>% 
+  bind_rows(data) %>% 
+  bind_rows(data)
+
+```
+
+```{r}
+data
+```
+
+---
+
+# More Complex Example
+
+```{r, eval = FALSE}
+data %>% 
+  filter(year == 2018) %>% 
+  group_by(age_group) %>% 
+  summarize(mean = mean(income))
+```
+
+--
+
+```{r, echo = FALSE}
+data %>% 
+  filter(year == 2018) %>% 
+  group_by(age_group) %>% 
+  summarize(mean = mean(income))
+```
+
+
+---
+
+class: center, middle
+
+background-image: url("static-img/tidyverse-default.png")
+
+
+---
+
+# `Tidyverse`
+An opinionated collection of R packages for data science.   
+<br>
+  
+--
+
+All packages share an underlying design philosophy, grammar, and data structures  
+
+--
+
+* Core packages - `readr`, `tidyr`, `dplyr`, `ggplot2`
+
+--
+
+![](static-img/tidy1.png)
+
+---
+
+# `Tidyverse`
+
+`Tidyverse` is an R package, as such you need to do two things to be able to use it
+* `install.packages("tidyverse")`
+  * This downloads and installs the `tidyverse`
+
+--
+  
+* `library(tidyverse)`
+  * This loads and gives you access to the `tidyverse` package
+
+---
+
+# `tidyverse` Core Principles
+
+* Built around `data` - usually as a `data.frame` or `tibble`
+* Built around `tidy` data
+  * Each `variable` in its own `column`
+  * Each `observation` or `case` in its own `row`
+  * Each type of observational units forms a table
+
+
+```{r, echo = FALSE}
+
+untidy_df <- tibble(
+  age_group = c("< 18", "18-30", "31-50", "51-60", "> 60"),
+  male_2016 = c(22000, 36000, 50000, 62000, 75000),
+  female_2016 = c(20000, 35000, 40000, 60000, 72000), 
+  male_2017 = c(22000, 36000, 50000, 62000, 75000),
+  female_2017 = c(20000, 35000, 40000, 60000, 72000),
+  male_2018 = c(22000, 36000, 50000, 62000, 75000),
+  female_2018 = c(20000, 35000, 40000, 60000, 72000)
+  )
+
+tidy_df <- untidy_df %>% 
+  gather(gender_year, income, male_2016:female_2018) %>% 
+  separate(gender_year, into = c("gender", "year"))
+
+```
+
+--
+
+![](static-img/tidy-1.png)
+
+---
+
+# Untidy data
+
+```{r, highlight.output = 2}
+untidy_df
+```
+
+
+---
+
+# Tidy data
+
+```{r, highlight.output = c(4, 9)}
+tidy_df
+```
+
+---
+
+# Tidy the data
+
+```{r, highlight.output = c(4, 9)}
+untidy_df %>% 
+  gather(gender_year, income, male_2016:female_2018) #<<
+```
+
+
+---
+
+# Tidy the data
+
+```{r, highlight.output = c(4, 9)}
+untidy_df %>% 
+  gather(gender_year, income, male_2016:female_2018) %>% 
+  separate(gender_year, into = c("gender", "year")) #<<
+```
+
+---
+
+# Read data in
+
+Read in data with `readr`, `haven`, `readxl`
+
+### `readr`
+* `read_csv()`, `read_tsv()`, `read_delim()`
+
+### `haven`
+* `read_sas()`, `read_spss()`, `read_stata()`, `read_dta()`
+
+### `readxl`
+* `read_xls()`, `read_xlsx()`, `read_excel()`
+
+---
+
+### `dplyr`
+
+.pull-left[
+### 6 Main verbs
+* `filter()`
+* `arrange()`
+* `select()`
+* `mutate()`
+* `group_by()`
+* `summarise()`
+
+### Simple use
+* `pull()`
+* `n()`/`count()`
+* `glimpse()`
+]
+
+--
+
+.pull-right[
+### Advanced iterations
+* `summarize_at()`
+* `mutate_at()`
+
+### More info
+* [`dplyr.tidyverse.org`](https://dplyr.tidyverse.org/)
+* [`R for Data Science`](https://r4ds.had.co.nz/transform.html)  
+
+```{r, echo = FALSE, out.width= "40%"}
+knitr::include_graphics("static-img/hex-dplyr.png")
+```
+
+]
+
+---
+
+# mtcars dataset
+
+`data.frame` vs `tibble`
+
+```{r}
+class(mtcars)
+```
+
+```{r}
+mtcars_tbl <- as_tibble(mtcars)
+
+class(mtcars_tbl)
+```
+
+
+
+---
+
+# mtcars dataset
+
+`data.frame` vs `tibble`
+
+```{r, highlight.output = 1}
+mtcars
+```
+
+---
+
+# mtcars dataset
+
+`data.frame` vs `tibble`
+
+```{r, highlight.output = c(1:3)}
+mtcars_tbl
+```
+
+
+---
+
+# mtcars dataset
+
+```{r}
+mtcars <- as_tibble(mtcars)
+```
+
+
+```{r, highlight.output = c(1:3)}
+mtcars
+```
+
+---
+
+# mtcars dataset
+
+```{r}
+head(mtcars, 5)
+```
+
+--
+
+```{r}
+tail(mtcars, 5)
+```
+
+---
+
+### `dplyr::slice()`
+
+```{r, highlight.output = c(4, 6)}
+slice(mtcars, 1:3)
+```
+
+--
+
+```{r,highlight.output = c(4,5)}
+slice(mtcars, 1, 3, 5)
+```
+
+
+---
+
+### `dplyr::glimpse()`
+
+```{r, highlight.output = c(1, 2)}
+glimpse(mtcars)
+```
+
+---
+
+### `dplyr::filter()`
+
+```{r}
+filter(mtcars, cyl == 8)
+```
+
+---
+
+### `dplyr::filter()`
+
+```{r}
+mtcars %>% 
+  filter(cyl %in% c(4, 6))
+```
+
+---
+
+### `dplyr::filter()`
+
+```{r}
+mtcars %>% 
+  filter(cyl != 4)
+```
+
+
+---
+
+### `dplyr::arrange()`
+
+```{r, highlight.output = 4}
+mtcars %>% 
+  arrange(mpg)
+```
+
+---
+
+### `dplyr::arrange()`
+
+```{r, highlight.output = 4}
+mtcars %>% 
+  arrange(desc(mpg))
+```
+
+---
+
+### `dplyr::arrange()`
+
+```{r, highlight.output = 4}
+mtcars %>% 
+  arrange(desc(cyl), desc(hp))
+```
+
+  
+---
+
+### `dplyr::select()`
+
+```{r, highlight.output = c(3,4)}
+mtcars %>% 
+  select(cyl, mpg) %>% #<<
+  glimpse()
+```
+
+
+---
+
+### `dplyr::select()`
+
+```{r, highlight.output = c(3:6)}
+mtcars %>% 
+  select(disp, cyl, hp, mpg) %>% #<<
+  glimpse()
+```
+
+
+--
+
+```{r, highlight.output = c(3:5)}
+mtcars %>% 
+  select(disp, cyl, hp, mpg) %>% 
+  select(-mpg) %>% #<<
+  glimpse()
+```
+
+---
+
+### `dplyr::select()`
+
+```{r}
+mtcars %>% 
+  select(cyl, hp, everything()) %>% #<<
+  glimpse()
+```
+
+---
+
+### `dplyr::select()`
+
+```{r}
+mtcars %>% 
+  select(starts_with("c"), starts_with("h")) %>% #<<
+  glimpse()
+```
+
+---
+
+### `dplyr::mutate()`
+
+```{r, highlight.output = 3}
+mtcars %>% 
+  select(cyl) %>% 
+  glimpse()
+```
+
+
+```{r, highlight.output = 3}
+mtcars %>% 
+  mutate(cyl = factor(cyl, #<<
+                      levels = c(4, 6, 8), #<<
+                      labels = c("4 Cyl", "6 Cyl", "8 Cyl"))) %>% #<<
+  select(cyl) %>% 
+  glimpse()
+```
+
+---
+
+### `dplyr::mutate()`
+
+```{r, highlight.output = 4}
+mtcars %>% 
+  mutate(miles_per_liter = mpg * 3.78541, #<<
+         miles_per_gallon = miles_per_liter / 3.78541) %>% #<<
+  select(miles_per_liter, mpg,miles_per_gallon) %>%
+  head(10)
+```
+
+
+---
+
+### `dplyr::group_by()`
+
+```{r, highlight.output = 2}
+mtcars %>% 
+  group_by(cyl)
+```
+
+---
+
+### `dplyr::group_by()`
+
+```{r, highlight.output = c(5:7)}
+mtcars %>% 
+  group_by(cyl) %>% #<<
+  slice(1)
+```
+
+
+---
+
+### `dplyr::group_by()`
+
+```{r}
+mtcars %>% 
+  group_by(cyl) %>% #<<
+  filter(hp == max(hp))
+```
+
+---
+
+### `dplyr::group_by()`
+
+```{r}
+mtcars %>% 
+  group_by(cyl) %>% #<<
+  top_n(1, hp)
+```
+
+
+---
+
+### `dplyr::group_by()`
+
+```{r}
+mtcars %>% 
+  group_by(cyl) %>% #<<
+  arrange(desc(hp)) %>% 
+  slice(1)
+```
+
+---
+
+### `dplyr::group_by()`
+
+```{r, highlight.output = 2}
+mtcars %>% 
+  group_by(cyl, am) %>%  #<<
+  count()
+```
+
+
+---
+
+### `dplyr::summarize()`
+
+```{r, highlight.output = 4}
+mtcars %>% 
+  summarize(mean = mean(mpg))
+```
+
+--
+
+```{r, highlight.output = c(1, 2)}
+mtcars %>% mean(mpg)
+```
+
+--
+
+```{r, highlight.output = 1}
+mtcars %>% 
+  pull(mpg) %>% #<<
+  mean()
+```
+
+---
+
+### `dplyr::summarize()`
+
+```{r, highlight.output = 2}
+mtcars %>% 
+  summarize(median(mpg))
+```
+
+--
+
+```{r, highlight.output = 2}
+mtcars %>% 
+  summarize(median_mpg = mean(mpg))
+```
+
+
+---
+
+
+### `dplyr::summarize()`
+
+```{r}
+mtcars %>% 
+  group_by(cyl) %>% 
+  summarize(mean_mpg = mean(mpg), #<<
+            sd_mpg = sd(mpg), #<<
+            n = n()) #<<
+```
+
+---
+
+### `dplyr::mutate_at()`
+
+```{r, highlight.output = c(3, 4)}
+mtcars %>% 
+  mutate_at(.vars = vars(cyl, am), factor) %>% #<<
+  select(cyl, am) %>% 
+  glimpse()
+```
+
+--
+
+```{r, highlight.output = c(3, 4)}
+mtcars %>% 
+  select(cyl, am) %>% 
+  glimpse()
+```
+
+---
+
+### `dplyr::summarize_at()`
+
+```{r, highlight.output = 2}
+mtcars %>% 
+  group_by(cyl) %>% 
+  summarize_at(.vars = vars(mpg, disp, qsec), .funs = mean) #<<
+```
+
+--
+
+```{r, highlight.output = 2}
+mtcars %>% 
+  group_by(cyl) %>% 
+  summarize_at(.vars = vars(mpg, disp, qsec), .funs = list(mean = mean, sd = sd)) #<<
+```
+---
+
+# `tidyr`
+The goal of tidyr is to help you create tidy data. Tidy data is data where:
+
+* Each variable is in a column.
+* Each observation is a row.
+* Each value is a cell.
+
+--
+
+
+### Make Taller and Make Wider
+* `gather()` - takes multiple columns, and gathers them into key-value pairs: it makes “wide” data longer.
+* `spread()` - takes two columns (key & value), and spreads into multiple columns: it makes “long” data wider.
+
+--
+
+### Separate and unite columns
+* `separate()` - Separate one column into multiple columns.
+* `unite()` - Unite multiple columns into one.
+
+---
+
+# Tidy the data
+
+```{r, highlight.output = 2}
+untidy_df
+```
+
+
+---
+
+# Tidy the data
+
+```{r, highlight.output = 2, eval = FALSE}
+untidy_df %>% 
+  gather(gender_year, income, male_2016:female_2018) #<<
+```
+
+--
+
+```{r, highlight.output = 2, echo = FALSE}
+untidy_df %>% 
+  gather(gender_year, income, male_2016:female_2018) #<<
+```
+
+
+---
+
+# Tidy the data
+
+```{r, highlight.output = c(2, 4, 9), eval = FALSE}
+untidy_df %>% 
+  gather(gender_year, income, male_2016:female_2018) %>% 
+  separate(gender_year, into = c("gender", "year")) #<<
+```
+
+--
+
+```{r, highlight.output = c(2, 4, 9), echo = FALSE}
+untidy_df %>% 
+  gather(gender_year, income, male_2016:female_2018) %>% 
+  separate(gender_year, into = c("gender", "year")) #<<
+```
+
+
+---
+
+# Untidy the data
+
+```{r, eval = FALSE}
+tidy_df %>% 
+  unite("gender_year", c("gender", "year"), sep = "_") #<<
+```
+
+--
+
+```{r, echo = FALSE, highlight.output = c(2, 4)}
+tidy_df %>% 
+  unite("gender_year", c("gender", "year"), sep = "_") #<<
+```
+
+---
+
+# Untidy the data
+```{r, eval = FALSE, highlight.output = 2}
+tidy_df %>% 
+  unite("gender_year", c("gender", "year"), sep = "_") %>% 
+  spread(gender_year, income) #<<
+```
+
+--
+
+```{r, echo = FALSE, highlight.output = 2}
+tidy_df %>% 
+  unite("gender_year", c("gender", "year"), sep = "_") %>% 
+  spread(gender_year, income) #<<
+```
+
+
+---
+
+# `ggplot2`
+
+### 3 Core parts
+.pull-left[
+* `ggplot` - builds base layer
+
+* `geom_` is the shape
+  * `geom_point()`
+  * `geom_line()`
+  * `geom_bar()`
+  * `geom_boxplot()`
+  * `geom_?()`
+]
+
+--
+
+.pull-right[
+  
+* `aes` is the mappings/relationships
+  * Horizontal Dimensions (x)
+  * Vertical Dimensions (y)
+  * Color
+  * Shape
+  * Size
+  * Transparency
+  * Relationships
+]
+
+---
+
+
+```{r, eval = FALSE}
+ggplot(data = <DATA>, mapping = aes(<MAPPINGS>)) + 
+  <GEOM_FUNCTION>()
+```
+
+--
+
+```{r, fig.width = 5, fig.height = 3, dpi = 600, eval = FALSE}
+ggplot(mtcars, aes(x = cyl, y = mpg)) +
+  geom_point()
+```
+
+--
+
+```{r, fig.width = 5, fig.height = 3, dpi = 600, echo = FALSE}
+ggplot(mtcars, aes(x = cyl, y = mpg)) +
+  geom_point()
+```
+
+---
+
+Supply the data, tell `ggplot2` the aesthetic mappings, and then add layers of `plots` via `geom_`
+
+--
+
+.pull-left[
+* `geom_point()` - Points
+* `geom_dotplot()` - Dot plot
+* `geom_hline()` - Horizontal reference line
+* `geom_vline()` - Vertical reference line
+* `geom_boxplot()` - A box and whisker plot
+* `geom_density()` - Smoothed density estimates
+* `geom_errorbarh()` - Horizontal error bars
+* `geom_hex()` - Hexagonal heatmap of 2d bin counts
+* `geom_jitter()` - Jittered points
+* `geom_linerange()` - Vertical interval line
+* `geom_pointrange()` - Vertical point line
+* `geom_line()` - Connect observations line
+
+]
+
+.pull-right[
+
+* `geom_step()` - Connect observations via step lines
+* `geom_polygon()` - Polygons
+* `geom_segment()` - Line segment
+* `geom_ribbon()` - Ribbon plot
+* `geom_area()` - Area plot
+* `geom_rug()` - Rug plots in the margins
+* `geom_smooth()` - Smoothed conditional means
+* `geom_label()` - Label points with text
+* `geom_text()` - Add text
+* `geom_violin()` - Violin plot
+* `geom_sf()` - Visual sf objects
+* `geom_map()` - Plot map
+* `geom_qq_line()` - A quantile-quantile plot
+* `geom_histogram()` - Histogram plot
+
+]
+
+---
+
+# `ggplot2`
+
+### Gapminder dataset
+
+```{r}
+gapminder_df <- gapminder::gapminder
+
+glimpse(gapminder_df)
+```
+
+---
+
+### `ggplot2`
+
+```{r, fig.height = 4}
+gapminder_df %>% 
+  filter(country == "Malawi") %>% 
+  ggplot(aes(x = year, y = lifeExp)) + #<<
+  geom_line(colour = "#1380A1", size = 1) #<<
+```
+
+---
+
+###`ggplot2`
+
+```{r, fig.height = 4}
+gapminder_df %>% 
+  filter(country == "Malawi") %>% 
+  ggplot(aes(x = year, y = lifeExp)) +
+  geom_line(colour = "#1380A1", size = 1) +
+  geom_point(size = 2) #<<
+```
+
+---
+
+### `ggplot2`
+
+```{r,  fig.height = 4}
+gapminder_df %>%
+  filter(country == "China" | country == "United States") %>% #<<
+  ggplot(aes(x = year, y = lifeExp, colour = country)) +
+  geom_line(size = 1)
+```
+
+
+---
+
+### `ggplot2`
+
+```{r,  fig.height = 4}
+gapminder_df %>%
+  filter(country == "China" | country == "United States") %>% 
+  ggplot(aes(x = year, y = country, colour = country, 
+             size = lifeExp)) + #<<
+  geom_point() +  
+  theme_minimal() + 
+  theme(panel.grid.major.x = element_blank(), 
+        panel.grid.minor.x = element_blank()) 
+```
+
+
+---
+
+# `ggplot2`
+
+```{r, fig.height = 4}
+bar_df <- gapminder_df %>%
+  filter(year == 2007 & continent == "Africa") %>%
+  arrange(desc(lifeExp)) %>%
+  head(5)
+
+(bars <- ggplot(bar_df, aes(x = country, y = lifeExp)) +
+  geom_bar(stat = "identity"))
+```
+
+---
+
+### `ggplot2`
+
+```{r, fig.height = 4}
+bar_df <- gapminder_df %>%
+  filter(year == 2007 & continent == "Africa") %>%
+  arrange(desc(lifeExp)) %>%
+  head(5)
+
+(bars <- ggplot(bar_df, aes(x = country, y = lifeExp)) +
+  geom_col()) #<<
+```
+
+---
+
+### `ggplot2`
+
+```{r, echo = FALSE}
+#Prepare data
+grouped_bar_df <- gapminder_df %>%
+  filter(year == 1967 | year == 2007) %>%
+  select(country, year, lifeExp) %>%
+  spread(year, lifeExp) %>%
+  mutate(gap = `2007` - `1967`) %>%
+  arrange(desc(gap)) %>%
+  head(5) %>%
+  gather(key = year, 
+         value = lifeExp,
+         -country,
+         -gap) 
+
+```
+
+```{r, fig.height= 4, tidy = FALSE}
+grouped_bars <- ggplot(grouped_bar_df, 
+                       aes(x = country, 
+                           y = lifeExp, 
+                           fill = as.factor(year))) +
+  geom_bar(stat="identity", position="dodge")
+
+grouped_bars
+```
+
+---
+
+### ggplot2
+
+```{r, fig.height = 4}
+hist_plot <- gapminder_df %>% 
+  filter(year == 2007) %>% 
+  ggplot(aes(x = lifeExp)) +
+  geom_histogram(binwidth = 5, color = "white") #<<
+
+hist_plot
+```
+
+---
+
+
+### ggplot2
+
+```{r, fig.height = 5}
+hist_plot +
+  labs(x = "Life Expectancy (Years)",
+       y = "Count",
+       title = "Life expectancy",
+       subtitle = "Year = 2007",
+       caption = "Source: Gapminder")
+```
+
+---
+
+### ggplot2
+
+```{r, eval = FALSE}
+ggsave("life_exp_2007.png", hist_plot, 
+       height = 4, width = 6, units = "in", dpi = 450)
+```
+
+--
+
+```{r, out.width= "600px"}
+knitr::include_graphics("static-img/life_exp_2007.png")
+```
+
+---
+
+### ggplot2
+
+Unlimited customization via theme! 
+
+```r
+theme(line, rect, text, title, aspect.ratio, axis.title, axis.title.x,
+  axis.title.x.top, axis.title.x.bottom, axis.title.y, axis.title.y.left,
+  axis.title.y.right, axis.text, axis.text.x, axis.text.x.top,
+  axis.text.x.bottom, axis.text.y, axis.text.y.left, axis.text.y.right,
+  axis.ticks, axis.ticks.x, axis.ticks.x.top, axis.ticks.x.bottom,
+  axis.ticks.y, axis.ticks.y.left, axis.ticks.y.right, axis.ticks.length,
+  axis.ticks.length.x, axis.ticks.length.x.top, axis.ticks.length.x.bottom,
+  axis.ticks.length.y, axis.ticks.length.y.left, axis.ticks.length.y.right,
+  axis.line, axis.line.x, axis.line.x.top, axis.line.x.bottom, axis.line.y,
+  axis.line.y.left, axis.line.y.right, legend.background, legend.margin,
+  legend.spacing, legend.spacing.x, legend.spacing.y, legend.key,
+  legend.key.size, legend.key.height, legend.key.width, legend.text,
+  legend.text.align, legend.title, legend.title.align, legend.position,
+  legend.direction, legend.justification, legend.box, legend.box.just,
+  legend.box.margin, legend.box.background, legend.box.spacing,
+  panel.background, panel.border, panel.spacing, panel.spacing.x,
+  panel.spacing.y, panel.grid, panel.grid.major, panel.grid.minor,
+  panel.grid.major.x, panel.grid.major.y, panel.grid.minor.x,
+  panel.grid.minor.y, panel.ontop, plot.background, plot.title,
+  plot.subtitle, plot.caption, plot.tag, plot.tag.position, plot.margin,
+  strip.background, strip.background.x, strip.background.y,
+  strip.placement, strip.text, strip.text.x, strip.text.y,
+  strip.switch.pad.grid, strip.switch.pad.wrap, ..., complete = FALSE,
+  validate = TRUE)
+
+```
+
+
+---
+
+### `ggplot2`
+
+.pull-left[
+
+Saved themes apply multiple theme elements all at once
+* Saves writing
+* Reproducibility
+
+Built in themes
+* `theme_grey()` # default
+* `theme_bw()`
+* `theme_minimal()`
+* `theme_classic()`
+]
+
+
+--
+
+.pull-right[
+New packages
+* `bbplot`
+  * `bbc_style()`
+  
+* `urbnthemes()`
+  * `theme_urbn_print()`
+  
+* `ggthemes`
+  * `theme_few()`
+  * `theme_excel()`
+  * `theme_economist()`
+  
+* Build your own package/theme!
+]
+
+---
+
+### `ggplot2`
+
+```{r,  fig.height = 4}
+gapminder_df %>%
+  filter(country == "China" | country == "United States") %>% 
+  ggplot(aes(x = year, y = lifeExp, colour = country)) +
+  geom_line(size = 1) +
+  theme_grey() #<<
+```
+
+
+---
+
+### `ggplot2`
+
+```{r,  fig.height = 4}
+gapminder_df %>%
+  filter(country == "China" | country == "United States") %>% 
+  ggplot(aes(x = year, y = lifeExp, colour = country)) +
+  geom_line(size = 1) +
+  theme_bw() #<<
+```
+
+
+---
+
+### `ggplot2`
+
+```{r,  fig.height = 4}
+gapminder_df %>%
+  filter(country == "China" | country == "United States") %>% 
+  ggplot(aes(x = year, y = lifeExp, colour = country)) +
+  geom_line(size = 1) +
+  theme_minimal() #<<
+```
+
+
+---
+
+### `ggplot2`
+
+```{r,  fig.height = 4}
+gapminder_df %>%
+  filter(country == "China" | country == "United States") %>% 
+  ggplot(aes(x = year, y = lifeExp, colour = country)) +
+  geom_line(size = 1) +
+  theme_classic() #<<
+```
+
+
+---
+
+### `ggplot2`
+
+```{r,  fig.height = 4}
+gapminder_df %>%
+  filter(country == "China" | country == "United States") %>% 
+  ggplot(aes(x = year, y = lifeExp, colour = country)) +
+  geom_line(size = 1) +
+  ggthemes::theme_economist_white() #<<
+```
+
+
+---
+
+### `ggplot2`
+
+```{r,  fig.height = 4}
+gapminder_df %>%
+  filter(country == "China" | country == "United States") %>% 
+  ggplot(aes(x = year, y = lifeExp, colour = country)) +
+  geom_line(size = 1) +
+  ggthemes::theme_few() #<<
+```
+
+
+---
+
+### `ggplot2`
+
+```{r,  fig.height = 4}
+gapminder_df %>%
+  filter(country == "China" | country == "United States") %>% 
+  ggplot(aes(x = year, y = lifeExp, colour = country)) +
+  geom_line(size = 1) +  
+  geom_hline(yintercept = 0, size = 1, colour="#333333") +
+  bbplot::bbc_style() #<<
+```
+
+
+
+---
+
+### `ggplot2`
+
+```{r,  fig.height = 4}
+gapminder_df %>%
+  filter(country == "China" | country == "United States") %>% 
+  ggplot(aes(x = year, y = lifeExp, colour = country)) +
+  geom_line(size = 1) +  
+  geom_hline(yintercept = 0, size = 1, colour="#333333") +
+  theme_minimal() + #<<
+  theme(panel.grid.major.x = element_blank(), #<<
+        panel.grid.minor.x = element_blank()) #<<
+```
+
+---
+
+# Whirlwind of information!
+
+`tidyverse` focuses on `tidy` data
+- `Tidyverse`
+  - Read data in with `readr`
+  - Tidy data with `tidyr`
+  - Transform data with `dplyr`
+  - Plot data with `ggplot2`
+  
+--
+
+- Next Steps
+  * [R for Data Science book (free!)](https://r4ds.had.co.nz/)
+  * [RStudio Cloud Primers (free!)](https://rstudio.cloud/learn/primers)

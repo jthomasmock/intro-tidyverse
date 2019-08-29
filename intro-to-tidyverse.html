@@ -1,0 +1,2309 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+  <head>
+    <title>Intro to the Tidyverse</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Thomas Mock" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Intro to the Tidyverse
+### Thomas Mock
+### RStudio, Inc.
+### updated: 2019-08-29
+
+---
+
+
+# Today's Agenda
+
+- RStudio
+  - Writing code
+  - File manipulation
+  - Package control
+
+--
+
+- R coding basics
+  - Math
+  - Assignment
+  - Functions
+  - Load and install packages
+
+--
+
+- `Tidyverse`
+  - Read data in with `readr`
+  - Tidy data with`tidyr`
+  - Transform data with `dplyr`
+  - Plot data with `ggplot2`
+  
+
+
+---
+
+# RStudio
+
+RStudio is an IDE (integrated development environment)  
+
+- A place to write  
+  - Console
+  - R Scripts
+  - R Markdown
+  - Code Completion
+  - Debugging
+  
+--
+
+- A place to open *things*  
+  - File and path exploration
+  - Open plots, data, .R/.Rmd file
+  
+--
+
+- A place for projects  
+  - Self-contained structure
+  - Consistent/easy pathing
+  - Keep relevant files/code together with output
+  
+  
+
+---
+
+class: center, middle, inverse
+
+.large[RStudio Basics]
+
+---
+
+![](static-img/rstudio-editor.png)  
+
+---
+
+![](static-img/R-file.png)
+
+---
+
+![](static-img/rmd-file.png)
+
+---
+
+# RStudio Diagnostics
+
+The script editor highlights syntax errors
+
+![](static-img/rstudio-diagnostic.png)  
+
+--
+
+Hover over the cross to see the problem
+![](static-img/rstudio-diagnostic-tip.png)  
+
+--
+
+RStudio also warns about potential problems
+![](static-img/rstudio-diagnostic-warn.png)  
+  
+  
+
+---
+
+
+# Everyone makes mistakes!
+
+Errors are *ok*, it happens to everyone!
+
+
+```r
+my_variable &lt;- x * 3.14
+
+my_variab1e
+```
+
+
+
+
+```
+## Warning: # Error: object 'my_variab1e' not found
+```
+
+--
+
+
+```r
+my_variable
+```
+
+```
+## [1] 31.4
+```
+
+
+--
+
+* R is essentially the most aggressive spell-checker of all time!
+
+--
+
+* Focus on what the error says and if you don't understand it, Googling can often help!
+
+---
+
+class: center, middle, inverse
+
+.large[R Code Basics]
+
+---
+
+# R Code Basics
+
+Assignment
+
+.pull-left[
+
+```r
+x &lt;- 3 * 4
+x
+```
+
+```
+## [1] 12
+```
+
+
+
+
+
+```r
+y &lt;- 5
+y * x
+```
+
+```
+## [1] 60
+```
+
+]
+
+--
+
+.pull-right[
+
+```r
+tmp_df &lt;- data.frame(
+  col_1 = c(1, 2, 3), 
+  col_2 = c("a", "b", "c")
+  )
+
+tmp_df
+```
+
+```
+##   col_1 col_2
+## 1     1     a
+## 2     2     b
+## 3     3     c
+```
+
+
+]
+  
+  
+
+
+---
+
+# Functions
+
+A function is essentially shorthand to call specific code
+
+
+
+
+
+```r
+function_name(arg1, arg2, arg3)
+```
+  
+--
+
+
+```r
+seq(from, to, by, 
+    length.out, along.with)
+```
+
+
+--
+
+
+```r
+seq(from = 10, to = 100, by = 10)  
+```
+
+```
+##  [1]  10  20  30  40  50  60  70  80  90 100
+```
+
+--
+
+
+```r
+seq(10, 100, 10)  
+```
+
+```
+##  [1]  10  20  30  40  50  60  70  80  90 100
+```
+
+--
+
+
+```r
+result_out &lt;- seq(10, 100, length.out = 5)  
+
+result_out
+```
+
+```
+## [1]  10.0  32.5  55.0  77.5 100.0
+```
+
+
+---
+
+# The `%&gt;%` `==` and then
+
+Rather than multiple assignment or nesting functions
+
+
+```r
+did_something &lt;- do_something(data)
+
+did_another_thing &lt;- do_another_thing(did_something)
+
+final_thing &lt;- do_last_thing(did_another_thing)
+```
+
+--
+
+
+```r
+final_thing &lt;- do_last_thing(
+  do_another_thing(
+    do_something(
+      data
+      )
+    )
+  )
+```
+
+
+--
+
+
+```r
+final_thing &lt;- data %&gt;% 
+      do_something() %&gt;% 
+      do_another_thing() %&gt;% 
+      do_last_thing()
+```
+
+
+---
+
+# The Pipe `%&gt;%`
+
+ 
+
+```r
+data %&gt;% 
+  do_something(.) %&gt;% 
+  do_another_thing(.) %&gt;% 
+  do_last_thing(.)
+```
+
+--
+
+`do_something(data)` is equivalent to:  
+
+--
+
+* `data %&gt;% do_something(data = .)`  
+
+--
+
+* `data %&gt;% do_something(.)`  
+
+--
+
+* `data %&gt;% do_something()`  
+
+---
+
+
+```r
+data_in &lt;- seq(10, 100, by = 10)
+
+result_out &lt;- mean(data_in)
+
+result_out
+```
+
+```
+## [1] 55
+```
+
+
+--
+
+
+```r
+mean(seq(10,100, by = 10))
+```
+
+```
+## [1] 55
+```
+
+--
+
+
+
+```r
+seq(10, 100, by = 10) %&gt;%
+  mean()
+```
+
+```
+## [1] 55
+```
+
+--
+
+
+```r
+mean_output &lt;- seq(10, 100, by = 10) %&gt;%
+  mean()
+
+mean_output
+```
+
+```
+## [1] 55
+```
+
+
+
+---
+
+# More Complex example
+
+
+
+
+```r
+data
+```
+
+```
+## # A tibble: 40 x 4
+##     year gender age_group income
+##    &lt;dbl&gt; &lt;chr&gt;  &lt;fct&gt;      &lt;dbl&gt;
+##  1  2018 Male   &lt; 18       20000
+##  2  2018 Male   &lt; 18       22000
+##  3  2018 Male   18-30      35000
+##  4  2018 Male   18-30      36000
+##  5  2018 Male   31-50      40000
+##  6  2018 Female 31-50      50000
+##  7  2018 Female 51-60      60000
+##  8  2018 Female 51-60      62000
+##  9  2018 Female &gt; 60       72000
+## 10  2018 Female &gt; 60       75000
+## # … with 30 more rows
+```
+
+---
+
+# More Complex Example
+
+
+```r
+data %&gt;% 
+  filter(year == 2018) %&gt;% 
+  group_by(age_group) %&gt;% 
+  summarize(mean = mean(income))
+```
+
+--
+
+
+```
+## # A tibble: 5 x 2
+##   age_group  mean
+##   &lt;fct&gt;     &lt;dbl&gt;
+## 1 &lt; 18      21000
+## 2 18-30     35500
+## 3 31-50     45000
+## 4 51-60     61000
+## 5 &gt; 60      73500
+```
+
+
+---
+
+class: center, middle
+
+background-image: url("static-img/tidyverse-default.png")
+
+
+---
+
+# `Tidyverse`
+An opinionated collection of R packages for data science.   
+&lt;br&gt;
+  
+--
+
+All packages share an underlying design philosophy, grammar, and data structures  
+
+--
+
+* Core packages - `readr`, `tidyr`, `dplyr`, `ggplot2`
+
+--
+
+![](static-img/tidy1.png)
+
+---
+
+# `Tidyverse`
+
+`Tidyverse` is an R package, as such you need to do two things to be able to use it
+* `install.packages("tidyverse")`
+  * This downloads and installs the `tidyverse`
+
+--
+  
+* `library(tidyverse)`
+  * This loads and gives you access to the `tidyverse` package
+
+---
+
+# `tidyverse` Core Principles
+
+* Built around `data` - usually as a `data.frame` or `tibble`
+* Built around `tidy` data
+  * Each `variable` in its own `column`
+  * Each `observation` or `case` in its own `row`
+  * Each type of observational units forms a table
+
+
+
+
+--
+
+![](static-img/tidy-1.png)
+
+---
+
+# Untidy data
+
+
+```r
+untidy_df
+```
+
+```
+## # A tibble: 5 x 7
+*##   age_group male_2016 female_2016 male_2017 female_2017 male_2018
+##   &lt;chr&gt;         &lt;dbl&gt;       &lt;dbl&gt;     &lt;dbl&gt;       &lt;dbl&gt;     &lt;dbl&gt;
+## 1 &lt; 18          22000       20000     22000       20000     22000
+## 2 18-30         36000       35000     36000       35000     36000
+## 3 31-50         50000       40000     50000       40000     50000
+## 4 51-60         62000       60000     62000       60000     62000
+## 5 &gt; 60          75000       72000     75000       72000     75000
+## # … with 1 more variable: female_2018 &lt;dbl&gt;
+```
+
+
+---
+
+# Tidy data
+
+
+```r
+tidy_df
+```
+
+```
+## # A tibble: 30 x 4
+##    age_group gender year  income
+##    &lt;chr&gt;     &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt;
+*##  1 &lt; 18      male   2016   22000
+##  2 18-30     male   2016   36000
+##  3 31-50     male   2016   50000
+##  4 51-60     male   2016   62000
+##  5 &gt; 60      male   2016   75000
+*##  6 &lt; 18      female 2016   20000
+##  7 18-30     female 2016   35000
+##  8 31-50     female 2016   40000
+##  9 51-60     female 2016   60000
+## 10 &gt; 60      female 2016   72000
+## # … with 20 more rows
+```
+
+---
+
+# Tidy the data
+
+
+```r
+untidy_df %&gt;% 
+* gather(gender_year, income, male_2016:female_2018)
+```
+
+```
+## # A tibble: 30 x 3
+##    age_group gender_year income
+##    &lt;chr&gt;     &lt;chr&gt;        &lt;dbl&gt;
+*##  1 &lt; 18      male_2016    22000
+##  2 18-30     male_2016    36000
+##  3 31-50     male_2016    50000
+##  4 51-60     male_2016    62000
+##  5 &gt; 60      male_2016    75000
+*##  6 &lt; 18      female_2016  20000
+##  7 18-30     female_2016  35000
+##  8 31-50     female_2016  40000
+##  9 51-60     female_2016  60000
+## 10 &gt; 60      female_2016  72000
+## # … with 20 more rows
+```
+
+
+---
+
+# Tidy the data
+
+
+```r
+untidy_df %&gt;% 
+  gather(gender_year, income, male_2016:female_2018) %&gt;% 
+* separate(gender_year, into = c("gender", "year"))
+```
+
+```
+## # A tibble: 30 x 4
+##    age_group gender year  income
+##    &lt;chr&gt;     &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt;
+*##  1 &lt; 18      male   2016   22000
+##  2 18-30     male   2016   36000
+##  3 31-50     male   2016   50000
+##  4 51-60     male   2016   62000
+##  5 &gt; 60      male   2016   75000
+*##  6 &lt; 18      female 2016   20000
+##  7 18-30     female 2016   35000
+##  8 31-50     female 2016   40000
+##  9 51-60     female 2016   60000
+## 10 &gt; 60      female 2016   72000
+## # … with 20 more rows
+```
+
+---
+
+# Read data in
+
+Read in data with `readr`, `haven`, `readxl`
+
+### `readr`
+* `read_csv()`, `read_tsv()`, `read_delim()`
+
+### `haven`
+* `read_sas()`, `read_spss()`, `read_stata()`, `read_dta()`
+
+### `readxl`
+* `read_xls()`, `read_xlsx()`, `read_excel()`
+
+---
+
+### `dplyr`
+
+.pull-left[
+### 6 Main verbs
+* `filter()`
+* `arrange()`
+* `select()`
+* `mutate()`
+* `group_by()`
+* `summarise()`
+
+### Simple use
+* `pull()`
+* `n()`/`count()`
+* `glimpse()`
+]
+
+--
+
+.pull-right[
+### Advanced iterations
+* `summarize_at()`
+* `mutate_at()`
+
+### More info
+* [`dplyr.tidyverse.org`](https://dplyr.tidyverse.org/)
+* [`R for Data Science`](https://r4ds.had.co.nz/transform.html)  
+
+&lt;img src="static-img/hex-dplyr.png" width="40%" /&gt;
+
+]
+
+---
+
+# mtcars dataset
+
+`data.frame` vs `tibble`
+
+
+```r
+class(mtcars)
+```
+
+```
+## [1] "data.frame"
+```
+
+
+```r
+mtcars_tbl &lt;- as_tibble(mtcars)
+
+class(mtcars_tbl)
+```
+
+```
+## [1] "tbl_df"     "tbl"        "data.frame"
+```
+
+
+
+---
+
+# mtcars dataset
+
+`data.frame` vs `tibble`
+
+
+```r
+mtcars
+```
+
+```
+*##                      mpg cyl  disp  hp drat    wt  qsec vs am gear carb
+## Mazda RX4           21.0   6 160.0 110 3.90 2.620 16.46  0  1    4    4
+## Mazda RX4 Wag       21.0   6 160.0 110 3.90 2.875 17.02  0  1    4    4
+## Datsun 710          22.8   4 108.0  93 3.85 2.320 18.61  1  1    4    1
+## Hornet 4 Drive      21.4   6 258.0 110 3.08 3.215 19.44  1  0    3    1
+## Hornet Sportabout   18.7   8 360.0 175 3.15 3.440 17.02  0  0    3    2
+## Valiant             18.1   6 225.0 105 2.76 3.460 20.22  1  0    3    1
+## Duster 360          14.3   8 360.0 245 3.21 3.570 15.84  0  0    3    4
+## Merc 240D           24.4   4 146.7  62 3.69 3.190 20.00  1  0    4    2
+## Merc 230            22.8   4 140.8  95 3.92 3.150 22.90  1  0    4    2
+## Merc 280            19.2   6 167.6 123 3.92 3.440 18.30  1  0    4    4
+## Merc 280C           17.8   6 167.6 123 3.92 3.440 18.90  1  0    4    4
+## Merc 450SE          16.4   8 275.8 180 3.07 4.070 17.40  0  0    3    3
+## Merc 450SL          17.3   8 275.8 180 3.07 3.730 17.60  0  0    3    3
+## Merc 450SLC         15.2   8 275.8 180 3.07 3.780 18.00  0  0    3    3
+## Cadillac Fleetwood  10.4   8 472.0 205 2.93 5.250 17.98  0  0    3    4
+## Lincoln Continental 10.4   8 460.0 215 3.00 5.424 17.82  0  0    3    4
+## Chrysler Imperial   14.7   8 440.0 230 3.23 5.345 17.42  0  0    3    4
+## Fiat 128            32.4   4  78.7  66 4.08 2.200 19.47  1  1    4    1
+## Honda Civic         30.4   4  75.7  52 4.93 1.615 18.52  1  1    4    2
+## Toyota Corolla      33.9   4  71.1  65 4.22 1.835 19.90  1  1    4    1
+## Toyota Corona       21.5   4 120.1  97 3.70 2.465 20.01  1  0    3    1
+## Dodge Challenger    15.5   8 318.0 150 2.76 3.520 16.87  0  0    3    2
+## AMC Javelin         15.2   8 304.0 150 3.15 3.435 17.30  0  0    3    2
+## Camaro Z28          13.3   8 350.0 245 3.73 3.840 15.41  0  0    3    4
+## Pontiac Firebird    19.2   8 400.0 175 3.08 3.845 17.05  0  0    3    2
+## Fiat X1-9           27.3   4  79.0  66 4.08 1.935 18.90  1  1    4    1
+## Porsche 914-2       26.0   4 120.3  91 4.43 2.140 16.70  0  1    5    2
+## Lotus Europa        30.4   4  95.1 113 3.77 1.513 16.90  1  1    5    2
+## Ford Pantera L      15.8   8 351.0 264 4.22 3.170 14.50  0  1    5    4
+## Ferrari Dino        19.7   6 145.0 175 3.62 2.770 15.50  0  1    5    6
+## Maserati Bora       15.0   8 301.0 335 3.54 3.570 14.60  0  1    5    8
+## Volvo 142E          21.4   4 121.0 109 4.11 2.780 18.60  1  1    4    2
+```
+
+---
+
+# mtcars dataset
+
+`data.frame` vs `tibble`
+
+
+```r
+mtcars_tbl
+```
+
+```
+*## # A tibble: 32 x 11
+*##      mpg   cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb
+*##    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+##  1  21       6  160    110  3.9   2.62  16.5     0     1     4     4
+##  2  21       6  160    110  3.9   2.88  17.0     0     1     4     4
+##  3  22.8     4  108     93  3.85  2.32  18.6     1     1     4     1
+##  4  21.4     6  258    110  3.08  3.22  19.4     1     0     3     1
+##  5  18.7     8  360    175  3.15  3.44  17.0     0     0     3     2
+##  6  18.1     6  225    105  2.76  3.46  20.2     1     0     3     1
+##  7  14.3     8  360    245  3.21  3.57  15.8     0     0     3     4
+##  8  24.4     4  147.    62  3.69  3.19  20       1     0     4     2
+##  9  22.8     4  141.    95  3.92  3.15  22.9     1     0     4     2
+## 10  19.2     6  168.   123  3.92  3.44  18.3     1     0     4     4
+## # … with 22 more rows
+```
+
+
+---
+
+# mtcars dataset
+
+
+```r
+mtcars &lt;- as_tibble(mtcars)
+```
+
+
+
+```r
+mtcars
+```
+
+```
+*## # A tibble: 32 x 11
+*##      mpg   cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb
+*##    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+##  1  21       6  160    110  3.9   2.62  16.5     0     1     4     4
+##  2  21       6  160    110  3.9   2.88  17.0     0     1     4     4
+##  3  22.8     4  108     93  3.85  2.32  18.6     1     1     4     1
+##  4  21.4     6  258    110  3.08  3.22  19.4     1     0     3     1
+##  5  18.7     8  360    175  3.15  3.44  17.0     0     0     3     2
+##  6  18.1     6  225    105  2.76  3.46  20.2     1     0     3     1
+##  7  14.3     8  360    245  3.21  3.57  15.8     0     0     3     4
+##  8  24.4     4  147.    62  3.69  3.19  20       1     0     4     2
+##  9  22.8     4  141.    95  3.92  3.15  22.9     1     0     4     2
+## 10  19.2     6  168.   123  3.92  3.44  18.3     1     0     4     4
+## # … with 22 more rows
+```
+
+---
+
+# mtcars dataset
+
+
+```r
+head(mtcars, 5)
+```
+
+```
+## # A tibble: 5 x 11
+##     mpg   cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb
+##   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1  21       6   160   110  3.9   2.62  16.5     0     1     4     4
+## 2  21       6   160   110  3.9   2.88  17.0     0     1     4     4
+## 3  22.8     4   108    93  3.85  2.32  18.6     1     1     4     1
+## 4  21.4     6   258   110  3.08  3.22  19.4     1     0     3     1
+## 5  18.7     8   360   175  3.15  3.44  17.0     0     0     3     2
+```
+
+--
+
+
+```r
+tail(mtcars, 5)
+```
+
+```
+## # A tibble: 5 x 11
+##     mpg   cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb
+##   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1  30.4     4  95.1   113  3.77  1.51  16.9     1     1     5     2
+## 2  15.8     8 351     264  4.22  3.17  14.5     0     1     5     4
+## 3  19.7     6 145     175  3.62  2.77  15.5     0     1     5     6
+## 4  15       8 301     335  3.54  3.57  14.6     0     1     5     8
+## 5  21.4     4 121     109  4.11  2.78  18.6     1     1     4     2
+```
+
+---
+
+### `dplyr::slice()`
+
+
+```r
+slice(mtcars, 1:3)
+```
+
+```
+## # A tibble: 3 x 11
+##     mpg   cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb
+##   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+*## 1  21       6   160   110  3.9   2.62  16.5     0     1     4     4
+## 2  21       6   160   110  3.9   2.88  17.0     0     1     4     4
+*## 3  22.8     4   108    93  3.85  2.32  18.6     1     1     4     1
+```
+
+--
+
+
+```r
+slice(mtcars, 1, 3, 5)
+```
+
+```
+## # A tibble: 3 x 11
+##     mpg   cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb
+##   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+*## 1  21       6   160   110  3.9   2.62  16.5     0     1     4     4
+*## 2  22.8     4   108    93  3.85  2.32  18.6     1     1     4     1
+## 3  18.7     8   360   175  3.15  3.44  17.0     0     0     3     2
+```
+
+
+---
+
+### `dplyr::glimpse()`
+
+
+```r
+glimpse(mtcars)
+```
+
+```
+*## Observations: 32
+*## Variables: 11
+## $ mpg  &lt;dbl&gt; 21.0, 21.0, 22.8, 21.4, 18.7, 18.1, 14.3, 24.4, 22.8, 19.2,…
+## $ cyl  &lt;dbl&gt; 6, 6, 4, 6, 8, 6, 8, 4, 4, 6, 6, 8, 8, 8, 8, 8, 8, 4, 4, 4,…
+## $ disp &lt;dbl&gt; 160.0, 160.0, 108.0, 258.0, 360.0, 225.0, 360.0, 146.7, 140…
+## $ hp   &lt;dbl&gt; 110, 110, 93, 110, 175, 105, 245, 62, 95, 123, 123, 180, 18…
+## $ drat &lt;dbl&gt; 3.90, 3.90, 3.85, 3.08, 3.15, 2.76, 3.21, 3.69, 3.92, 3.92,…
+## $ wt   &lt;dbl&gt; 2.620, 2.875, 2.320, 3.215, 3.440, 3.460, 3.570, 3.190, 3.1…
+## $ qsec &lt;dbl&gt; 16.46, 17.02, 18.61, 19.44, 17.02, 20.22, 15.84, 20.00, 22.…
+## $ vs   &lt;dbl&gt; 0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1,…
+## $ am   &lt;dbl&gt; 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1,…
+## $ gear &lt;dbl&gt; 4, 4, 4, 3, 3, 3, 3, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 4, 4, 4,…
+## $ carb &lt;dbl&gt; 4, 4, 1, 1, 2, 1, 4, 2, 2, 4, 4, 3, 3, 3, 4, 4, 4, 1, 2, 1,…
+```
+
+---
+
+### `dplyr::filter()`
+
+
+```r
+filter(mtcars, cyl == 8)
+```
+
+```
+## # A tibble: 14 x 11
+##      mpg   cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb
+##    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+##  1  18.7     8  360    175  3.15  3.44  17.0     0     0     3     2
+##  2  14.3     8  360    245  3.21  3.57  15.8     0     0     3     4
+##  3  16.4     8  276.   180  3.07  4.07  17.4     0     0     3     3
+##  4  17.3     8  276.   180  3.07  3.73  17.6     0     0     3     3
+##  5  15.2     8  276.   180  3.07  3.78  18       0     0     3     3
+##  6  10.4     8  472    205  2.93  5.25  18.0     0     0     3     4
+##  7  10.4     8  460    215  3     5.42  17.8     0     0     3     4
+##  8  14.7     8  440    230  3.23  5.34  17.4     0     0     3     4
+##  9  15.5     8  318    150  2.76  3.52  16.9     0     0     3     2
+## 10  15.2     8  304    150  3.15  3.44  17.3     0     0     3     2
+## 11  13.3     8  350    245  3.73  3.84  15.4     0     0     3     4
+## 12  19.2     8  400    175  3.08  3.84  17.0     0     0     3     2
+## 13  15.8     8  351    264  4.22  3.17  14.5     0     1     5     4
+## 14  15       8  301    335  3.54  3.57  14.6     0     1     5     8
+```
+
+---
+
+### `dplyr::filter()`
+
+
+```r
+mtcars %&gt;% 
+  filter(cyl %in% c(4, 6))
+```
+
+```
+## # A tibble: 18 x 11
+##      mpg   cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb
+##    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+##  1  21       6 160     110  3.9   2.62  16.5     0     1     4     4
+##  2  21       6 160     110  3.9   2.88  17.0     0     1     4     4
+##  3  22.8     4 108      93  3.85  2.32  18.6     1     1     4     1
+##  4  21.4     6 258     110  3.08  3.22  19.4     1     0     3     1
+##  5  18.1     6 225     105  2.76  3.46  20.2     1     0     3     1
+##  6  24.4     4 147.     62  3.69  3.19  20       1     0     4     2
+##  7  22.8     4 141.     95  3.92  3.15  22.9     1     0     4     2
+##  8  19.2     6 168.    123  3.92  3.44  18.3     1     0     4     4
+##  9  17.8     6 168.    123  3.92  3.44  18.9     1     0     4     4
+## 10  32.4     4  78.7    66  4.08  2.2   19.5     1     1     4     1
+## 11  30.4     4  75.7    52  4.93  1.62  18.5     1     1     4     2
+## 12  33.9     4  71.1    65  4.22  1.84  19.9     1     1     4     1
+## 13  21.5     4 120.     97  3.7   2.46  20.0     1     0     3     1
+## 14  27.3     4  79      66  4.08  1.94  18.9     1     1     4     1
+## 15  26       4 120.     91  4.43  2.14  16.7     0     1     5     2
+## 16  30.4     4  95.1   113  3.77  1.51  16.9     1     1     5     2
+## 17  19.7     6 145     175  3.62  2.77  15.5     0     1     5     6
+## 18  21.4     4 121     109  4.11  2.78  18.6     1     1     4     2
+```
+
+---
+
+### `dplyr::filter()`
+
+
+```r
+mtcars %&gt;% 
+  filter(cyl != 4)
+```
+
+```
+## # A tibble: 21 x 11
+##      mpg   cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb
+##    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+##  1  21       6  160    110  3.9   2.62  16.5     0     1     4     4
+##  2  21       6  160    110  3.9   2.88  17.0     0     1     4     4
+##  3  21.4     6  258    110  3.08  3.22  19.4     1     0     3     1
+##  4  18.7     8  360    175  3.15  3.44  17.0     0     0     3     2
+##  5  18.1     6  225    105  2.76  3.46  20.2     1     0     3     1
+##  6  14.3     8  360    245  3.21  3.57  15.8     0     0     3     4
+##  7  19.2     6  168.   123  3.92  3.44  18.3     1     0     4     4
+##  8  17.8     6  168.   123  3.92  3.44  18.9     1     0     4     4
+##  9  16.4     8  276.   180  3.07  4.07  17.4     0     0     3     3
+## 10  17.3     8  276.   180  3.07  3.73  17.6     0     0     3     3
+## # … with 11 more rows
+```
+
+
+---
+
+### `dplyr::arrange()`
+
+
+```r
+mtcars %&gt;% 
+  arrange(mpg)
+```
+
+```
+## # A tibble: 32 x 11
+##      mpg   cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb
+##    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+*##  1  10.4     8  472    205  2.93  5.25  18.0     0     0     3     4
+##  2  10.4     8  460    215  3     5.42  17.8     0     0     3     4
+##  3  13.3     8  350    245  3.73  3.84  15.4     0     0     3     4
+##  4  14.3     8  360    245  3.21  3.57  15.8     0     0     3     4
+##  5  14.7     8  440    230  3.23  5.34  17.4     0     0     3     4
+##  6  15       8  301    335  3.54  3.57  14.6     0     1     5     8
+##  7  15.2     8  276.   180  3.07  3.78  18       0     0     3     3
+##  8  15.2     8  304    150  3.15  3.44  17.3     0     0     3     2
+##  9  15.5     8  318    150  2.76  3.52  16.9     0     0     3     2
+## 10  15.8     8  351    264  4.22  3.17  14.5     0     1     5     4
+## # … with 22 more rows
+```
+
+---
+
+### `dplyr::arrange()`
+
+
+```r
+mtcars %&gt;% 
+  arrange(desc(mpg))
+```
+
+```
+## # A tibble: 32 x 11
+##      mpg   cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb
+##    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+*##  1  33.9     4  71.1    65  4.22  1.84  19.9     1     1     4     1
+##  2  32.4     4  78.7    66  4.08  2.2   19.5     1     1     4     1
+##  3  30.4     4  75.7    52  4.93  1.62  18.5     1     1     4     2
+##  4  30.4     4  95.1   113  3.77  1.51  16.9     1     1     5     2
+##  5  27.3     4  79      66  4.08  1.94  18.9     1     1     4     1
+##  6  26       4 120.     91  4.43  2.14  16.7     0     1     5     2
+##  7  24.4     4 147.     62  3.69  3.19  20       1     0     4     2
+##  8  22.8     4 108      93  3.85  2.32  18.6     1     1     4     1
+##  9  22.8     4 141.     95  3.92  3.15  22.9     1     0     4     2
+## 10  21.5     4 120.     97  3.7   2.46  20.0     1     0     3     1
+## # … with 22 more rows
+```
+
+---
+
+### `dplyr::arrange()`
+
+
+```r
+mtcars %&gt;% 
+  arrange(desc(cyl), desc(hp))
+```
+
+```
+## # A tibble: 32 x 11
+##      mpg   cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb
+##    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+*##  1  15       8  301    335  3.54  3.57  14.6     0     1     5     8
+##  2  15.8     8  351    264  4.22  3.17  14.5     0     1     5     4
+##  3  14.3     8  360    245  3.21  3.57  15.8     0     0     3     4
+##  4  13.3     8  350    245  3.73  3.84  15.4     0     0     3     4
+##  5  14.7     8  440    230  3.23  5.34  17.4     0     0     3     4
+##  6  10.4     8  460    215  3     5.42  17.8     0     0     3     4
+##  7  10.4     8  472    205  2.93  5.25  18.0     0     0     3     4
+##  8  16.4     8  276.   180  3.07  4.07  17.4     0     0     3     3
+##  9  17.3     8  276.   180  3.07  3.73  17.6     0     0     3     3
+## 10  15.2     8  276.   180  3.07  3.78  18       0     0     3     3
+## # … with 22 more rows
+```
+
+  
+---
+
+### `dplyr::select()`
+
+
+```r
+mtcars %&gt;% 
+* select(cyl, mpg) %&gt;%
+  glimpse()
+```
+
+```
+## Observations: 32
+## Variables: 2
+*## $ cyl &lt;dbl&gt; 6, 6, 4, 6, 8, 6, 8, 4, 4, 6, 6, 8, 8, 8, 8, 8, 8, 4, 4, 4, …
+*## $ mpg &lt;dbl&gt; 21.0, 21.0, 22.8, 21.4, 18.7, 18.1, 14.3, 24.4, 22.8, 19.2, …
+```
+
+
+---
+
+### `dplyr::select()`
+
+
+```r
+mtcars %&gt;% 
+* select(disp, cyl, hp, mpg) %&gt;%
+  glimpse()
+```
+
+```
+## Observations: 32
+## Variables: 4
+*## $ disp &lt;dbl&gt; 160.0, 160.0, 108.0, 258.0, 360.0, 225.0, 360.0, 146.7, 140…
+*## $ cyl  &lt;dbl&gt; 6, 6, 4, 6, 8, 6, 8, 4, 4, 6, 6, 8, 8, 8, 8, 8, 8, 4, 4, 4,…
+*## $ hp   &lt;dbl&gt; 110, 110, 93, 110, 175, 105, 245, 62, 95, 123, 123, 180, 18…
+*## $ mpg  &lt;dbl&gt; 21.0, 21.0, 22.8, 21.4, 18.7, 18.1, 14.3, 24.4, 22.8, 19.2,…
+```
+
+
+--
+
+
+```r
+mtcars %&gt;% 
+  select(disp, cyl, hp, mpg) %&gt;% 
+* select(-mpg) %&gt;%
+  glimpse()
+```
+
+```
+## Observations: 32
+## Variables: 3
+*## $ disp &lt;dbl&gt; 160.0, 160.0, 108.0, 258.0, 360.0, 225.0, 360.0, 146.7, 140…
+*## $ cyl  &lt;dbl&gt; 6, 6, 4, 6, 8, 6, 8, 4, 4, 6, 6, 8, 8, 8, 8, 8, 8, 4, 4, 4,…
+*## $ hp   &lt;dbl&gt; 110, 110, 93, 110, 175, 105, 245, 62, 95, 123, 123, 180, 18…
+```
+
+---
+
+### `dplyr::select()`
+
+
+```r
+mtcars %&gt;% 
+* select(cyl, hp, everything()) %&gt;%
+  glimpse()
+```
+
+```
+## Observations: 32
+## Variables: 11
+## $ cyl  &lt;dbl&gt; 6, 6, 4, 6, 8, 6, 8, 4, 4, 6, 6, 8, 8, 8, 8, 8, 8, 4, 4, 4,…
+## $ hp   &lt;dbl&gt; 110, 110, 93, 110, 175, 105, 245, 62, 95, 123, 123, 180, 18…
+## $ mpg  &lt;dbl&gt; 21.0, 21.0, 22.8, 21.4, 18.7, 18.1, 14.3, 24.4, 22.8, 19.2,…
+## $ disp &lt;dbl&gt; 160.0, 160.0, 108.0, 258.0, 360.0, 225.0, 360.0, 146.7, 140…
+## $ drat &lt;dbl&gt; 3.90, 3.90, 3.85, 3.08, 3.15, 2.76, 3.21, 3.69, 3.92, 3.92,…
+## $ wt   &lt;dbl&gt; 2.620, 2.875, 2.320, 3.215, 3.440, 3.460, 3.570, 3.190, 3.1…
+## $ qsec &lt;dbl&gt; 16.46, 17.02, 18.61, 19.44, 17.02, 20.22, 15.84, 20.00, 22.…
+## $ vs   &lt;dbl&gt; 0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1,…
+## $ am   &lt;dbl&gt; 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1,…
+## $ gear &lt;dbl&gt; 4, 4, 4, 3, 3, 3, 3, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 4, 4, 4,…
+## $ carb &lt;dbl&gt; 4, 4, 1, 1, 2, 1, 4, 2, 2, 4, 4, 3, 3, 3, 4, 4, 4, 1, 2, 1,…
+```
+
+---
+
+### `dplyr::select()`
+
+
+```r
+mtcars %&gt;% 
+* select(starts_with("c"), starts_with("h")) %&gt;%
+  glimpse()
+```
+
+```
+## Observations: 32
+## Variables: 3
+## $ cyl  &lt;dbl&gt; 6, 6, 4, 6, 8, 6, 8, 4, 4, 6, 6, 8, 8, 8, 8, 8, 8, 4, 4, 4,…
+## $ carb &lt;dbl&gt; 4, 4, 1, 1, 2, 1, 4, 2, 2, 4, 4, 3, 3, 3, 4, 4, 4, 1, 2, 1,…
+## $ hp   &lt;dbl&gt; 110, 110, 93, 110, 175, 105, 245, 62, 95, 123, 123, 180, 18…
+```
+
+---
+
+### `dplyr::mutate()`
+
+
+```r
+mtcars %&gt;% 
+  select(cyl) %&gt;% 
+  glimpse()
+```
+
+```
+## Observations: 32
+## Variables: 1
+*## $ cyl &lt;dbl&gt; 6, 6, 4, 6, 8, 6, 8, 4, 4, 6, 6, 8, 8, 8, 8, 8, 8, 4, 4, 4, …
+```
+
+
+
+```r
+mtcars %&gt;% 
+* mutate(cyl = factor(cyl,
+*                     levels = c(4, 6, 8),
+*                     labels = c("4 Cyl", "6 Cyl", "8 Cyl"))) %&gt;%
+  select(cyl) %&gt;% 
+  glimpse()
+```
+
+```
+## Observations: 32
+## Variables: 1
+*## $ cyl &lt;fct&gt; 6 Cyl, 6 Cyl, 4 Cyl, 6 Cyl, 8 Cyl, 6 Cyl, 8 Cyl, 4 Cyl, 4 Cy…
+```
+
+---
+
+### `dplyr::mutate()`
+
+
+```r
+mtcars %&gt;% 
+* mutate(miles_per_liter = mpg * 3.78541,
+*        miles_per_gallon = miles_per_liter / 3.78541) %&gt;%
+  select(miles_per_liter, mpg,miles_per_gallon) %&gt;%
+  head(10)
+```
+
+```
+## # A tibble: 10 x 3
+##    miles_per_liter   mpg miles_per_gallon
+##              &lt;dbl&gt; &lt;dbl&gt;            &lt;dbl&gt;
+*##  1            79.5  21               21  
+##  2            79.5  21               21  
+##  3            86.3  22.8             22.8
+##  4            81.0  21.4             21.4
+##  5            70.8  18.7             18.7
+##  6            68.5  18.1             18.1
+##  7            54.1  14.3             14.3
+##  8            92.4  24.4             24.4
+##  9            86.3  22.8             22.8
+## 10            72.7  19.2             19.2
+```
+
+
+---
+
+### `dplyr::group_by()`
+
+
+```r
+mtcars %&gt;% 
+  group_by(cyl)
+```
+
+```
+## # A tibble: 32 x 11
+*## # Groups:   cyl [3]
+##      mpg   cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb
+##    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+##  1  21       6  160    110  3.9   2.62  16.5     0     1     4     4
+##  2  21       6  160    110  3.9   2.88  17.0     0     1     4     4
+##  3  22.8     4  108     93  3.85  2.32  18.6     1     1     4     1
+##  4  21.4     6  258    110  3.08  3.22  19.4     1     0     3     1
+##  5  18.7     8  360    175  3.15  3.44  17.0     0     0     3     2
+##  6  18.1     6  225    105  2.76  3.46  20.2     1     0     3     1
+##  7  14.3     8  360    245  3.21  3.57  15.8     0     0     3     4
+##  8  24.4     4  147.    62  3.69  3.19  20       1     0     4     2
+##  9  22.8     4  141.    95  3.92  3.15  22.9     1     0     4     2
+## 10  19.2     6  168.   123  3.92  3.44  18.3     1     0     4     4
+## # … with 22 more rows
+```
+
+---
+
+### `dplyr::group_by()`
+
+
+```r
+mtcars %&gt;% 
+* group_by(cyl) %&gt;%
+  slice(1)
+```
+
+```
+## # A tibble: 3 x 11
+## # Groups:   cyl [3]
+##     mpg   cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb
+##   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+*## 1  22.8     4   108    93  3.85  2.32  18.6     1     1     4     1
+*## 2  21       6   160   110  3.9   2.62  16.5     0     1     4     4
+*## 3  18.7     8   360   175  3.15  3.44  17.0     0     0     3     2
+```
+
+
+---
+
+### `dplyr::group_by()`
+
+
+```r
+mtcars %&gt;% 
+* group_by(cyl) %&gt;%
+  filter(hp == max(hp))
+```
+
+```
+## # A tibble: 3 x 11
+## # Groups:   cyl [3]
+##     mpg   cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb
+##   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1  30.4     4  95.1   113  3.77  1.51  16.9     1     1     5     2
+## 2  19.7     6 145     175  3.62  2.77  15.5     0     1     5     6
+## 3  15       8 301     335  3.54  3.57  14.6     0     1     5     8
+```
+
+---
+
+### `dplyr::group_by()`
+
+
+```r
+mtcars %&gt;% 
+* group_by(cyl) %&gt;%
+  top_n(1, hp)
+```
+
+```
+## # A tibble: 3 x 11
+## # Groups:   cyl [3]
+##     mpg   cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb
+##   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1  30.4     4  95.1   113  3.77  1.51  16.9     1     1     5     2
+## 2  19.7     6 145     175  3.62  2.77  15.5     0     1     5     6
+## 3  15       8 301     335  3.54  3.57  14.6     0     1     5     8
+```
+
+
+---
+
+### `dplyr::group_by()`
+
+
+```r
+mtcars %&gt;% 
+* group_by(cyl) %&gt;%
+  arrange(desc(hp)) %&gt;% 
+  slice(1)
+```
+
+```
+## # A tibble: 3 x 11
+## # Groups:   cyl [3]
+##     mpg   cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb
+##   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1  30.4     4  95.1   113  3.77  1.51  16.9     1     1     5     2
+## 2  19.7     6 145     175  3.62  2.77  15.5     0     1     5     6
+## 3  15       8 301     335  3.54  3.57  14.6     0     1     5     8
+```
+
+---
+
+### `dplyr::group_by()`
+
+
+```r
+mtcars %&gt;% 
+* group_by(cyl, am) %&gt;%
+  count()
+```
+
+```
+## # A tibble: 6 x 3
+*## # Groups:   cyl, am [6]
+##     cyl    am     n
+##   &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt;
+## 1     4     0     3
+## 2     4     1     8
+## 3     6     0     4
+## 4     6     1     3
+## 5     8     0    12
+## 6     8     1     2
+```
+
+
+---
+
+### `dplyr::summarize()`
+
+
+```r
+mtcars %&gt;% 
+  summarize(mean = mean(mpg))
+```
+
+```
+## # A tibble: 1 x 1
+##    mean
+##   &lt;dbl&gt;
+*## 1  20.1
+```
+
+--
+
+
+```r
+mtcars %&gt;% mean(mpg)
+```
+
+```
+## Warning in mean.default(., mpg): argument is not numeric or logical:
+## returning NA
+```
+
+```
+*## [1] NA
+*```
+
+--
+
+
+```r
+mtcars %&gt;% 
+* pull(mpg) %&gt;%
+  mean()
+```
+
+```
+*## [1] 20.09062
+```
+
+---
+
+### `dplyr::summarize()`
+
+
+```r
+mtcars %&gt;% 
+  summarize(median(mpg))
+```
+
+```
+## # A tibble: 1 x 1
+*##   `median(mpg)`
+##           &lt;dbl&gt;
+## 1          19.2
+```
+
+--
+
+
+```r
+mtcars %&gt;% 
+  summarize(median_mpg = mean(mpg))
+```
+
+```
+## # A tibble: 1 x 1
+*##   median_mpg
+##        &lt;dbl&gt;
+## 1       20.1
+```
+
+
+---
+
+
+### `dplyr::summarize()`
+
+
+```r
+mtcars %&gt;% 
+  group_by(cyl) %&gt;% 
+* summarize(mean_mpg = mean(mpg),
+*           sd_mpg = sd(mpg),
+*           n = n())
+```
+
+```
+## # A tibble: 3 x 4
+##     cyl mean_mpg sd_mpg     n
+##   &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt; &lt;int&gt;
+## 1     4     26.7   4.51    11
+## 2     6     19.7   1.45     7
+## 3     8     15.1   2.56    14
+```
+
+---
+
+### `dplyr::mutate_at()`
+
+
+```r
+mtcars %&gt;% 
+* mutate_at(.vars = vars(cyl, am), factor) %&gt;%
+  select(cyl, am) %&gt;% 
+  glimpse()
+```
+
+```
+## Observations: 32
+## Variables: 2
+*## $ cyl &lt;fct&gt; 6, 6, 4, 6, 8, 6, 8, 4, 4, 6, 6, 8, 8, 8, 8, 8, 8, 4, 4, 4, …
+*## $ am  &lt;fct&gt; 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, …
+```
+
+--
+
+
+```r
+mtcars %&gt;% 
+  select(cyl, am) %&gt;% 
+  glimpse()
+```
+
+```
+## Observations: 32
+## Variables: 2
+*## $ cyl &lt;dbl&gt; 6, 6, 4, 6, 8, 6, 8, 4, 4, 6, 6, 8, 8, 8, 8, 8, 8, 4, 4, 4, …
+*## $ am  &lt;dbl&gt; 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, …
+```
+
+---
+
+### `dplyr::summarize_at()`
+
+
+```r
+mtcars %&gt;% 
+  group_by(cyl) %&gt;% 
+* summarize_at(.vars = vars(mpg, disp, qsec), .funs = mean)
+```
+
+```
+## # A tibble: 3 x 4
+*##     cyl   mpg  disp  qsec
+##   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1     4  26.7  105.  19.1
+## 2     6  19.7  183.  18.0
+## 3     8  15.1  353.  16.8
+```
+
+--
+
+
+```r
+mtcars %&gt;% 
+  group_by(cyl) %&gt;% 
+* summarize_at(.vars = vars(mpg, disp, qsec), .funs = list(mean = mean, sd = sd))
+```
+
+```
+## # A tibble: 3 x 7
+*##     cyl mpg_mean disp_mean qsec_mean mpg_sd disp_sd qsec_sd
+##   &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+## 1     4     26.7      105.      19.1   4.51    26.9    1.68
+## 2     6     19.7      183.      18.0   1.45    41.6    1.71
+## 3     8     15.1      353.      16.8   2.56    67.8    1.20
+```
+---
+
+# `tidyr`
+The goal of tidyr is to help you create tidy data. Tidy data is data where:
+
+* Each variable is in a column.
+* Each observation is a row.
+* Each value is a cell.
+
+--
+
+
+### Make Taller and Make Wider
+* `gather()` - takes multiple columns, and gathers them into key-value pairs: it makes “wide” data longer.
+* `spread()` - takes two columns (key &amp; value), and spreads into multiple columns: it makes “long” data wider.
+
+--
+
+### Separate and unite columns
+* `separate()` - Separate one column into multiple columns.
+* `unite()` - Unite multiple columns into one.
+
+---
+
+# Tidy the data
+
+
+```r
+untidy_df
+```
+
+```
+## # A tibble: 5 x 7
+*##   age_group male_2016 female_2016 male_2017 female_2017 male_2018
+##   &lt;chr&gt;         &lt;dbl&gt;       &lt;dbl&gt;     &lt;dbl&gt;       &lt;dbl&gt;     &lt;dbl&gt;
+## 1 &lt; 18          22000       20000     22000       20000     22000
+## 2 18-30         36000       35000     36000       35000     36000
+## 3 31-50         50000       40000     50000       40000     50000
+## 4 51-60         62000       60000     62000       60000     62000
+## 5 &gt; 60          75000       72000     75000       72000     75000
+## # … with 1 more variable: female_2018 &lt;dbl&gt;
+```
+
+
+---
+
+# Tidy the data
+
+
+```r
+untidy_df %&gt;% 
+* gather(gender_year, income, male_2016:female_2018)
+```
+
+--
+
+
+```
+## # A tibble: 30 x 3
+*##    age_group gender_year income
+##    &lt;chr&gt;     &lt;chr&gt;        &lt;dbl&gt;
+##  1 &lt; 18      male_2016    22000
+##  2 18-30     male_2016    36000
+##  3 31-50     male_2016    50000
+##  4 51-60     male_2016    62000
+##  5 &gt; 60      male_2016    75000
+##  6 &lt; 18      female_2016  20000
+##  7 18-30     female_2016  35000
+##  8 31-50     female_2016  40000
+##  9 51-60     female_2016  60000
+## 10 &gt; 60      female_2016  72000
+## # … with 20 more rows
+```
+
+
+---
+
+# Tidy the data
+
+
+```r
+untidy_df %&gt;% 
+  gather(gender_year, income, male_2016:female_2018) %&gt;% 
+* separate(gender_year, into = c("gender", "year"))
+```
+
+--
+
+
+```
+## # A tibble: 30 x 4
+*##    age_group gender year  income
+##    &lt;chr&gt;     &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt;
+*##  1 &lt; 18      male   2016   22000
+##  2 18-30     male   2016   36000
+##  3 31-50     male   2016   50000
+##  4 51-60     male   2016   62000
+##  5 &gt; 60      male   2016   75000
+*##  6 &lt; 18      female 2016   20000
+##  7 18-30     female 2016   35000
+##  8 31-50     female 2016   40000
+##  9 51-60     female 2016   60000
+## 10 &gt; 60      female 2016   72000
+## # … with 20 more rows
+```
+
+
+---
+
+# Untidy the data
+
+
+```r
+tidy_df %&gt;% 
+* unite("gender_year", c("gender", "year"), sep = "_")
+```
+
+--
+
+
+```
+## # A tibble: 30 x 3
+*##    age_group gender_year income
+##    &lt;chr&gt;     &lt;chr&gt;        &lt;dbl&gt;
+*##  1 &lt; 18      male_2016    22000
+##  2 18-30     male_2016    36000
+##  3 31-50     male_2016    50000
+##  4 51-60     male_2016    62000
+##  5 &gt; 60      male_2016    75000
+##  6 &lt; 18      female_2016  20000
+##  7 18-30     female_2016  35000
+##  8 31-50     female_2016  40000
+##  9 51-60     female_2016  60000
+## 10 &gt; 60      female_2016  72000
+## # … with 20 more rows
+```
+
+---
+
+# Untidy the data
+
+```r
+tidy_df %&gt;% 
+  unite("gender_year", c("gender", "year"), sep = "_") %&gt;% 
+* spread(gender_year, income)
+```
+
+--
+
+
+```
+## # A tibble: 5 x 7
+*##   age_group female_2016 female_2017 female_2018 male_2016 male_2017
+##   &lt;chr&gt;           &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+## 1 &lt; 18            20000       20000       20000     22000     22000
+## 2 &gt; 60            72000       72000       72000     75000     75000
+## 3 18-30           35000       35000       35000     36000     36000
+## 4 31-50           40000       40000       40000     50000     50000
+## 5 51-60           60000       60000       60000     62000     62000
+## # … with 1 more variable: male_2018 &lt;dbl&gt;
+```
+
+
+---
+
+# `ggplot2`
+
+### 3 Core parts
+.pull-left[
+* `ggplot` - builds base layer
+
+* `geom_` is the shape
+  * `geom_point()`
+  * `geom_line()`
+  * `geom_bar()`
+  * `geom_boxplot()`
+  * `geom_?()`
+]
+
+--
+
+.pull-right[
+  
+* `aes` is the mappings/relationships
+  * Horizontal Dimensions (x)
+  * Vertical Dimensions (y)
+  * Color
+  * Shape
+  * Size
+  * Transparency
+  * Relationships
+]
+
+---
+
+
+
+```r
+ggplot(data = &lt;DATA&gt;, mapping = aes(&lt;MAPPINGS&gt;)) + 
+  &lt;GEOM_FUNCTION&gt;()
+```
+
+--
+
+
+```r
+ggplot(mtcars, aes(x = cyl, y = mpg)) +
+  geom_point()
+```
+
+--
+
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-84-1.png)&lt;!-- --&gt;
+
+---
+
+Supply the data, tell `ggplot2` the aesthetic mappings, and then add layers of `plots` via `geom_`
+
+--
+
+.pull-left[
+* `geom_point()` - Points
+* `geom_dotplot()` - Dot plot
+* `geom_hline()` - Horizontal reference line
+* `geom_vline()` - Vertical reference line
+* `geom_boxplot()` - A box and whisker plot
+* `geom_density()` - Smoothed density estimates
+* `geom_errorbarh()` - Horizontal error bars
+* `geom_hex()` - Hexagonal heatmap of 2d bin counts
+* `geom_jitter()` - Jittered points
+* `geom_linerange()` - Vertical interval line
+* `geom_pointrange()` - Vertical point line
+* `geom_line()` - Connect observations line
+
+]
+
+.pull-right[
+
+* `geom_step()` - Connect observations via step lines
+* `geom_polygon()` - Polygons
+* `geom_segment()` - Line segment
+* `geom_ribbon()` - Ribbon plot
+* `geom_area()` - Area plot
+* `geom_rug()` - Rug plots in the margins
+* `geom_smooth()` - Smoothed conditional means
+* `geom_label()` - Label points with text
+* `geom_text()` - Add text
+* `geom_violin()` - Violin plot
+* `geom_sf()` - Visual sf objects
+* `geom_map()` - Plot map
+* `geom_qq_line()` - A quantile-quantile plot
+* `geom_histogram()` - Histogram plot
+
+]
+
+---
+
+# `ggplot2`
+
+### Gapminder dataset
+
+
+```r
+gapminder_df &lt;- gapminder::gapminder
+
+glimpse(gapminder_df)
+```
+
+```
+## Observations: 1,704
+## Variables: 6
+## $ country   &lt;fct&gt; Afghanistan, Afghanistan, Afghanistan, Afghanistan, Af…
+## $ continent &lt;fct&gt; Asia, Asia, Asia, Asia, Asia, Asia, Asia, Asia, Asia, …
+## $ year      &lt;int&gt; 1952, 1957, 1962, 1967, 1972, 1977, 1982, 1987, 1992, …
+## $ lifeExp   &lt;dbl&gt; 28.801, 30.332, 31.997, 34.020, 36.088, 38.438, 39.854…
+## $ pop       &lt;int&gt; 8425333, 9240934, 10267083, 11537966, 13079460, 148803…
+## $ gdpPercap &lt;dbl&gt; 779.4453, 820.8530, 853.1007, 836.1971, 739.9811, 786.…
+```
+
+---
+
+### `ggplot2`
+
+
+```r
+gapminder_df %&gt;% 
+  filter(country == "Malawi") %&gt;% 
+* ggplot(aes(x = year, y = lifeExp)) +
+* geom_line(colour = "#1380A1", size = 1)
+```
+
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-86-1.png)&lt;!-- --&gt;
+
+---
+
+###`ggplot2`
+
+
+```r
+gapminder_df %&gt;% 
+  filter(country == "Malawi") %&gt;% 
+  ggplot(aes(x = year, y = lifeExp)) +
+  geom_line(colour = "#1380A1", size = 1) +
+* geom_point(size = 2)
+```
+
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-87-1.png)&lt;!-- --&gt;
+
+---
+
+### `ggplot2`
+
+
+```r
+gapminder_df %&gt;%
+* filter(country == "China" | country == "United States") %&gt;%
+  ggplot(aes(x = year, y = lifeExp, colour = country)) +
+  geom_line(size = 1)
+```
+
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-88-1.png)&lt;!-- --&gt;
+
+
+---
+
+### `ggplot2`
+
+
+```r
+gapminder_df %&gt;%
+  filter(country == "China" | country == "United States") %&gt;% 
+  ggplot(aes(x = year, y = country, colour = country, 
+*            size = lifeExp)) +
+  geom_point() +  
+  theme_minimal() + 
+  theme(panel.grid.major.x = element_blank(), 
+        panel.grid.minor.x = element_blank()) 
+```
+
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-89-1.png)&lt;!-- --&gt;
+
+
+---
+
+# `ggplot2`
+
+
+```r
+bar_df &lt;- gapminder_df %&gt;%
+  filter(year == 2007 &amp; continent == "Africa") %&gt;%
+  arrange(desc(lifeExp)) %&gt;%
+  head(5)
+
+(bars &lt;- ggplot(bar_df, aes(x = country, y = lifeExp)) +
+  geom_bar(stat = "identity"))
+```
+
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-90-1.png)&lt;!-- --&gt;
+
+---
+
+### `ggplot2`
+
+
+```r
+bar_df &lt;- gapminder_df %&gt;%
+  filter(year == 2007 &amp; continent == "Africa") %&gt;%
+  arrange(desc(lifeExp)) %&gt;%
+  head(5)
+
+(bars &lt;- ggplot(bar_df, aes(x = country, y = lifeExp)) +
+* geom_col())
+```
+
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-91-1.png)&lt;!-- --&gt;
+
+---
+
+### `ggplot2`
+
+
+
+
+```r
+grouped_bars &lt;- ggplot(grouped_bar_df, 
+                       aes(x = country, 
+                           y = lifeExp, 
+                           fill = as.factor(year))) +
+  geom_bar(stat="identity", position="dodge")
+
+grouped_bars
+```
+
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-93-1.png)&lt;!-- --&gt;
+
+---
+
+### ggplot2
+
+
+```r
+hist_plot &lt;- gapminder_df %&gt;% 
+  filter(year == 2007) %&gt;% 
+  ggplot(aes(x = lifeExp)) +
+* geom_histogram(binwidth = 5, color = "white")
+
+hist_plot
+```
+
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-94-1.png)&lt;!-- --&gt;
+
+---
+
+
+### ggplot2
+
+
+```r
+hist_plot +
+  labs(x = "Life Expectancy (Years)",
+       y = "Count",
+       title = "Life expectancy",
+       subtitle = "Year = 2007",
+       caption = "Source: Gapminder")
+```
+
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-95-1.png)&lt;!-- --&gt;
+
+---
+
+### ggplot2
+
+
+```r
+ggsave("life_exp_2007.png", hist_plot, 
+       height = 4, width = 6, units = "in", dpi = 450)
+```
+
+--
+
+
+```r
+knitr::include_graphics("static-img/life_exp_2007.png")
+```
+
+&lt;img src="static-img/life_exp_2007.png" width="600px" /&gt;
+
+---
+
+### ggplot2
+
+Unlimited customization via theme! 
+
+```r
+theme(line, rect, text, title, aspect.ratio, axis.title, axis.title.x,
+  axis.title.x.top, axis.title.x.bottom, axis.title.y, axis.title.y.left,
+  axis.title.y.right, axis.text, axis.text.x, axis.text.x.top,
+  axis.text.x.bottom, axis.text.y, axis.text.y.left, axis.text.y.right,
+  axis.ticks, axis.ticks.x, axis.ticks.x.top, axis.ticks.x.bottom,
+  axis.ticks.y, axis.ticks.y.left, axis.ticks.y.right, axis.ticks.length,
+  axis.ticks.length.x, axis.ticks.length.x.top, axis.ticks.length.x.bottom,
+  axis.ticks.length.y, axis.ticks.length.y.left, axis.ticks.length.y.right,
+  axis.line, axis.line.x, axis.line.x.top, axis.line.x.bottom, axis.line.y,
+  axis.line.y.left, axis.line.y.right, legend.background, legend.margin,
+  legend.spacing, legend.spacing.x, legend.spacing.y, legend.key,
+  legend.key.size, legend.key.height, legend.key.width, legend.text,
+  legend.text.align, legend.title, legend.title.align, legend.position,
+  legend.direction, legend.justification, legend.box, legend.box.just,
+  legend.box.margin, legend.box.background, legend.box.spacing,
+  panel.background, panel.border, panel.spacing, panel.spacing.x,
+  panel.spacing.y, panel.grid, panel.grid.major, panel.grid.minor,
+  panel.grid.major.x, panel.grid.major.y, panel.grid.minor.x,
+  panel.grid.minor.y, panel.ontop, plot.background, plot.title,
+  plot.subtitle, plot.caption, plot.tag, plot.tag.position, plot.margin,
+  strip.background, strip.background.x, strip.background.y,
+  strip.placement, strip.text, strip.text.x, strip.text.y,
+  strip.switch.pad.grid, strip.switch.pad.wrap, ..., complete = FALSE,
+  validate = TRUE)
+
+```
+
+
+---
+
+### `ggplot2`
+
+.pull-left[
+
+Saved themes apply multiple theme elements all at once
+* Saves writing
+* Reproducibility
+
+Built in themes
+* `theme_grey()` # default
+* `theme_bw()`
+* `theme_minimal()`
+* `theme_classic()`
+]
+
+
+--
+
+.pull-right[
+New packages
+* `bbplot`
+  * `bbc_style()`
+  
+* `urbnthemes()`
+  * `theme_urbn_print()`
+  
+* `ggthemes`
+  * `theme_few()`
+  * `theme_excel()`
+  * `theme_economist()`
+  
+* Build your own package/theme!
+]
+
+---
+
+### `ggplot2`
+
+
+```r
+gapminder_df %&gt;%
+  filter(country == "China" | country == "United States") %&gt;% 
+  ggplot(aes(x = year, y = lifeExp, colour = country)) +
+  geom_line(size = 1) +
+* theme_grey()
+```
+
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-98-1.png)&lt;!-- --&gt;
+
+
+---
+
+### `ggplot2`
+
+
+```r
+gapminder_df %&gt;%
+  filter(country == "China" | country == "United States") %&gt;% 
+  ggplot(aes(x = year, y = lifeExp, colour = country)) +
+  geom_line(size = 1) +
+* theme_bw()
+```
+
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-99-1.png)&lt;!-- --&gt;
+
+
+---
+
+### `ggplot2`
+
+
+```r
+gapminder_df %&gt;%
+  filter(country == "China" | country == "United States") %&gt;% 
+  ggplot(aes(x = year, y = lifeExp, colour = country)) +
+  geom_line(size = 1) +
+* theme_minimal()
+```
+
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-100-1.png)&lt;!-- --&gt;
+
+
+---
+
+### `ggplot2`
+
+
+```r
+gapminder_df %&gt;%
+  filter(country == "China" | country == "United States") %&gt;% 
+  ggplot(aes(x = year, y = lifeExp, colour = country)) +
+  geom_line(size = 1) +
+* theme_classic()
+```
+
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-101-1.png)&lt;!-- --&gt;
+
+
+---
+
+### `ggplot2`
+
+
+```r
+gapminder_df %&gt;%
+  filter(country == "China" | country == "United States") %&gt;% 
+  ggplot(aes(x = year, y = lifeExp, colour = country)) +
+  geom_line(size = 1) +
+* ggthemes::theme_economist_white()
+```
+
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-102-1.png)&lt;!-- --&gt;
+
+
+---
+
+### `ggplot2`
+
+
+```r
+gapminder_df %&gt;%
+  filter(country == "China" | country == "United States") %&gt;% 
+  ggplot(aes(x = year, y = lifeExp, colour = country)) +
+  geom_line(size = 1) +
+* ggthemes::theme_few()
+```
+
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-103-1.png)&lt;!-- --&gt;
+
+
+---
+
+### `ggplot2`
+
+
+```r
+gapminder_df %&gt;%
+  filter(country == "China" | country == "United States") %&gt;% 
+  ggplot(aes(x = year, y = lifeExp, colour = country)) +
+  geom_line(size = 1) +  
+  geom_hline(yintercept = 0, size = 1, colour="#333333") +
+* bbplot::bbc_style()
+```
+
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-104-1.png)&lt;!-- --&gt;
+
+
+
+---
+
+### `ggplot2`
+
+
+```r
+gapminder_df %&gt;%
+  filter(country == "China" | country == "United States") %&gt;% 
+  ggplot(aes(x = year, y = lifeExp, colour = country)) +
+  geom_line(size = 1) +  
+  geom_hline(yintercept = 0, size = 1, colour="#333333") +
+* theme_minimal() +
+* theme(panel.grid.major.x = element_blank(),
+*       panel.grid.minor.x = element_blank())
+```
+
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-105-1.png)&lt;!-- --&gt;
+
+---
+
+# Whirlwind of information!
+
+`tidyverse` focuses on `tidy` data
+- `Tidyverse`
+  - Read data in with `readr`
+  - Tidy data with `tidyr`
+  - Transform data with `dplyr`
+  - Plot data with `ggplot2`
+  
+--
+
+- Next Steps
+  * [R for Data Science book (free!)](https://r4ds.had.co.nz/)
+  * [RStudio Cloud Primers (free!)](https://rstudio.cloud/learn/primers)
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();</script>
+
+<script>
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

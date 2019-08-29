@@ -1,0 +1,70 @@
+---
+title: "Total Animal Impacts Report"
+author: "Thomas Mock"
+date: "`r Sys.Date()`"
+output: html_document
+params:
+  years:
+    label: "Year"
+    value: 2018
+    input: slider
+    min: 1990
+    max: 2018
+    step: 1
+    sep: ""
+  states:
+    label: "State"
+    value: "TX"
+    input: select
+    choices: [AL, AL, AZ, AR, CA, CO, CT, DE, FL, GA, HI, ID, IL, IN, IA, KS, KY, LA, ME, MD, MA, MI, MN, MS, MO, MT, NE, NV, NH, NJ, NM, NY, NC, ND, OH, OK, OR, PA, RI, SC, SD, TN, TX, UT, VT, VA, WA, WV, WI, WY]
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+
+wildlife_impacts <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-07-23/wildlife_impacts.csv")
+```
+
+## What state?
+
+The state is `r params$states`
+
+## What year?
+
+The year is `r params$years`
+
+```{r, echo = FALSE}
+summary_df <- wildlife_impacts %>% 
+  filter(state != "N/A") %>% 
+  mutate(year = lubridate::year(incident_date)) %>% 
+  select(incident_date, state, operator, year) %>% 
+  group_by(state, operator, year) %>% 
+  summarize(n = n()) %>% 
+  arrange(desc(n)) %>% 
+  ungroup()
+
+years <- summary_df %>% 
+  distinct(year) %>%
+  arrange(year) %>% 
+  pull()
+
+state <- summary_df %>% 
+  distinct(state) %>% 
+  arrange(state) %>% 
+  pull()
+
+summary_df %>% 
+  filter(year == params$years, state == params$states) %>% 
+  ggplot(aes(x = fct_reorder(operator, desc(n)), y = n, fill = operator)) +
+  geom_col() +
+  geom_hline(yintercept = 0, color = "black", size = 1) +
+  ggthemes::theme_fivethirtyeight() +
+  labs(x = "",
+       y = "Animal Impacts",
+       title = "Total animal impacts by airline") +
+  theme(axis.title = element_text(face = "bold"),
+        legend.position = "none")
+```
+
