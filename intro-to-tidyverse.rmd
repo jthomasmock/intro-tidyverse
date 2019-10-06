@@ -506,17 +506,16 @@ untidy_df %>%
 
 Read in data with `readr`, `arrow`, `haven`, `readxl`
 
-### `readr`
+#### `readr`
 * `read_csv()`, `read_tsv()`, `read_delim()`
 
-
-### `arrow`
+#### `arrow`
 * `read_arrow()`, `read_feather()`, `read_parquet()`, `read_*_arrow()`
 
-### `haven`
+#### `haven`
 * `read_sas()`, `read_spss()`, `read_stata()`, `read_dta()`
 
-### `readxl`
+#### `readxl`
 * `read_xls()`, `read_xlsx()`, `read_excel()`
 
 ---
@@ -952,6 +951,7 @@ The goal of tidyr is to help you create tidy data. Tidy data is data where:
 
 
 * `pivot_wider()` - the opposite of pivot_longer(): it makes a dataset wider by increasing the number of columns and decreasing the number of rows.
+
 --
 
 ### Separate and unite columns
@@ -973,14 +973,18 @@ untidy_df
 
 ```{r, highlight.output = 2, eval = FALSE}
 untidy_df %>% 
-  gather(gender_year, income, male_2016:female_2018) #<<
+  pivot_longer(cols = male_2016:female_2018, 
+               names_to = "gender_year",
+               values_to = "income") #<<
 ```
 
 --
 
 ```{r, highlight.output = 2, echo = FALSE}
 untidy_df %>% 
-  gather(gender_year, income, male_2016:female_2018) #<<
+  pivot_longer(cols = male_2016:female_2018, 
+               names_to = "gender_year",
+               values_to = "income")#<<
 ```
 
 
@@ -990,16 +994,20 @@ untidy_df %>%
 
 ```{r, highlight.output = c(2, 4, 9), eval = FALSE}
 untidy_df %>% 
-  gather(gender_year, income, male_2016:female_2018) %>% 
-  separate(gender_year, into = c("gender", "year")) #<<
+  pivot_longer(cols = male_2016:female_2018, 
+               names_to = c("gender", "year"),
+               names_sep = "_", #<<
+               values_to = "income")
 ```
 
 --
 
 ```{r, highlight.output = c(2, 4, 9), echo = FALSE}
 untidy_df %>% 
-  gather(gender_year, income, male_2016:female_2018) %>% 
-  separate(gender_year, into = c("gender", "year")) #<<
+  pivot_longer(cols = male_2016:female_2018, 
+               names_to = c("gender", "year"),
+               names_sep = "_", #<<
+               values_to = "income")
 ```
 
 
@@ -1025,7 +1033,7 @@ tidy_df %>%
 ```{r, eval = FALSE, highlight.output = 2}
 tidy_df %>% 
   unite("gender_year", c("gender", "year"), sep = "_") %>% 
-  spread(gender_year, income) #<<
+  pivot_wider(names_from = gender_year, values_from = income) #<<
 ```
 
 --
@@ -1033,7 +1041,7 @@ tidy_df %>%
 ```{r, echo = FALSE, highlight.output = 2}
 tidy_df %>% 
   unite("gender_year", c("gender", "year"), sep = "_") %>% 
-  spread(gender_year, income) #<<
+  pivot_wider(names_from = gender_year, values_from = income)#<<
 ```
 
 ---
@@ -1229,7 +1237,7 @@ gapminder_df %>%
 gapminder_df %>%
   filter(country %in% c("China", "United States")) %>% 
   ggplot(aes(x = year, y = country, colour = country, 
-             size = lifeExp)) + #<<
+             size = life_exp)) + #<<
   geom_point() +  
   theme_minimal() + 
   theme(panel.grid.major.x = element_blank(), 

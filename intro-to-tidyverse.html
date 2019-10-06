@@ -3,7 +3,6 @@
   <head>
     <title>Intro to the Tidyverse</title>
     <meta charset="utf-8" />
-    <meta name="author" content="Thomas Mock" />
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
   </head>
   <body>
@@ -11,9 +10,8 @@
 class: center, middle, inverse, title-slide
 
 # Intro to the Tidyverse
-### Thomas Mock
 ### RStudio, Inc.
-### updated: 2019-08-29
+### updated: 2019-10-06
 
 ---
 
@@ -410,20 +408,20 @@ data
 ```
 
 ```
-## # A tibble: 40 x 4
+## # A tibble: 100 x 4
 ##     year gender age_group income
 ##    &lt;dbl&gt; &lt;chr&gt;  &lt;fct&gt;      &lt;dbl&gt;
-##  1  2018 Male   &lt; 18       20000
-##  2  2018 Male   &lt; 18       22000
-##  3  2018 Male   18-30      35000
-##  4  2018 Male   18-30      36000
-##  5  2018 Male   31-50      40000
-##  6  2018 Female 31-50      50000
-##  7  2018 Female 51-60      60000
+##  1  2018 Female 31-50      50000
+##  2  2018 Male   31-50      40000
+##  3  2018 Female 51-60      60000
+##  4  2018 Female &gt; 60       72000
+##  5  2018 Male   18-30      35000
+##  6  2018 Male   &lt; 18       22000
+##  7  2018 Female &gt; 60       75000
 ##  8  2018 Female 51-60      62000
-##  9  2018 Female &gt; 60       72000
-## 10  2018 Female &gt; 60       75000
-## # … with 30 more rows
+##  9  2018 Female 51-60      62000
+## 10  2018 Female 51-60      62000
+## # … with 90 more rows
 ```
 
 ---
@@ -443,13 +441,13 @@ data %&gt;%
 
 ```
 ## # A tibble: 5 x 2
-##   age_group  mean
-##   &lt;fct&gt;     &lt;dbl&gt;
-## 1 &lt; 18      21000
-## 2 18-30     35500
-## 3 31-50     45000
-## 4 51-60     61000
-## 5 &gt; 60      73500
+##   age_group   mean
+##   &lt;fct&gt;      &lt;dbl&gt;
+## 1 &lt; 18      20800 
+## 2 18-30     35560 
+## 3 31-50     46667.
+## 4 51-60     60917.
+## 5 &gt; 60      73125
 ```
 
 
@@ -472,7 +470,7 @@ All packages share an underlying design philosophy, grammar, and data structures
 
 --
 
-* Core packages - `readr`, `tidyr`, `dplyr`, `ggplot2`
+* Core packages - `readr`, `tidyr`, `dplyr`, `ggplot2`, `purrr`, `stringr`, `forcats`
 
 --
 
@@ -495,7 +493,7 @@ All packages share an underlying design philosophy, grammar, and data structures
 
 # `tidyverse` Core Principles
 
-* Built around `data` - usually as a `data.frame` or `tibble`
+* Built around `data` - usually as a [`tibble`](https://tibble.tidyverse.org) (a modern `data.frame`)
 * Built around `tidy` data
   * Each `variable` in its own `column`
   * Each `observation` or `case` in its own `row`
@@ -563,23 +561,24 @@ tidy_df
 
 ```r
 untidy_df %&gt;% 
-* gather(gender_year, income, male_2016:female_2018)
+  pivot_longer(cols = male_2016:female_2018, 
+*              names_to = "gender_year")
 ```
 
 ```
 ## # A tibble: 30 x 3
-##    age_group gender_year income
-##    &lt;chr&gt;     &lt;chr&gt;        &lt;dbl&gt;
-*##  1 &lt; 18      male_2016    22000
-##  2 18-30     male_2016    36000
-##  3 31-50     male_2016    50000
-##  4 51-60     male_2016    62000
-##  5 &gt; 60      male_2016    75000
-*##  6 &lt; 18      female_2016  20000
-##  7 18-30     female_2016  35000
-##  8 31-50     female_2016  40000
-##  9 51-60     female_2016  60000
-## 10 &gt; 60      female_2016  72000
+##    age_group gender_year value
+##    &lt;chr&gt;     &lt;chr&gt;       &lt;dbl&gt;
+*##  1 &lt; 18      male_2016   22000
+##  2 &lt; 18      female_2016 20000
+##  3 &lt; 18      male_2017   22000
+##  4 &lt; 18      female_2017 20000
+##  5 &lt; 18      male_2018   22000
+*##  6 &lt; 18      female_2018 20000
+##  7 18-30     male_2016   36000
+##  8 18-30     female_2016 35000
+##  9 18-30     male_2017   36000
+## 10 18-30     female_2017 35000
 ## # … with 20 more rows
 ```
 
@@ -591,24 +590,55 @@ untidy_df %&gt;%
 
 ```r
 untidy_df %&gt;% 
-  gather(gender_year, income, male_2016:female_2018) %&gt;% 
-* separate(gender_year, into = c("gender", "year"))
+  pivot_longer(cols = male_2016:female_2018, 
+               names_to = c("gender", "year"), 
+*              names_sep = "_")
 ```
 
 ```
 ## # A tibble: 30 x 4
-##    age_group gender year  income
-##    &lt;chr&gt;     &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt;
-*##  1 &lt; 18      male   2016   22000
-##  2 18-30     male   2016   36000
-##  3 31-50     male   2016   50000
-##  4 51-60     male   2016   62000
-##  5 &gt; 60      male   2016   75000
-*##  6 &lt; 18      female 2016   20000
-##  7 18-30     female 2016   35000
-##  8 31-50     female 2016   40000
-##  9 51-60     female 2016   60000
-## 10 &gt; 60      female 2016   72000
+##    age_group gender year  value
+##    &lt;chr&gt;     &lt;chr&gt;  &lt;chr&gt; &lt;dbl&gt;
+*##  1 &lt; 18      male   2016  22000
+##  2 &lt; 18      female 2016  20000
+##  3 &lt; 18      male   2017  22000
+##  4 &lt; 18      female 2017  20000
+##  5 &lt; 18      male   2018  22000
+*##  6 &lt; 18      female 2018  20000
+##  7 18-30     male   2016  36000
+##  8 18-30     female 2016  35000
+##  9 18-30     male   2017  36000
+## 10 18-30     female 2017  35000
+## # … with 20 more rows
+```
+
+---
+
+
+# Tidy the data
+
+
+```r
+untidy_df %&gt;% 
+  pivot_longer(cols = male_2016:female_2018, 
+               names_to = "gender_year") %&gt;% 
+* separate(gender_year, into = c("gender", "year"), sep = "_")
+```
+
+```
+## # A tibble: 30 x 4
+##    age_group gender year  value
+##    &lt;chr&gt;     &lt;chr&gt;  &lt;chr&gt; &lt;dbl&gt;
+*##  1 &lt; 18      male   2016  22000
+##  2 &lt; 18      female 2016  20000
+##  3 &lt; 18      male   2017  22000
+##  4 &lt; 18      female 2017  20000
+##  5 &lt; 18      male   2018  22000
+*##  6 &lt; 18      female 2018  20000
+##  7 18-30     male   2016  36000
+##  8 18-30     female 2016  35000
+##  9 18-30     male   2017  36000
+## 10 18-30     female 2017  35000
 ## # … with 20 more rows
 ```
 
@@ -616,15 +646,18 @@ untidy_df %&gt;%
 
 # Read data in
 
-Read in data with `readr`, `haven`, `readxl`
+Read in data with `readr`, `arrow`, `haven`, `readxl`
 
-### `readr`
+#### `readr`
 * `read_csv()`, `read_tsv()`, `read_delim()`
 
-### `haven`
+#### `arrow`
+* `read_arrow()`, `read_feather()`, `read_parquet()`, `read_*_arrow()`
+
+#### `haven`
 * `read_sas()`, `read_spss()`, `read_stata()`, `read_dta()`
 
-### `readxl`
+#### `readxl`
 * `read_xls()`, `read_xlsx()`, `read_excel()`
 
 ---
@@ -1216,7 +1249,7 @@ mtcars %&gt;%
 * mutate(miles_per_liter = mpg * 3.78541,
 *        miles_per_gallon = miles_per_liter / 3.78541) %&gt;%
   select(miles_per_liter, mpg,miles_per_gallon) %&gt;%
-  head(10)
+  slice(1:10)
 ```
 
 ```
@@ -1562,9 +1595,11 @@ The goal of tidyr is to help you create tidy data. Tidy data is data where:
 --
 
 
-### Make Taller and Make Wider
-* `gather()` - takes multiple columns, and gathers them into key-value pairs: it makes “wide” data longer.
-* `spread()` - takes two columns (key &amp; value), and spreads into multiple columns: it makes “long” data wider.
+### Make Longer and Make Wider
+* `pivot_longer()` - takes multiple columns, and makes the data "longer" by reducing the number of columns and increasing the number of rows.
+
+
+* `pivot_wider()` - the opposite of pivot_longer(): it makes a dataset wider by increasing the number of columns and decreasing the number of rows.
 
 --
 
@@ -1601,7 +1636,9 @@ untidy_df
 
 ```r
 untidy_df %&gt;% 
-* gather(gender_year, income, male_2016:female_2018)
+  pivot_longer(cols = male_2016:female_2018, 
+               names_to = "gender_year",
+*              values_to = "income")
 ```
 
 --
@@ -1612,15 +1649,15 @@ untidy_df %&gt;%
 *##    age_group gender_year income
 ##    &lt;chr&gt;     &lt;chr&gt;        &lt;dbl&gt;
 ##  1 &lt; 18      male_2016    22000
-##  2 18-30     male_2016    36000
-##  3 31-50     male_2016    50000
-##  4 51-60     male_2016    62000
-##  5 &gt; 60      male_2016    75000
-##  6 &lt; 18      female_2016  20000
-##  7 18-30     female_2016  35000
-##  8 31-50     female_2016  40000
-##  9 51-60     female_2016  60000
-## 10 &gt; 60      female_2016  72000
+##  2 &lt; 18      female_2016  20000
+##  3 &lt; 18      male_2017    22000
+##  4 &lt; 18      female_2017  20000
+##  5 &lt; 18      male_2018    22000
+##  6 &lt; 18      female_2018  20000
+##  7 18-30     male_2016    36000
+##  8 18-30     female_2016  35000
+##  9 18-30     male_2017    36000
+## 10 18-30     female_2017  35000
 ## # … with 20 more rows
 ```
 
@@ -1632,8 +1669,10 @@ untidy_df %&gt;%
 
 ```r
 untidy_df %&gt;% 
-  gather(gender_year, income, male_2016:female_2018) %&gt;% 
-* separate(gender_year, into = c("gender", "year"))
+  pivot_longer(cols = male_2016:female_2018, 
+               names_to = c("gender", "year"),
+*              names_sep = "_",
+               values_to = "income")
 ```
 
 --
@@ -1644,15 +1683,15 @@ untidy_df %&gt;%
 *##    age_group gender year  income
 ##    &lt;chr&gt;     &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt;
 *##  1 &lt; 18      male   2016   22000
-##  2 18-30     male   2016   36000
-##  3 31-50     male   2016   50000
-##  4 51-60     male   2016   62000
-##  5 &gt; 60      male   2016   75000
-*##  6 &lt; 18      female 2016   20000
-##  7 18-30     female 2016   35000
-##  8 31-50     female 2016   40000
-##  9 51-60     female 2016   60000
-## 10 &gt; 60      female 2016   72000
+##  2 &lt; 18      female 2016   20000
+##  3 &lt; 18      male   2017   22000
+##  4 &lt; 18      female 2017   20000
+##  5 &lt; 18      male   2018   22000
+*##  6 &lt; 18      female 2018   20000
+##  7 18-30     male   2016   36000
+##  8 18-30     female 2016   35000
+##  9 18-30     male   2017   36000
+## 10 18-30     female 2017   35000
 ## # … with 20 more rows
 ```
 
@@ -1694,7 +1733,7 @@ tidy_df %&gt;%
 ```r
 tidy_df %&gt;% 
   unite("gender_year", c("gender", "year"), sep = "_") %&gt;% 
-* spread(gender_year, income)
+* pivot_wider(names_from = gender_year, values_from = income)
 ```
 
 --
@@ -1702,15 +1741,73 @@ tidy_df %&gt;%
 
 ```
 ## # A tibble: 5 x 7
-*##   age_group female_2016 female_2017 female_2018 male_2016 male_2017
-##   &lt;chr&gt;           &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
-## 1 &lt; 18            20000       20000       20000     22000     22000
-## 2 &gt; 60            72000       72000       72000     75000     75000
-## 3 18-30           35000       35000       35000     36000     36000
-## 4 31-50           40000       40000       40000     50000     50000
-## 5 51-60           60000       60000       60000     62000     62000
-## # … with 1 more variable: male_2018 &lt;dbl&gt;
+*##   age_group male_2016 female_2016 male_2017 female_2017 male_2018
+##   &lt;chr&gt;         &lt;dbl&gt;       &lt;dbl&gt;     &lt;dbl&gt;       &lt;dbl&gt;     &lt;dbl&gt;
+## 1 &lt; 18          22000       20000     22000       20000     22000
+## 2 18-30         36000       35000     36000       35000     36000
+## 3 31-50         50000       40000     50000       40000     50000
+## 4 51-60         62000       60000     62000       60000     62000
+## 5 &gt; 60          75000       72000     75000       72000     75000
+## # … with 1 more variable: female_2018 &lt;dbl&gt;
 ```
+
+---
+
+class: center, middle, inverse
+
+# SIDEBAR!
+
+## The janitor package
+
+---
+
+## Keep your columns tidy, too
+
+* `clean_names()` cleans up column names for you.
+
+--
+
+
+
+.pull-left[
+
+```r
+glimpse(bad_names)
+```
+
+```
+## Observations: 1
+## Variables: 6
+## $ `sp ace` &lt;lgl&gt; NA
+## $ repeated &lt;lgl&gt; NA
+## $ `a**^@`  &lt;lgl&gt; NA
+## $ `%`      &lt;lgl&gt; NA
+## $ `*`      &lt;lgl&gt; NA
+## $ `!`      &lt;lgl&gt; NA
+```
+]
+
+--
+
+.pull-right[
+
+```r
+bad_names %&gt;% 
+  janitor::clean_names() %&gt;% 
+  glimpse()
+```
+
+```
+## Observations: 1
+## Variables: 6
+## $ sp_ace   &lt;lgl&gt; NA
+## $ repeated &lt;lgl&gt; NA
+## $ a        &lt;lgl&gt; NA
+## $ percent  &lt;lgl&gt; NA
+## $ x        &lt;lgl&gt; NA
+## $ x_2      &lt;lgl&gt; NA
+```
+]
 
 
 ---
@@ -1762,7 +1859,7 @@ ggplot(mtcars, aes(x = cyl, y = mpg)) +
 
 --
 
-![](intro-to-tidyverse_files/figure-html/unnamed-chunk-84-1.png)&lt;!-- --&gt;
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-88-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -1807,13 +1904,15 @@ Supply the data, tell `ggplot2` the aesthetic mappings, and then add layers of `
 
 ---
 
+
 # `ggplot2`
 
 ### Gapminder dataset
 
 
 ```r
-gapminder_df &lt;- gapminder::gapminder
+gapminder_df &lt;- gapminder::gapminder %&gt;% 
+  janitor::clean_names()
 
 glimpse(gapminder_df)
 ```
@@ -1821,12 +1920,12 @@ glimpse(gapminder_df)
 ```
 ## Observations: 1,704
 ## Variables: 6
-## $ country   &lt;fct&gt; Afghanistan, Afghanistan, Afghanistan, Afghanistan, Af…
-## $ continent &lt;fct&gt; Asia, Asia, Asia, Asia, Asia, Asia, Asia, Asia, Asia, …
-## $ year      &lt;int&gt; 1952, 1957, 1962, 1967, 1972, 1977, 1982, 1987, 1992, …
-## $ lifeExp   &lt;dbl&gt; 28.801, 30.332, 31.997, 34.020, 36.088, 38.438, 39.854…
-## $ pop       &lt;int&gt; 8425333, 9240934, 10267083, 11537966, 13079460, 148803…
-## $ gdpPercap &lt;dbl&gt; 779.4453, 820.8530, 853.1007, 836.1971, 739.9811, 786.…
+## $ country    &lt;fct&gt; Afghanistan, Afghanistan, Afghanistan, Afghanistan, A…
+## $ continent  &lt;fct&gt; Asia, Asia, Asia, Asia, Asia, Asia, Asia, Asia, Asia,…
+## $ year       &lt;int&gt; 1952, 1957, 1962, 1967, 1972, 1977, 1982, 1987, 1992,…
+## $ life_exp   &lt;dbl&gt; 28.801, 30.332, 31.997, 34.020, 36.088, 38.438, 39.85…
+## $ pop        &lt;int&gt; 8425333, 9240934, 10267083, 11537966, 13079460, 14880…
+## $ gdp_percap &lt;dbl&gt; 779.4453, 820.8530, 853.1007, 836.1971, 739.9811, 786…
 ```
 
 ---
@@ -1837,11 +1936,11 @@ glimpse(gapminder_df)
 ```r
 gapminder_df %&gt;% 
   filter(country == "Malawi") %&gt;% 
-* ggplot(aes(x = year, y = lifeExp)) +
+* ggplot(aes(x = year, y = life_exp)) +
 * geom_line(colour = "#1380A1", size = 1)
 ```
 
-![](intro-to-tidyverse_files/figure-html/unnamed-chunk-86-1.png)&lt;!-- --&gt;
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-90-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -1851,12 +1950,12 @@ gapminder_df %&gt;%
 ```r
 gapminder_df %&gt;% 
   filter(country == "Malawi") %&gt;% 
-  ggplot(aes(x = year, y = lifeExp)) +
+  ggplot(aes(x = year, y = life_exp)) +
   geom_line(colour = "#1380A1", size = 1) +
 * geom_point(size = 2)
 ```
 
-![](intro-to-tidyverse_files/figure-html/unnamed-chunk-87-1.png)&lt;!-- --&gt;
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-91-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -1865,12 +1964,12 @@ gapminder_df %&gt;%
 
 ```r
 gapminder_df %&gt;%
-* filter(country == "China" | country == "United States") %&gt;%
-  ggplot(aes(x = year, y = lifeExp, colour = country)) +
+* filter(country %in% c("China", "United States")) %&gt;%
+  ggplot(aes(x = year, y = life_exp, colour = country)) +
   geom_line(size = 1)
 ```
 
-![](intro-to-tidyverse_files/figure-html/unnamed-chunk-88-1.png)&lt;!-- --&gt;
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-92-1.png)&lt;!-- --&gt;
 
 
 ---
@@ -1880,16 +1979,16 @@ gapminder_df %&gt;%
 
 ```r
 gapminder_df %&gt;%
-  filter(country == "China" | country == "United States") %&gt;% 
+  filter(country %in% c("China", "United States")) %&gt;% 
   ggplot(aes(x = year, y = country, colour = country, 
-*            size = lifeExp)) +
+*            size = life_exp)) +
   geom_point() +  
   theme_minimal() + 
   theme(panel.grid.major.x = element_blank(), 
         panel.grid.minor.x = element_blank()) 
 ```
 
-![](intro-to-tidyverse_files/figure-html/unnamed-chunk-89-1.png)&lt;!-- --&gt;
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-93-1.png)&lt;!-- --&gt;
 
 
 ---
@@ -1899,15 +1998,14 @@ gapminder_df %&gt;%
 
 ```r
 bar_df &lt;- gapminder_df %&gt;%
-  filter(year == 2007 &amp; continent == "Africa") %&gt;%
-  arrange(desc(lifeExp)) %&gt;%
-  head(5)
+  filter(year == 2007, continent == "Africa") %&gt;%
+  top_n(5, life_exp)
 
-(bars &lt;- ggplot(bar_df, aes(x = country, y = lifeExp)) +
+(bars &lt;- ggplot(bar_df, aes(x = country, y = life_exp)) +
   geom_bar(stat = "identity"))
 ```
 
-![](intro-to-tidyverse_files/figure-html/unnamed-chunk-90-1.png)&lt;!-- --&gt;
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-94-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -1916,15 +2014,14 @@ bar_df &lt;- gapminder_df %&gt;%
 
 ```r
 bar_df &lt;- gapminder_df %&gt;%
-  filter(year == 2007 &amp; continent == "Africa") %&gt;%
-  arrange(desc(lifeExp)) %&gt;%
-  head(5)
+  filter(year == 2007, continent == "Africa") %&gt;%
+  top_n(5, life_exp)
 
-(bars &lt;- ggplot(bar_df, aes(x = country, y = lifeExp)) +
+(bars &lt;- ggplot(bar_df, aes(x = country, y = life_exp)) +
 * geom_col())
 ```
 
-![](intro-to-tidyverse_files/figure-html/unnamed-chunk-91-1.png)&lt;!-- --&gt;
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-95-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -1936,14 +2033,14 @@ bar_df &lt;- gapminder_df %&gt;%
 ```r
 grouped_bars &lt;- ggplot(grouped_bar_df, 
                        aes(x = country, 
-                           y = lifeExp, 
+                           y = life_exp, 
                            fill = as.factor(year))) +
-  geom_bar(stat="identity", position="dodge")
+  geom_col(position = "dodge")
 
 grouped_bars
 ```
 
-![](intro-to-tidyverse_files/figure-html/unnamed-chunk-93-1.png)&lt;!-- --&gt;
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-97-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -1953,13 +2050,13 @@ grouped_bars
 ```r
 hist_plot &lt;- gapminder_df %&gt;% 
   filter(year == 2007) %&gt;% 
-  ggplot(aes(x = lifeExp)) +
+  ggplot(aes(x = life_exp)) +
 * geom_histogram(binwidth = 5, color = "white")
 
 hist_plot
 ```
 
-![](intro-to-tidyverse_files/figure-html/unnamed-chunk-94-1.png)&lt;!-- --&gt;
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-98-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -1976,7 +2073,7 @@ hist_plot +
        caption = "Source: Gapminder")
 ```
 
-![](intro-to-tidyverse_files/figure-html/unnamed-chunk-95-1.png)&lt;!-- --&gt;
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-99-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -2054,10 +2151,10 @@ Built in themes
 
 .pull-right[
 New packages
-* `bbplot`
+* `bbc/bbplot`
   * `bbc_style()`
   
-* `urbnthemes()`
+* `UrbanInstitute/urbnthemes`
   * `theme_urbn_print()`
   
 * `ggthemes`
@@ -2075,74 +2172,10 @@ New packages
 
 ```r
 gapminder_df %&gt;%
-  filter(country == "China" | country == "United States") %&gt;% 
-  ggplot(aes(x = year, y = lifeExp, colour = country)) +
+  filter(country %in% c("China", "United States")) %&gt;% 
+  ggplot(aes(x = year, y = life_exp, colour = country)) +
   geom_line(size = 1) +
 * theme_grey()
-```
-
-![](intro-to-tidyverse_files/figure-html/unnamed-chunk-98-1.png)&lt;!-- --&gt;
-
-
----
-
-### `ggplot2`
-
-
-```r
-gapminder_df %&gt;%
-  filter(country == "China" | country == "United States") %&gt;% 
-  ggplot(aes(x = year, y = lifeExp, colour = country)) +
-  geom_line(size = 1) +
-* theme_bw()
-```
-
-![](intro-to-tidyverse_files/figure-html/unnamed-chunk-99-1.png)&lt;!-- --&gt;
-
-
----
-
-### `ggplot2`
-
-
-```r
-gapminder_df %&gt;%
-  filter(country == "China" | country == "United States") %&gt;% 
-  ggplot(aes(x = year, y = lifeExp, colour = country)) +
-  geom_line(size = 1) +
-* theme_minimal()
-```
-
-![](intro-to-tidyverse_files/figure-html/unnamed-chunk-100-1.png)&lt;!-- --&gt;
-
-
----
-
-### `ggplot2`
-
-
-```r
-gapminder_df %&gt;%
-  filter(country == "China" | country == "United States") %&gt;% 
-  ggplot(aes(x = year, y = lifeExp, colour = country)) +
-  geom_line(size = 1) +
-* theme_classic()
-```
-
-![](intro-to-tidyverse_files/figure-html/unnamed-chunk-101-1.png)&lt;!-- --&gt;
-
-
----
-
-### `ggplot2`
-
-
-```r
-gapminder_df %&gt;%
-  filter(country == "China" | country == "United States") %&gt;% 
-  ggplot(aes(x = year, y = lifeExp, colour = country)) +
-  geom_line(size = 1) +
-* ggthemes::theme_economist_white()
 ```
 
 ![](intro-to-tidyverse_files/figure-html/unnamed-chunk-102-1.png)&lt;!-- --&gt;
@@ -2155,10 +2188,10 @@ gapminder_df %&gt;%
 
 ```r
 gapminder_df %&gt;%
-  filter(country == "China" | country == "United States") %&gt;% 
-  ggplot(aes(x = year, y = lifeExp, colour = country)) +
+  filter(country %in% c("China", "United States")) %&gt;% 
+  ggplot(aes(x = year, y = life_exp, colour = country)) +
   geom_line(size = 1) +
-* ggthemes::theme_few()
+* theme_bw()
 ```
 
 ![](intro-to-tidyverse_files/figure-html/unnamed-chunk-103-1.png)&lt;!-- --&gt;
@@ -2171,14 +2204,78 @@ gapminder_df %&gt;%
 
 ```r
 gapminder_df %&gt;%
-  filter(country == "China" | country == "United States") %&gt;% 
-  ggplot(aes(x = year, y = lifeExp, colour = country)) +
-  geom_line(size = 1) +  
-  geom_hline(yintercept = 0, size = 1, colour="#333333") +
-* bbplot::bbc_style()
+  filter(country %in% c("China", "United States")) %&gt;% 
+  ggplot(aes(x = year, y = life_exp, colour = country)) +
+  geom_line(size = 1)  +
+* theme_minimal()
 ```
 
 ![](intro-to-tidyverse_files/figure-html/unnamed-chunk-104-1.png)&lt;!-- --&gt;
+
+
+---
+
+### `ggplot2`
+
+
+```r
+gapminder_df %&gt;%
+  filter(country %in% c("China", "United States")) %&gt;% 
+  ggplot(aes(x = year, y = life_exp, colour = country)) +
+  geom_line(size = 1)  +
+* theme_classic()
+```
+
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-105-1.png)&lt;!-- --&gt;
+
+
+---
+
+### `ggplot2`
+
+
+```r
+gapminder_df %&gt;%
+  filter(country %in% c("China", "United States")) %&gt;% 
+  ggplot(aes(x = year, y = life_exp, colour = country)) +
+  geom_line(size = 1)  +
+* ggthemes::theme_economist_white()
+```
+
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-106-1.png)&lt;!-- --&gt;
+
+
+---
+
+### `ggplot2`
+
+
+```r
+gapminder_df %&gt;%
+  filter(country %in% c("China", "United States")) %&gt;% 
+  ggplot(aes(x = year, y = life_exp, colour = country)) +
+  geom_line(size = 1) +
+* ggthemes::theme_few()
+```
+
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-107-1.png)&lt;!-- --&gt;
+
+
+---
+
+### `ggplot2`
+
+
+```r
+gapminder_df %&gt;%
+  filter(country %in% c("China", "United States")) %&gt;% 
+  ggplot(aes(x = year, y = life_exp, colour = country)) +
+  geom_line(size = 1) +  
+  geom_hline(yintercept = 0, size = 1, colour = "#333333") +
+* ggthemes::theme_fivethirtyeight()
+```
+
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-108-1.png)&lt;!-- --&gt;
 
 
 
@@ -2189,8 +2286,8 @@ gapminder_df %&gt;%
 
 ```r
 gapminder_df %&gt;%
-  filter(country == "China" | country == "United States") %&gt;% 
-  ggplot(aes(x = year, y = lifeExp, colour = country)) +
+  filter(country %in% c("China", "United States")) %&gt;% 
+  ggplot(aes(x = year, y = life_exp, colour = country)) +
   geom_line(size = 1) +  
   geom_hline(yintercept = 0, size = 1, colour="#333333") +
 * theme_minimal() +
@@ -2198,7 +2295,7 @@ gapminder_df %&gt;%
 *       panel.grid.minor.x = element_blank())
 ```
 
-![](intro-to-tidyverse_files/figure-html/unnamed-chunk-105-1.png)&lt;!-- --&gt;
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-109-1.png)&lt;!-- --&gt;
 
 ---
 
