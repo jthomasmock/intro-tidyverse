@@ -1,6 +1,6 @@
 ---
 title: "Intro to the Tidyverse"
-author: "Thomas Mock"
+#author: "Thomas Mock"
 institute: "RStudio, Inc."
 date: "updated: `r Sys.Date()`"
 output:
@@ -343,14 +343,13 @@ data <- tibble(
   gender = rep(c("Male", "Female"), each = 5),
   age_group = rep(c("< 18", "18-30", "31-50", "51-60", "> 60"), each = 2),
   income = c(20000, 22000, 35000, 36000, 40000, 50000, 60000, 62000, 72000, 75000)
-) %>% 
-  mutate(age_group = factor(age_group, levels = c("< 18", "18-30", "31-50", "51-60", "> 60")
+  ) %>% 
+  mutate(age_group = factor(age_group,
+                            levels = c("< 18", "18-30", "31-50", "51-60", "> 60")
                             )
-  )
+  ) %>% 
+  sample_n(size = 100, replace = TRUE)
 
-data <- bind_rows(data, data) %>% 
-  bind_rows(data) %>% 
-  bind_rows(data)
 
 ```
 
@@ -398,7 +397,7 @@ All packages share an underlying design philosophy, grammar, and data structures
 
 --
 
-* Core packages - `readr`, `tidyr`, `dplyr`, `ggplot2`
+* Core packages - `readr`, `tidyr`, `dplyr`, `ggplot2`, `purrr`, `stringr`, `forcats`
 
 --
 
@@ -421,7 +420,7 @@ All packages share an underlying design philosophy, grammar, and data structures
 
 # `tidyverse` Core Principles
 
-* Built around `data` - usually as a `data.frame` or `tibble`
+* Built around `data` - usually as a [`tibble`](https://tibble.tidyverse.org) (a modern `data.frame`)
 * Built around `tidy` data
   * Each `variable` in its own `column`
   * Each `observation` or `case` in its own `row`
@@ -473,7 +472,8 @@ tidy_df
 
 ```{r, highlight.output = c(4, 9)}
 untidy_df %>% 
-  gather(gender_year, income, male_2016:female_2018) #<<
+  pivot_longer(cols = male_2016:female_2018, 
+               names_to = "gender_year") #<<
 ```
 
 
@@ -483,18 +483,35 @@ untidy_df %>%
 
 ```{r, highlight.output = c(4, 9)}
 untidy_df %>% 
-  gather(gender_year, income, male_2016:female_2018) %>% 
-  separate(gender_year, into = c("gender", "year")) #<<
+  pivot_longer(cols = male_2016:female_2018, 
+               names_to = c("gender", "year"), 
+               names_sep = "_") #<<
+```
+
+---
+
+
+# Tidy the data
+
+```{r, highlight.output = c(4, 9)}
+untidy_df %>% 
+  pivot_longer(cols = male_2016:female_2018, 
+               names_to = "gender_year") %>% 
+  separate(gender_year, into = c("gender", "year"), sep = "_") #<<
 ```
 
 ---
 
 # Read data in
 
-Read in data with `readr`, `haven`, `readxl`
+Read in data with `readr`, `arrow`, `haven`, `readxl`
 
 ### `readr`
 * `read_csv()`, `read_tsv()`, `read_delim()`
+
+
+### `arrow`
+* `read_arrow()`, `read_feather()`, `read_parquet()`, `read_*_arrow()`
 
 ### `haven`
 * `read_sas()`, `read_spss()`, `read_stata()`, `read_dta()`
@@ -762,7 +779,7 @@ mtcars %>%
   mutate(miles_per_liter = mpg * 3.78541, #<<
          miles_per_gallon = miles_per_liter / 3.78541) %>% #<<
   select(miles_per_liter, mpg,miles_per_gallon) %>%
-  head(10)
+  slice(1:10)
 ```
 
 
@@ -930,10 +947,11 @@ The goal of tidyr is to help you create tidy data. Tidy data is data where:
 --
 
 
-### Make Taller and Make Wider
-* `gather()` - takes multiple columns, and gathers them into key-value pairs: it makes “wide” data longer.
-* `spread()` - takes two columns (key & value), and spreads into multiple columns: it makes “long” data wider.
+### Make Longer and Make Wider
+* `pivot_longer()` - takes multiple columns, and makes the data "longer" by reducing the number of columns and increasing the number of rows.
 
+
+* `pivot_wider()` - the opposite of pivot_longer(): it makes a dataset wider by increasing the number of columns and decreasing the number of rows.
 --
 
 ### Separate and unite columns
@@ -1017,6 +1035,48 @@ tidy_df %>%
   unite("gender_year", c("gender", "year"), sep = "_") %>% 
   spread(gender_year, income) #<<
 ```
+
+---
+
+class: center, middle, inverse
+
+# SIDEBAR!
+
+## The janitor package
+
+---
+
+## Keep your columns tidy, too
+
+* `clean_names()` cleans up column names for you.
+
+--
+
+```{r, echo = FALSE}
+bad_names <- data.frame(matrix(ncol = 22) %>% as.data.frame()) %>% 
+  setNames(
+    c("sp ace", "repeated", "a**^@", "%", "*", "!",
+      "d(!)9", "REPEATED", "can\"'t", "hi_`there`", "  leading spaces",
+      "€", "ação", "Farœ", "a b c d e f", "testCamelCase", "!leadingpunct",
+      "average # of days", "jan2009sales", "jan 2009 sales", "long", "lat")
+  ) %>% select(1:6)
+```
+
+.pull-left[
+```{r}
+glimpse(bad_names)
+```
+]
+
+--
+
+.pull-right[
+```{r}
+bad_names %>% 
+  janitor::clean_names() %>% 
+  glimpse()
+```
+]
 
 
 ---
@@ -1114,12 +1174,14 @@ Supply the data, tell `ggplot2` the aesthetic mappings, and then add layers of `
 
 ---
 
+
 # `ggplot2`
 
 ### Gapminder dataset
 
 ```{r}
-gapminder_df <- gapminder::gapminder
+gapminder_df <- gapminder::gapminder %>% 
+  janitor::clean_names()
 
 glimpse(gapminder_df)
 ```
@@ -1131,7 +1193,7 @@ glimpse(gapminder_df)
 ```{r, fig.height = 4}
 gapminder_df %>% 
   filter(country == "Malawi") %>% 
-  ggplot(aes(x = year, y = lifeExp)) + #<<
+  ggplot(aes(x = year, y = life_exp)) + #<<
   geom_line(colour = "#1380A1", size = 1) #<<
 ```
 
@@ -1142,7 +1204,7 @@ gapminder_df %>%
 ```{r, fig.height = 4}
 gapminder_df %>% 
   filter(country == "Malawi") %>% 
-  ggplot(aes(x = year, y = lifeExp)) +
+  ggplot(aes(x = year, y = life_exp)) +
   geom_line(colour = "#1380A1", size = 1) +
   geom_point(size = 2) #<<
 ```
@@ -1153,8 +1215,8 @@ gapminder_df %>%
 
 ```{r,  fig.height = 4}
 gapminder_df %>%
-  filter(country == "China" | country == "United States") %>% #<<
-  ggplot(aes(x = year, y = lifeExp, colour = country)) +
+  filter(country %in% c("China", "United States")) %>% #<<
+  ggplot(aes(x = year, y = life_exp, colour = country)) +
   geom_line(size = 1)
 ```
 
@@ -1165,7 +1227,7 @@ gapminder_df %>%
 
 ```{r,  fig.height = 4}
 gapminder_df %>%
-  filter(country == "China" | country == "United States") %>% 
+  filter(country %in% c("China", "United States")) %>% 
   ggplot(aes(x = year, y = country, colour = country, 
              size = lifeExp)) + #<<
   geom_point() +  
@@ -1181,11 +1243,10 @@ gapminder_df %>%
 
 ```{r, fig.height = 4}
 bar_df <- gapminder_df %>%
-  filter(year == 2007 & continent == "Africa") %>%
-  arrange(desc(lifeExp)) %>%
-  head(5)
+  filter(year == 2007, continent == "Africa") %>%
+  top_n(5, life_exp)
 
-(bars <- ggplot(bar_df, aes(x = country, y = lifeExp)) +
+(bars <- ggplot(bar_df, aes(x = country, y = life_exp)) +
   geom_bar(stat = "identity"))
 ```
 
@@ -1195,11 +1256,10 @@ bar_df <- gapminder_df %>%
 
 ```{r, fig.height = 4}
 bar_df <- gapminder_df %>%
-  filter(year == 2007 & continent == "Africa") %>%
-  arrange(desc(lifeExp)) %>%
-  head(5)
+  filter(year == 2007, continent == "Africa") %>%
+  top_n(5, life_exp)
 
-(bars <- ggplot(bar_df, aes(x = country, y = lifeExp)) +
+(bars <- ggplot(bar_df, aes(x = country, y = life_exp)) +
   geom_col()) #<<
 ```
 
@@ -1210,25 +1270,24 @@ bar_df <- gapminder_df %>%
 ```{r, echo = FALSE}
 #Prepare data
 grouped_bar_df <- gapminder_df %>%
-  filter(year == 1967 | year == 2007) %>%
-  select(country, year, lifeExp) %>%
-  spread(year, lifeExp) %>%
-  mutate(gap = `2007` - `1967`) %>%
-  arrange(desc(gap)) %>%
-  head(5) %>%
-  gather(key = year, 
-         value = lifeExp,
-         -country,
-         -gap) 
-
+  filter(year %in% c(1967, 2007)) %>%
+  select(country, year, life_exp) %>% 
+  pivot_wider(values_from = life_exp,
+              names_from = year) %>% 
+  mutate(gap = `2007` - `1967`) %>% 
+  top_n(5, gap) %>% 
+  pivot_longer(cols = -c(country, gap), 
+               names_to = "year",
+               values_to = "life_exp") %>% 
+  arrange(-life_exp)
 ```
 
 ```{r, fig.height= 4, tidy = FALSE}
 grouped_bars <- ggplot(grouped_bar_df, 
                        aes(x = country, 
-                           y = lifeExp, 
+                           y = life_exp, 
                            fill = as.factor(year))) +
-  geom_bar(stat="identity", position="dodge")
+  geom_col(position = "dodge")
 
 grouped_bars
 ```
@@ -1240,7 +1299,7 @@ grouped_bars
 ```{r, fig.height = 4}
 hist_plot <- gapminder_df %>% 
   filter(year == 2007) %>% 
-  ggplot(aes(x = lifeExp)) +
+  ggplot(aes(x = life_exp)) +
   geom_histogram(binwidth = 5, color = "white") #<<
 
 hist_plot
@@ -1332,10 +1391,10 @@ Built in themes
 
 .pull-right[
 New packages
-* `bbplot`
+* `bbc/bbplot`
   * `bbc_style()`
   
-* `urbnthemes()`
+* `UrbanInstitute/urbnthemes`
   * `theme_urbn_print()`
   
 * `ggthemes`
@@ -1352,8 +1411,8 @@ New packages
 
 ```{r,  fig.height = 4}
 gapminder_df %>%
-  filter(country == "China" | country == "United States") %>% 
-  ggplot(aes(x = year, y = lifeExp, colour = country)) +
+  filter(country %in% c("China", "United States")) %>% 
+  ggplot(aes(x = year, y = life_exp, colour = country)) +
   geom_line(size = 1) +
   theme_grey() #<<
 ```
@@ -1365,8 +1424,8 @@ gapminder_df %>%
 
 ```{r,  fig.height = 4}
 gapminder_df %>%
-  filter(country == "China" | country == "United States") %>% 
-  ggplot(aes(x = year, y = lifeExp, colour = country)) +
+  filter(country %in% c("China", "United States")) %>% 
+  ggplot(aes(x = year, y = life_exp, colour = country)) +
   geom_line(size = 1) +
   theme_bw() #<<
 ```
@@ -1378,9 +1437,9 @@ gapminder_df %>%
 
 ```{r,  fig.height = 4}
 gapminder_df %>%
-  filter(country == "China" | country == "United States") %>% 
-  ggplot(aes(x = year, y = lifeExp, colour = country)) +
-  geom_line(size = 1) +
+  filter(country %in% c("China", "United States")) %>% 
+  ggplot(aes(x = year, y = life_exp, colour = country)) +
+  geom_line(size = 1)  +
   theme_minimal() #<<
 ```
 
@@ -1391,9 +1450,9 @@ gapminder_df %>%
 
 ```{r,  fig.height = 4}
 gapminder_df %>%
-  filter(country == "China" | country == "United States") %>% 
-  ggplot(aes(x = year, y = lifeExp, colour = country)) +
-  geom_line(size = 1) +
+  filter(country %in% c("China", "United States")) %>% 
+  ggplot(aes(x = year, y = life_exp, colour = country)) +
+  geom_line(size = 1)  +
   theme_classic() #<<
 ```
 
@@ -1404,9 +1463,9 @@ gapminder_df %>%
 
 ```{r,  fig.height = 4}
 gapminder_df %>%
-  filter(country == "China" | country == "United States") %>% 
-  ggplot(aes(x = year, y = lifeExp, colour = country)) +
-  geom_line(size = 1) +
+  filter(country %in% c("China", "United States")) %>% 
+  ggplot(aes(x = year, y = life_exp, colour = country)) +
+  geom_line(size = 1)  +
   ggthemes::theme_economist_white() #<<
 ```
 
@@ -1417,8 +1476,8 @@ gapminder_df %>%
 
 ```{r,  fig.height = 4}
 gapminder_df %>%
-  filter(country == "China" | country == "United States") %>% 
-  ggplot(aes(x = year, y = lifeExp, colour = country)) +
+  filter(country %in% c("China", "United States")) %>% 
+  ggplot(aes(x = year, y = life_exp, colour = country)) +
   geom_line(size = 1) +
   ggthemes::theme_few() #<<
 ```
@@ -1430,11 +1489,11 @@ gapminder_df %>%
 
 ```{r,  fig.height = 4}
 gapminder_df %>%
-  filter(country == "China" | country == "United States") %>% 
-  ggplot(aes(x = year, y = lifeExp, colour = country)) +
+  filter(country %in% c("China", "United States")) %>% 
+  ggplot(aes(x = year, y = life_exp, colour = country)) +
   geom_line(size = 1) +  
-  geom_hline(yintercept = 0, size = 1, colour="#333333") +
-  bbplot::bbc_style() #<<
+  geom_hline(yintercept = 0, size = 1, colour = "#333333") +
+  ggthemes::theme_fivethirtyeight() #<<
 ```
 
 
@@ -1445,8 +1504,8 @@ gapminder_df %>%
 
 ```{r,  fig.height = 4}
 gapminder_df %>%
-  filter(country == "China" | country == "United States") %>% 
-  ggplot(aes(x = year, y = lifeExp, colour = country)) +
+  filter(country %in% c("China", "United States")) %>% 
+  ggplot(aes(x = year, y = life_exp, colour = country)) +
   geom_line(size = 1) +  
   geom_hline(yintercept = 0, size = 1, colour="#333333") +
   theme_minimal() + #<<
