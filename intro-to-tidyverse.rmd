@@ -610,32 +610,32 @@ knitr::include_graphics("static-img/hex-dplyr.png")
 
 `data.frame` vs `tibble`
 
-.small[
+
 ```{r}
 penguin_df <- palmerpenguins::penguins %>% as.data.frame()
 class(penguin_df)
 ```
-]
+
 --
 
-.small[
+
 ```{r}
 penguins <- as_tibble(penguin_df)
 
 class(penguins)
 ```
-]
+
 
 ---
 
 # penguins dataset
 
 `data.frame` vs `tibble`
-.small[
+
 ```{r, highlight.output = c(1:3)}
 penguin_df
 ```
-]
+
 
 ---
 
@@ -645,11 +645,11 @@ penguin_df
 penguins <- as_tibble(penguin_df)
 ```
 
-.small[
+
 ```{r, highlight.output = c(1:3)}
 penguins
 ```
-]
+
 
 ---
 
@@ -660,56 +660,56 @@ head(penguins, 5)
 ```
 
 --
-.small[
+
 ```{r}
 tail(penguins, 5)
 ```
-]
+
 ---
 
 ### [`dplyr::slice()`](https://dplyr.tidyverse.org/reference/slice.html)
 
-.small[
+
 ```{r, highlight.output = c(4, 6)}
 slice(penguins, 1:3)
 ```
-]
+
 --
-.small[
+
 ```{r,highlight.output = c(4,5)}
 slice(penguins, 1, 3, 5)
 ```
-]
+
 ---
 
 #### [`dplyr::slice_min()`](https://dplyr.tidyverse.org/reference/slice.html) & [`dplyr::slice_max()`](https://dplyr.tidyverse.org/reference/slice.html)
 
-.small[
+
 ```{r,highlight.output = c(3:5)}
 # bottom 3 beak lengths
 slice_min(penguins, order_by = culmen_length_mm, n = 3)
 ```
-]
+
 
 --
 
-.small[
+
 ```{r,highlight.output = c(3:5)}
 # top 3 beak lengths
 slice_max(penguins, order_by = culmen_length_mm, n = 3)
 ```
-]
+
 
 
 ---
 
 ### [`dplyr::slice_sample()`](https://dplyr.tidyverse.org/reference/slice.html)
 
-.small[
+
 ```{r}
 slice_sample(penguins, n = 10) # random selection
 ```
-]
+
 
 ---
 
@@ -723,7 +723,7 @@ glimpse(penguins)
 
 ### Quick Pause for `Logic`
 
-.tiny[
+
 Logical operators in R. `?base::Logic` - for additional details
 
 |  Operator|  Description| `TRUE` | `FALSE` |
@@ -738,7 +738,7 @@ Logical operators in R. `?base::Logic` - for additional details
 | `!(x %in% y)` | Returns TRUE for NOT present in y | `!(3 %in% c(4:9))` | `!("cat" %in% c("dog", "cat", "rat"))` |
 | `x` &#x7c; `y` | x OR y | `5 == 3` &#x7c; `3 != 2` | `"cat" == "dog"` &#x7c; `3 != 3` |
 | `x & y`| x AND y | `3 == 3 & "dog" == "dog"` | `5 == 3 & 3 != 2` |
-]
+
 
 ---
 
@@ -746,24 +746,24 @@ Logical operators in R. `?base::Logic` - for additional details
 
 Returns rows where the logical argument is `TRUE`
 
-.small[
+
 ```{r}
 # sex EQUAL to MALE
 filter(penguins, species == "Adelie") 
 ```
-]
+
 
 ---
 
 ### [`dplyr::filter()`](https://dplyr.tidyverse.org/reference/filter.html)
 
-.small[
+
 ```{r}
 penguins %>% 
   # species matching Adelie or Gentoo
   filter(species %in% c("Adelie", "Gentoo")) 
 ```
-]
+
 ---
 
 ### `dplyr::filter()`

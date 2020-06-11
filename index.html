@@ -695,7 +695,7 @@ Read in data with `readr`, `haven`, `readxl`
 
 `data.frame` vs `tibble`
 
-.small[
+
 
 ```r
 penguin_df &lt;- palmerpenguins::penguins %&gt;% as.data.frame()
@@ -705,10 +705,10 @@ class(penguin_df)
 ```
 ## [1] "data.frame"
 ```
-]
+
 --
 
-.small[
+
 
 ```r
 penguins &lt;- as_tibble(penguin_df)
@@ -719,14 +719,14 @@ class(penguins)
 ```
 ## [1] "tbl_df"     "tbl"        "data.frame"
 ```
-]
+
 
 ---
 
 # penguins dataset
 
 `data.frame` vs `tibble`
-.small[
+
 
 ```r
 penguin_df
@@ -1424,7 +1424,7 @@ penguin_df
 ## 343        5200 FEMALE
 ## 344        5400   MALE
 ```
-]
+
 
 ---
 
@@ -1435,7 +1435,7 @@ penguin_df
 penguins &lt;- as_tibble(penguin_df)
 ```
 
-.small[
+
 
 ```r
 penguins
@@ -1457,7 +1457,7 @@ penguins
 ## 10 Adelie  Torge…             42              20.2              190        4250
 ## # … with 334 more rows, and 1 more variable: sex &lt;chr&gt;
 ```
-]
+
 
 ---
 
@@ -1481,7 +1481,7 @@ head(penguins, 5)
 ```
 
 --
-.small[
+
 
 ```r
 tail(penguins, 5)
@@ -1498,12 +1498,12 @@ tail(penguins, 5)
 ## 5 Gentoo  Biscoe             49.9            16.1              213        5400
 ## # … with 1 more variable: sex &lt;chr&gt;
 ```
-]
+
 ---
 
 ### [`dplyr::slice()`](https://dplyr.tidyverse.org/reference/slice.html)
 
-.small[
+
 
 ```r
 slice(penguins, 1:3)
@@ -1518,9 +1518,9 @@ slice(penguins, 1:3)
 *## 3 Adelie  Torge…             40.3            18                195        3250
 ## # … with 1 more variable: sex &lt;chr&gt;
 ```
-]
+
 --
-.small[
+
 
 ```r
 slice(penguins, 1, 3, 5)
@@ -1535,12 +1535,12 @@ slice(penguins, 1, 3, 5)
 ## 3 Adelie  Torge…             36.7            19.3              193        3450
 ## # … with 1 more variable: sex &lt;chr&gt;
 ```
-]
+
 ---
 
 #### [`dplyr::slice_min()`](https://dplyr.tidyverse.org/reference/slice.html) &amp; [`dplyr::slice_max()`](https://dplyr.tidyverse.org/reference/slice.html)
 
-.small[
+
 
 ```r
 # bottom 3 beak lengths
@@ -1556,11 +1556,11 @@ slice_min(penguins, order_by = culmen_length_mm, n = 3)
 ## 3 Adelie  Torge…             33.5            19                190        3600
 ## # … with 1 more variable: sex &lt;chr&gt;
 ```
-]
+
 
 --
 
-.small[
+
 
 ```r
 # top 3 beak lengths
@@ -1576,14 +1576,14 @@ slice_max(penguins, order_by = culmen_length_mm, n = 3)
 ## 3 Gentoo  Biscoe             55.9            17                228        5600
 ## # … with 1 more variable: sex &lt;chr&gt;
 ```
-]
+
 
 
 ---
 
 ### [`dplyr::slice_sample()`](https://dplyr.tidyverse.org/reference/slice.html)
 
-.small[
+
 
 ```r
 slice_sample(penguins, n = 10) # random selection
@@ -1593,19 +1593,19 @@ slice_sample(penguins, n = 10) # random selection
 ## # A tibble: 10 x 7
 ##    species island culmen_length_mm culmen_depth_mm flipper_length_… body_mass_g
 ##    &lt;chr&gt;   &lt;chr&gt;             &lt;dbl&gt;           &lt;dbl&gt;            &lt;dbl&gt;       &lt;dbl&gt;
-##  1 Gentoo  Biscoe             47.6            14.5              215        5400
-##  2 Adelie  Dream              35.6            17.5              191        3175
-##  3 Adelie  Biscoe             38.8            17.2              180        3800
-##  4 Gentoo  Biscoe             45              15.4              220        5050
-##  5 Adelie  Biscoe             41.1            18.2              192        4050
-##  6 Adelie  Dream              36.6            18.4              184        3475
-##  7 Adelie  Dream              36              17.8              195        3450
-##  8 Gentoo  Biscoe             46.3            15.8              215        5050
-##  9 Gentoo  Biscoe             45.1            14.5              215        5000
-## 10 Gentoo  Biscoe             54.3            15.7              231        5650
+##  1 Adelie  Dream              38.1            17.6              187        3425
+##  2 Chinst… Dream              47.6            18.3              195        3850
+##  3 Adelie  Biscoe             40.1            18.9              188        4300
+##  4 Adelie  Dream              36.6            18.4              184        3475
+##  5 Adelie  Torge…             37.8            17.3              180        3700
+##  6 Gentoo  Biscoe             45.2            16.4              223        5950
+##  7 Gentoo  Biscoe             49.6            16                225        5700
+##  8 Adelie  Torge…             36.7            18.8              187        3800
+##  9 Adelie  Dream              44.1            19.7              196        4400
+## 10 Gentoo  Biscoe             44.4            17.3              219        5250
 ## # … with 1 more variable: sex &lt;chr&gt;
 ```
-]
+
 
 ---
 
@@ -1632,7 +1632,7 @@ glimpse(penguins)
 
 ### Quick Pause for `Logic`
 
-.tiny[
+
 Logical operators in R. `?base::Logic` - for additional details
 
 |  Operator|  Description| `TRUE` | `FALSE` |
@@ -1647,7 +1647,7 @@ Logical operators in R. `?base::Logic` - for additional details
 | `!(x %in% y)` | Returns TRUE for NOT present in y | `!(3 %in% c(4:9))` | `!("cat" %in% c("dog", "cat", "rat"))` |
 | `x` &amp;#x7c; `y` | x OR y | `5 == 3` &amp;#x7c; `3 != 2` | `"cat" == "dog"` &amp;#x7c; `3 != 3` |
 | `x &amp; y`| x AND y | `3 == 3 &amp; "dog" == "dog"` | `5 == 3 &amp; 3 != 2` |
-]
+
 
 ---
 
@@ -1655,7 +1655,7 @@ Logical operators in R. `?base::Logic` - for additional details
 
 Returns rows where the logical argument is `TRUE`
 
-.small[
+
 
 ```r
 # sex EQUAL to MALE
@@ -1678,13 +1678,13 @@ filter(penguins, species == "Adelie")
 ## 10 Adelie  Torge…             42              20.2              190        4250
 ## # … with 142 more rows, and 1 more variable: sex &lt;chr&gt;
 ```
-]
+
 
 ---
 
 ### [`dplyr::filter()`](https://dplyr.tidyverse.org/reference/filter.html)
 
-.small[
+
 
 ```r
 penguins %&gt;% 
@@ -1708,7 +1708,7 @@ penguins %&gt;%
 ## 10 Adelie  Torge…             42              20.2              190        4250
 ## # … with 266 more rows, and 1 more variable: sex &lt;chr&gt;
 ```
-]
+
 ---
 
 ### `dplyr::filter()`
