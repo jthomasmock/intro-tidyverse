@@ -1,6 +1,6 @@
 ---
 title: "Intro to the Tidyverse"
-#author: "Thomas Mock"
+author: "Thomas Mock"
 institute: "RStudio, Inc."
 date: "updated: `r Sys.Date()`"
 output:
@@ -11,6 +11,38 @@ output:
       highlightLines: TRUE
       countIncrementalSlides: FALSE
 ---
+
+```{css, include = FALSE, eval = TRUE}
+/* Extra CSS */
+.hljs-github .hjls {
+  background: black;
+}
+.small {
+  font-size: 70%;
+}
+
+.tiny {
+  font-size: 60%;
+}
+
+.large {
+  font-size: 200%;
+}
+
+.small pre .remark-code {
+  font-size: 75%;
+}
+.small .remark-code {
+  font-size: 80%;
+}
+.tiny .remark-code {
+  font-size: 60%;
+}
+.medium .remark-code {
+  font-size: 90%;
+}
+
+```
 
 # Today's Agenda
 
@@ -69,7 +101,7 @@ RStudio is an IDE (integrated development environment)
 
 class: center, middle, inverse
 
-.large[RStudio Basics]
+# `RStudio Basics`
 
 ---
 
@@ -144,7 +176,7 @@ my_variable
 
 class: center, middle, inverse
 
-.large[R Code Basics]
+# R Code Basics
 
 ---
 
@@ -333,9 +365,10 @@ mean_output
 
 
 
+
 ---
 
-# More Complex example
+## About the penguins
 
 ```{r, echo = FALSE}
 data <- tibble(
@@ -343,18 +376,23 @@ data <- tibble(
   gender = rep(c("Male", "Female"), each = 5),
   age_group = rep(c("< 18", "18-30", "31-50", "51-60", "> 60"), each = 2),
   income = c(20000, 22000, 35000, 36000, 40000, 50000, 60000, 62000, 72000, 75000)
-  ) %>% 
-  mutate(age_group = factor(age_group,
-                            levels = c("< 18", "18-30", "31-50", "51-60", "> 60")
+) %>% 
+  mutate(age_group = factor(age_group, levels = c("< 18", "18-30", "31-50", "51-60", "> 60")
                             )
-  ) %>% 
-  sample_n(size = 100, replace = TRUE)
+  )
 
+data <- bind_rows(data, data) %>% 
+  bind_rows(data) %>% 
+  bind_rows(data)
 
 ```
 
+
 ```{r}
-data
+penguins <- palmerpenguins::penguins 
+
+penguins %>% 
+  glimpse()
 ```
 
 ---
@@ -362,19 +400,19 @@ data
 # More Complex Example
 
 ```{r, eval = FALSE}
-data %>% 
-  filter(year == 2018) %>% 
-  group_by(age_group) %>% 
-  summarize(mean = mean(income))
+penguins %>% 
+  filter(species == "Adelie" & !is.na(sex)) %>%                   
+  group_by(sex, island) %>%                                 
+  summarize(mean = mean(body_mass_g, na.rm = TRUE)) 
 ```
 
 --
 
 ```{r, echo = FALSE}
-data %>% 
-  filter(year == 2018) %>% 
-  group_by(age_group) %>% 
-  summarize(mean = mean(income))
+penguins %>% 
+  filter(species == "Adelie" & !is.na(sex)) %>%                   
+  group_by(sex, island) %>%                                 
+  summarize(mean = mean(body_mass_g, na.rm = TRUE)) 
 ```
 
 
@@ -397,7 +435,7 @@ All packages share an underlying design philosophy, grammar, and data structures
 
 --
 
-* Core packages - `readr`, `tidyr`, `dplyr`, `ggplot2`, `purrr`, `stringr`, `forcats`
+* Core packages - `readr`, `tidyr`, `dplyr`, `ggplot2`
 
 --
 
@@ -420,7 +458,7 @@ All packages share an underlying design philosophy, grammar, and data structures
 
 # `tidyverse` Core Principles
 
-* Built around `data` - usually as a [`tibble`](https://tibble.tidyverse.org) (a modern `data.frame`)
+* Built around `data` - usually as a `data.frame` or `tibble`
 * Built around `tidy` data
   * Each `variable` in its own `column`
   * Each `observation` or `case` in its own `row`
@@ -444,6 +482,16 @@ tidy_df <- untidy_df %>%
   separate(gender_year, into = c("gender", "year"))
 
 ```
+
+```{r, eval = FALSE, echo = FALSE}
+test_penguin <- penguins %>% 
+  filter(sex %in% c("MALE", "FEMALE")) %>% 
+  select(species, sex, body_mass_g) %>% 
+  group_by(species, sex) %>% 
+  summarize(body_mass_g = mean(body_mass_g)) %>% 
+  pivot_wider(names_from = c("sex", "species"), values_from = c("body_mass_g"))
+```
+
 
 --
 
@@ -473,8 +521,11 @@ tidy_df
 ```{r, highlight.output = c(4, 9)}
 untidy_df %>% 
   pivot_longer(cols = male_2016:female_2018, 
-               names_to = "gender_year") #<<
+               names_to = "gender_year",
+               values_to = "income") %>% 
+  separate(gender_year, into = c("gender", "year")) #<<
 ```
+
 
 
 ---
@@ -483,39 +534,27 @@ untidy_df %>%
 
 ```{r, highlight.output = c(4, 9)}
 untidy_df %>% 
-  pivot_longer(cols = male_2016:female_2018, 
-               names_to = c("gender", "year"), 
-               names_sep = "_") #<<
-```
-
----
-
-
-# Tidy the data
-
-```{r, highlight.output = c(4, 9)}
-untidy_df %>% 
-  pivot_longer(cols = male_2016:female_2018, 
-               names_to = "gender_year") %>% 
-  separate(gender_year, into = c("gender", "year"), sep = "_") #<<
+  pivot_longer( 
+    cols = male_2016:female_2018, #<<
+    names_to = c("gender", "year"), #<<
+    names_pattern = "(.*)_(.*)", #<<
+    values_to = "income" #<<
+  )
 ```
 
 ---
 
 # Read data in
 
-Read in data with `readr`, `arrow`, `haven`, `readxl`
+Read in data with `readr`, `haven`, `readxl`
 
-#### `readr`
+### `readr`
 * `read_csv()`, `read_tsv()`, `read_delim()`
 
-#### `arrow`
-* `read_arrow()`, `read_feather()`, `read_parquet()`, `read_*_arrow()`
-
-#### `haven`
+### `haven`
 * `read_sas()`, `read_spss()`, `read_stata()`, `read_dta()`
 
-#### `readxl`
+### `readxl`
 * `read_xls()`, `read_xlsx()`, `read_excel()`
 
 ---
@@ -541,8 +580,8 @@ Read in data with `readr`, `arrow`, `haven`, `readxl`
 
 .pull-right[
 ### Advanced iterations
-* `summarize_at()`
-* `mutate_at()`
+* `across()`
+* `rowwise()`
 
 ### More info
 * [`dplyr.tidyverse.org`](https://dplyr.tidyverse.org/)
@@ -556,166 +595,236 @@ knitr::include_graphics("static-img/hex-dplyr.png")
 
 ---
 
-# mtcars dataset
+# Meet the penguins
 
-`data.frame` vs `tibble`
-
-```{r}
-class(mtcars)
-```
-
-```{r}
-mtcars_tbl <- as_tibble(mtcars)
-
-class(mtcars_tbl)
-```
-
+.center[ ![](https://allisonhorst.github.io/palmerpenguins/man/figures/lter_penguins.png) ]
 
 
 ---
 
-# mtcars dataset
-
-`data.frame` vs `tibble`
-
-```{r, highlight.output = 1}
-mtcars
-```
+.center[ ![](https://allisonhorst.github.io/palmerpenguins/man/figures/culmen_depth.png) ]
 
 ---
 
-# mtcars dataset
+# penguins dataset
 
 `data.frame` vs `tibble`
 
+.small[
+```{r}
+penguin_df <- palmerpenguins::penguins %>% as.data.frame()
+class(penguin_df)
+```
+]
+--
+
+.small[
+```{r}
+penguins <- as_tibble(penguin_df)
+
+class(penguins)
+```
+]
+
+---
+
+# penguins dataset
+
+`data.frame` vs `tibble`
+.small[
 ```{r, highlight.output = c(1:3)}
-mtcars_tbl
+penguin_df
 ```
-
+]
 
 ---
 
-# mtcars dataset
+# penguins dataset
 
 ```{r}
-mtcars <- as_tibble(mtcars)
+penguins <- as_tibble(penguin_df)
 ```
 
-
+.small[
 ```{r, highlight.output = c(1:3)}
-mtcars
+penguins
 ```
+]
 
 ---
 
-# mtcars dataset
+# penguins dataset
 
 ```{r}
-head(mtcars, 5)
+head(penguins, 5)
 ```
 
 --
-
+.small[
 ```{r}
-tail(mtcars, 5)
+tail(penguins, 5)
 ```
-
+]
 ---
 
-### `dplyr::slice()`
+### [`dplyr::slice()`](https://dplyr.tidyverse.org/reference/slice.html)
 
+.small[
 ```{r, highlight.output = c(4, 6)}
-slice(mtcars, 1:3)
+slice(penguins, 1:3)
 ```
+]
+--
+.small[
+```{r,highlight.output = c(4,5)}
+slice(penguins, 1, 3, 5)
+```
+]
+---
+
+#### [`dplyr::slice_min()`](https://dplyr.tidyverse.org/reference/slice.html) & [`dplyr::slice_max()`](https://dplyr.tidyverse.org/reference/slice.html)
+
+.small[
+```{r,highlight.output = c(3:5)}
+# bottom 3 beak lengths
+slice_min(penguins, order_by = culmen_length_mm, n = 3)
+```
+]
 
 --
 
-```{r,highlight.output = c(4,5)}
-slice(mtcars, 1, 3, 5)
+.small[
+```{r,highlight.output = c(3:5)}
+# top 3 beak lengths
+slice_max(penguins, order_by = culmen_length_mm, n = 3)
 ```
+]
 
 
 ---
 
-### `dplyr::glimpse()`
+### [`dplyr::slice_sample()`](https://dplyr.tidyverse.org/reference/slice.html)
+
+.small[
+```{r}
+slice_sample(penguins, n = 10) # random selection
+```
+]
+
+---
+
+### [`tibble::glimpse()`](https://tibble.tidyverse.org/reference/glimpse.html)
 
 ```{r, highlight.output = c(1, 2)}
-glimpse(mtcars)
+glimpse(penguins)
 ```
 
+---
+
+### Quick Pause for `Logic`
+
+.tiny[
+Logical operators in R. `?base::Logic` - for additional details
+
+|  Operator|  Description| `TRUE` | `FALSE` |
+|:-------- |:---------- | :---------:| :----------: |
+| `<` |  Less than | `3 < 5` | `100 < 1` |
+| `<=` |  Less than or equal to | `2 <= 2`| `4 <= 2` |
+| `>` | Greater than | `5 > 3` | `1 > 100` |
+| `>=` | Greater than or equal to | `25 >= 25.1` | `12 >= 100` |
+| `==` | Exactly equal to | `"cat" == "cat"` | `"cat" == "dog"` |
+| `!=` | NOT equal to | `5 != 3` | `as.character(5) != "5"` |
+|`x %in% y`| Returns TRUE for x that are present in y| `3 %in% c(1, 2, 3)` | `3 %in% c(4:9)` |
+| `!(x %in% y)` | Returns TRUE for NOT present in y | `!(3 %in% c(4:9))` | `!("cat" %in% c("dog", "cat", "rat"))` |
+| `x` &#x7c; `y` | x OR y | `5 == 3` &#x7c; `3 != 2` | `"cat" == "dog"` &#x7c; `3 != 3` |
+| `x & y`| x AND y | `3 == 3 & "dog" == "dog"` | `5 == 3 & 3 != 2` |
+]
+
+---
+
+### [`dplyr::filter()`](https://dplyr.tidyverse.org/reference/filter.html)
+
+Returns rows where the logical argument is `TRUE`
+
+.small[
+```{r}
+# sex EQUAL to MALE
+filter(penguins, species == "Adelie") 
+```
+]
+
+---
+
+### [`dplyr::filter()`](https://dplyr.tidyverse.org/reference/filter.html)
+
+.small[
+```{r}
+penguins %>% 
+  # species matching Adelie or Gentoo
+  filter(species %in% c("Adelie", "Gentoo")) 
+```
+]
 ---
 
 ### `dplyr::filter()`
 
 ```{r}
-filter(mtcars, cyl == 8)
-```
-
----
-
-### `dplyr::filter()`
-
-```{r}
-mtcars %>% 
-  filter(cyl %in% c(4, 6))
-```
-
----
-
-### `dplyr::filter()`
-
-```{r}
-mtcars %>% 
-  filter(cyl != 4)
+penguins %>% 
+  # species EQUAL to Chinstrap and culmen lenth greater than 53
+  filter(species != "Chinstrap" & culmen_length_mm >= 53)
 ```
 
 
 ---
 
-### `dplyr::arrange()`
+### [`dplyr::arrange()`](https://dplyr.tidyverse.org/reference/arrange.html)
+
+`arrange` defaults to smallest to largest
 
 ```{r, highlight.output = 4}
-mtcars %>% 
-  arrange(mpg)
+penguins %>% 
+  arrange(culmen_length_mm)
 ```
 
 ---
 
 ### `dplyr::arrange()`
 
+`desc` means descending order, ie largest to smallest
+
 ```{r, highlight.output = 4}
-mtcars %>% 
-  arrange(desc(mpg))
+penguins %>% 
+  arrange(desc(culmen_length_mm))
 ```
 
 ---
 
-### `dplyr::arrange()`
+### [`dplyr::arrange()`](https://dplyr.tidyverse.org/reference/arrange.html)
 
 ```{r, highlight.output = 4}
-mtcars %>% 
-  arrange(desc(cyl), desc(hp))
+penguins %>% 
+  arrange(desc(flipper_length_mm), desc(culmen_length_mm))
 ```
 
   
 ---
 
-### `dplyr::select()`
+### [`dplyr::select()`](https://dplyr.tidyverse.org/reference/select.html)
 
 ```{r, highlight.output = c(3,4)}
-mtcars %>% 
-  select(cyl, mpg) %>% #<<
+penguins %>% 
+  select(species, sex) %>% #<<
   glimpse()
 ```
 
 
 ---
 
-### `dplyr::select()`
+### [`dplyr::select()`](https://dplyr.tidyverse.org/reference/select.html)
 
 ```{r, highlight.output = c(3:6)}
-mtcars %>% 
-  select(disp, cyl, hp, mpg) %>% #<<
+penguins %>% 
+  select(species, sex, island, body_mass_g) %>% #<<
   glimpse()
 ```
 
@@ -723,220 +832,216 @@ mtcars %>%
 --
 
 ```{r, highlight.output = c(3:5)}
-mtcars %>% 
-  select(disp, cyl, hp, mpg) %>% 
-  select(-mpg) %>% #<<
+penguins %>% 
+  select(species, sex, island, body_mass_g) %>% 
+  select(-island) %>% #<<
   glimpse()
 ```
 
 ---
 
-### `dplyr::select()`
+### [`dplyr::select()`](https://dplyr.tidyverse.org/reference/select.html)
 
 ```{r}
-mtcars %>% 
-  select(cyl, hp, everything()) %>% #<<
+penguins %>% 
+  select(sex, everything()) %>% #<<
   glimpse()
 ```
 
 ---
 
-### `dplyr::select()`
+### [`dplyr::select()`](https://dplyr.tidyverse.org/reference/select.html)
 
 ```{r}
-mtcars %>% 
-  select(starts_with("c"), starts_with("h")) %>% #<<
+penguins %>% 
+  select(starts_with("culmen"), contains("flip")) %>% #<<
   glimpse()
 ```
 
 ---
 
-### `dplyr::mutate()`
+### [`dplyr::mutate()`](https://dplyr.tidyverse.org/reference/mutate.html)
 
 ```{r, highlight.output = 3}
-mtcars %>% 
-  select(cyl) %>% 
+penguins %>% 
+  select(species) %>% 
   glimpse()
 ```
 
 
 ```{r, highlight.output = 3}
-mtcars %>% 
-  mutate(cyl = factor(cyl, #<<
-                      levels = c(4, 6, 8), #<<
-                      labels = c("4 Cyl", "6 Cyl", "8 Cyl"))) %>% #<<
-  select(cyl) %>% 
+penguins %>% 
+  mutate(species = factor(species, #<<
+                      levels = c("Adelie", "Chinstrap", "Gentoo"), #<<
+                      labels = c("AD", "CS", "GT"))) %>% #<<
+  select(species) %>% 
   glimpse()
 ```
 
 ---
 
-### `dplyr::mutate()`
+### [`dplyr::mutate()`](https://dplyr.tidyverse.org/reference/mutate.html)
 
 ```{r, highlight.output = 4}
-mtcars %>% 
-  mutate(miles_per_liter = mpg * 3.78541, #<<
-         miles_per_gallon = miles_per_liter / 3.78541) %>% #<<
-  select(miles_per_liter, mpg,miles_per_gallon) %>%
-  slice(1:10)
+penguins %>% 
+  mutate(body_mass_kg = body_mass_g / 1000, #<<
+         body_mass = body_mass_kg * 1000) %>% #<<
+  select(body_mass_kg, body_mass_g, body_mass) %>%
+  head(10)
 ```
 
 
 ---
 
-### `dplyr::group_by()`
+### [`dplyr::group_by()`](https://dplyr.tidyverse.org/reference/group_by.html)
 
 ```{r, highlight.output = 2}
-mtcars %>% 
-  group_by(cyl)
+penguins %>% 
+  group_by(species)
 ```
 
 ---
 
-### `dplyr::group_by()`
+### [`dplyr::group_by()`](https://dplyr.tidyverse.org/reference/group_by.html)
 
 ```{r, highlight.output = c(5:7)}
-mtcars %>% 
-  group_by(cyl) %>% #<<
+penguins %>% 
+  group_by(species) %>% #<<
   slice(1)
 ```
 
 
 ---
 
-### `dplyr::group_by()`
+### [`dplyr::group_by()`](https://dplyr.tidyverse.org/reference/group_by.html)
 
 ```{r}
-mtcars %>% 
-  group_by(cyl) %>% #<<
-  filter(hp == max(hp))
-```
-
----
-
-### `dplyr::group_by()`
-
-```{r}
-mtcars %>% 
-  group_by(cyl) %>% #<<
-  top_n(1, hp)
+penguins %>% 
+  group_by(species) %>% #<<
+  slice_max(culmen_length_mm, n = 1)
 ```
 
 
 ---
 
-### `dplyr::group_by()`
+### [`dplyr::group_by()`](https://dplyr.tidyverse.org/reference/group_by.html)
 
 ```{r}
-mtcars %>% 
-  group_by(cyl) %>% #<<
-  arrange(desc(hp)) %>% 
+penguins %>% 
+  group_by(species) %>% #<<
+  arrange(desc(culmen_length_mm)) %>% 
   slice(1)
 ```
 
 ---
 
-### `dplyr::group_by()`
+### [`dplyr::group_by()`](https://dplyr.tidyverse.org/reference/group_by.html)
 
 ```{r, highlight.output = 2}
-mtcars %>% 
-  group_by(cyl, am) %>%  #<<
+penguins %>% 
+  group_by(species, island) %>%  #<<
   count()
 ```
 
 
 ---
 
-### `dplyr::summarize()`
+### [`dplyr::summarize()`](https://dplyr.tidyverse.org/reference/summarise.html)
 
-```{r, highlight.output = 4}
-mtcars %>% 
-  summarize(mean = mean(mpg))
+```{r}
+penguins %>% 
+  summarize(mean = mean(body_mass_g))
 ```
 
 --
 
 ```{r, highlight.output = c(1, 2)}
-mtcars %>% mean(mpg)
-```
-
---
-
-```{r, highlight.output = 1}
-mtcars %>% 
-  pull(mpg) %>% #<<
-  mean()
+penguins %>% 
+  summarize(mean = mean(body_mass_g, na.rm = TRUE)) #<<
 ```
 
 ---
 
-### `dplyr::summarize()`
+### [`dplyr::summarize()`](https://dplyr.tidyverse.org/reference/summarise.html)
 
 ```{r, highlight.output = 2}
-mtcars %>% 
-  summarize(median(mpg))
+penguins %>% 
+  summarize(median(body_mass_g, na.rm = TRUE))
 ```
 
 --
 
 ```{r, highlight.output = 2}
-mtcars %>% 
-  summarize(median_mpg = mean(mpg))
+penguins %>% 
+  summarize(median_mass= median(body_mass_g, na.rm = TRUE))
 ```
 
 
 ---
 
 
-### `dplyr::summarize()`
+### [`dplyr::summarize()`](https://dplyr.tidyverse.org/reference/summarise.html)
 
 ```{r}
-mtcars %>% 
-  group_by(cyl) %>% 
-  summarize(mean_mpg = mean(mpg), #<<
-            sd_mpg = sd(mpg), #<<
+penguins %>% 
+  group_by(species) %>% 
+  summarize(mean_mass = mean(body_mass_g, na.rm = TRUE), #<<
+            sd_mass = sd(body_mass_g, na.rm = TRUE), #<<
             n = n()) #<<
 ```
 
 ---
 
-### `dplyr::mutate_at()`
+### [`dplyr::mutate() + across()`](https://dplyr.tidyverse.org/reference/across.html)
 
 ```{r, highlight.output = c(3, 4)}
-mtcars %>% 
-  mutate_at(.vars = vars(cyl, am), factor) %>% #<<
-  select(cyl, am) %>% 
+penguins %>% 
+  mutate(across(c(species, island), factor)) %>% #<<
+  select(species, island) %>% 
   glimpse()
 ```
 
 --
 
 ```{r, highlight.output = c(3, 4)}
-mtcars %>% 
-  select(cyl, am) %>% 
+penguins %>% 
+  select(species, island) %>% 
   glimpse()
 ```
 
 ---
 
-### `dplyr::summarize_at()`
+### [`dplyr::summarize() + across`](https://dplyr.tidyverse.org/reference/across.html)
 
 ```{r, highlight.output = 2}
-mtcars %>% 
-  group_by(cyl) %>% 
-  summarize_at(.vars = vars(mpg, disp, qsec), .funs = mean) #<<
+penguins %>% 
+  group_by(species) %>% 
+  summarize(
+    across(c(body_mass_g, culmen_length_mm), mean, na.rm = TRUE), #<<
+    n = n() #<<
+    ) 
 ```
 
---
-
-```{r, highlight.output = 2}
-mtcars %>% 
-  group_by(cyl) %>% 
-  summarize_at(.vars = vars(mpg, disp, qsec), .funs = list(mean = mean, sd = sd)) #<<
-```
 ---
 
-# `tidyr`
+### [`dplyr::summarize() + across`](https://dplyr.tidyverse.org/reference/across.html)
+
+```{r, highlight.output = 2}
+penguins %>% 
+  group_by(species) %>% 
+  summarize(
+    across(c(body_mass_g, culmen_length_mm, culmen_depth_mm), 
+           list(
+             mean = ~mean(.x, na.rm = TRUE), #<<
+             sd = ~sd(.x, na.rm = TRUE)) #<<
+           ), 
+    n = n() #<<
+    ) 
+```
+
+---
+
+# [`tidyr`](https://tidyr.tidyverse.org/)
 The goal of tidyr is to help you create tidy data. Tidy data is data where:
 
 * Each variable is in a column.
@@ -946,11 +1051,9 @@ The goal of tidyr is to help you create tidy data. Tidy data is data where:
 --
 
 
-### Make Longer and Make Wider
-* `pivot_longer()` - takes multiple columns, and makes the data "longer" by reducing the number of columns and increasing the number of rows.
-
-
-* `pivot_wider()` - the opposite of pivot_longer(): it makes a dataset wider by increasing the number of columns and decreasing the number of rows.
+### Make Taller and Make Wider
+* `pivot_longer()` - "lengthens" data, increasing the number of rows and decreasing the number of columns.
+* `pivot_wider()` - "widens" data, increases the number of columns and decreasing the number of rows.
 
 --
 
@@ -971,43 +1074,37 @@ untidy_df
 
 # Tidy the data
 
-```{r, highlight.output = 2, eval = FALSE}
+```{r, highlight.output = c(4, 9)}
 untidy_df %>% 
-  pivot_longer(cols = male_2016:female_2018, 
-               names_to = "gender_year",
+  pivot_longer(cols = male_2016:female_2018, #<<
+               names_to = "gender_year", #<<
                values_to = "income") #<<
 ```
 
---
 
-```{r, highlight.output = 2, echo = FALSE}
+# Tidy the data
+---
+
+```{r, highlight.output = c(4, 9)}
 untidy_df %>% 
   pivot_longer(cols = male_2016:female_2018, 
                names_to = "gender_year",
-               values_to = "income")#<<
+               values_to = "income")  %>% 
+  separate(gender_year, into = c("gender", "year")) #<<
 ```
-
 
 ---
 
 # Tidy the data
 
-```{r, highlight.output = c(2, 4, 9), eval = FALSE}
+```{r, highlight.output = c(4, 9)}
 untidy_df %>% 
-  pivot_longer(cols = male_2016:female_2018, 
-               names_to = c("gender", "year"),
-               names_sep = "_", #<<
-               values_to = "income")
-```
-
---
-
-```{r, highlight.output = c(2, 4, 9), echo = FALSE}
-untidy_df %>% 
-  pivot_longer(cols = male_2016:female_2018, 
-               names_to = c("gender", "year"),
-               names_sep = "_", #<<
-               values_to = "income")
+  pivot_longer( 
+    cols = male_2016:female_2018, #<<
+    names_to = c("gender", "year"), #<<
+    names_pattern = "(.*)_(.*)", #<<
+    values_to = "income" #<<
+  )
 ```
 
 
@@ -1030,7 +1127,7 @@ tidy_df %>%
 ---
 
 # Untidy the data
-```{r, eval = FALSE, highlight.output = 2}
+```{r, eval = FALSE, highlight.output = 2:3}
 tidy_df %>% 
   unite("gender_year", c("gender", "year"), sep = "_") %>% 
   pivot_wider(names_from = gender_year, values_from = income) #<<
@@ -1041,50 +1138,24 @@ tidy_df %>%
 ```{r, echo = FALSE, highlight.output = 2}
 tidy_df %>% 
   unite("gender_year", c("gender", "year"), sep = "_") %>% 
-  pivot_wider(names_from = gender_year, values_from = income)#<<
+  pivot_wider(names_from = gender_year, values_from = income) #<<
 ```
 
 ---
 
-class: center, middle, inverse
+# Untidy the data
 
-# SIDEBAR!
-
-## The janitor package
-
----
-
-## Keep your columns tidy, too
-
-* `clean_names()` cleans up column names for you.
+```{r, eval = FALSE, highlight.output = 2}
+tidy_df %>% 
+  pivot_wider(names_from = c(gender, year), values_from = income) #<<
+```
 
 --
 
-```{r, echo = FALSE}
-bad_names <- data.frame(matrix(ncol = 22) %>% as.data.frame()) %>% 
-  setNames(
-    c("sp ace", "repeated", "a**^@", "%", "*", "!",
-      "d(!)9", "REPEATED", "can\"'t", "hi_`there`", "  leading spaces",
-      "€", "ação", "Farœ", "a b c d e f", "testCamelCase", "!leadingpunct",
-      "average # of days", "jan2009sales", "jan 2009 sales", "long", "lat")
-  ) %>% select(1:6)
+```{r, echo = FALSE, highlight.output = 2}
+tidy_df %>% 
+  pivot_wider(names_from = c(gender, year), values_from = income) #<<
 ```
-
-.pull-left[
-```{r}
-glimpse(bad_names)
-```
-]
-
---
-
-.pull-right[
-```{r}
-bad_names %>% 
-  janitor::clean_names() %>% 
-  glimpse()
-```
-]
 
 
 ---
@@ -1127,15 +1198,18 @@ ggplot(data = <DATA>, mapping = aes(<MAPPINGS>)) +
 
 --
 
-```{r, fig.width = 5, fig.height = 3, dpi = 600, eval = FALSE}
-ggplot(mtcars, aes(x = cyl, y = mpg)) +
+```{r, fig.width = 4, fig.height = 3, dpi = 600, eval = FALSE, warning = FALSE}
+ggplot(penguins, 
+       aes(x = culmen_length_mm, 
+           y = culmen_depth_mm, 
+           color = species)) +
   geom_point()
 ```
 
 --
 
 ```{r, fig.width = 5, fig.height = 3, dpi = 600, echo = FALSE}
-ggplot(mtcars, aes(x = cyl, y = mpg)) +
+ggplot(penguins, aes(x = culmen_length_mm, y = culmen_depth_mm, color = species)) +
   geom_point()
 ```
 
@@ -1182,14 +1256,14 @@ Supply the data, tell `ggplot2` the aesthetic mappings, and then add layers of `
 
 ---
 
-
 # `ggplot2`
 
-### Gapminder dataset
+### [Gapminder dataset](https://cran.r-project.org/web/packages/gapminder/index.html)
+
+Excerpt from the Gapminder data. For each of 142 countries, the data provides values for life expectancy, GDP per capita, and population, every five years, from 1952 to 2007.
 
 ```{r}
-gapminder_df <- gapminder::gapminder %>% 
-  janitor::clean_names()
+gapminder_df <- gapminder::gapminder
 
 glimpse(gapminder_df)
 ```
@@ -1201,7 +1275,7 @@ glimpse(gapminder_df)
 ```{r, fig.height = 4}
 gapminder_df %>% 
   filter(country == "Malawi") %>% 
-  ggplot(aes(x = year, y = life_exp)) + #<<
+  ggplot(aes(x = year, y = lifeExp)) + #<<
   geom_line(colour = "#1380A1", size = 1) #<<
 ```
 
@@ -1212,7 +1286,7 @@ gapminder_df %>%
 ```{r, fig.height = 4}
 gapminder_df %>% 
   filter(country == "Malawi") %>% 
-  ggplot(aes(x = year, y = life_exp)) +
+  ggplot(aes(x = year, y = lifeExp)) +
   geom_line(colour = "#1380A1", size = 1) +
   geom_point(size = 2) #<<
 ```
@@ -1223,8 +1297,8 @@ gapminder_df %>%
 
 ```{r,  fig.height = 4}
 gapminder_df %>%
-  filter(country %in% c("China", "United States")) %>% #<<
-  ggplot(aes(x = year, y = life_exp, colour = country)) +
+  filter(country == "China" | country == "United States") %>% #<<
+  ggplot(aes(x = year, y = lifeExp, colour = country)) +
   geom_line(size = 1)
 ```
 
@@ -1235,9 +1309,9 @@ gapminder_df %>%
 
 ```{r,  fig.height = 4}
 gapminder_df %>%
-  filter(country %in% c("China", "United States")) %>% 
-  ggplot(aes(x = year, y = country, colour = country, 
-             size = life_exp)) + #<<
+  filter(country == "China" | country == "United States") %>% 
+  ggplot(aes(x = year, y = lifeExp, colour = country, 
+             size = pop)) + #<<
   geom_point() +  
   theme_minimal() + 
   theme(panel.grid.major.x = element_blank(), 
@@ -1251,10 +1325,11 @@ gapminder_df %>%
 
 ```{r, fig.height = 4}
 bar_df <- gapminder_df %>%
-  filter(year == 2007, continent == "Africa") %>%
-  top_n(5, life_exp)
+  filter(year == 2007 & continent == "Africa") %>%
+  arrange(desc(lifeExp)) %>%
+  head(5)
 
-(bars <- ggplot(bar_df, aes(x = country, y = life_exp)) +
+(bars <- ggplot(bar_df, aes(x = country, y = lifeExp)) +
   geom_bar(stat = "identity"))
 ```
 
@@ -1264,10 +1339,11 @@ bar_df <- gapminder_df %>%
 
 ```{r, fig.height = 4}
 bar_df <- gapminder_df %>%
-  filter(year == 2007, continent == "Africa") %>%
-  top_n(5, life_exp)
+  filter(year == 2007 & continent == "Africa") %>%
+  arrange(desc(lifeExp)) %>%
+  head(5)
 
-(bars <- ggplot(bar_df, aes(x = country, y = life_exp)) +
+(bars <- ggplot(bar_df, aes(x = country, y = lifeExp)) +
   geom_col()) #<<
 ```
 
@@ -1278,24 +1354,23 @@ bar_df <- gapminder_df %>%
 ```{r, echo = FALSE}
 #Prepare data
 grouped_bar_df <- gapminder_df %>%
-  filter(year %in% c(1967, 2007)) %>%
-  select(country, year, life_exp) %>% 
-  pivot_wider(values_from = life_exp,
-              names_from = year) %>% 
-  mutate(gap = `2007` - `1967`) %>% 
-  top_n(5, gap) %>% 
-  pivot_longer(cols = -c(country, gap), 
-               names_to = "year",
-               values_to = "life_exp") %>% 
-  arrange(-life_exp)
+  filter(year == 1967 | year == 2007) %>%
+  select(country, year, lifeExp) %>%
+  pivot_wider(names_from = "year", values_from = "lifeExp") %>%
+  mutate(gap = `2007` - `1967`) %>%
+  arrange(desc(gap)) %>%
+  head(5) %>%
+  pivot_longer(names_to = "year", values_to = "lifeExp", cols = `1967`:`2007`)
+
+
 ```
 
 ```{r, fig.height= 4, tidy = FALSE}
 grouped_bars <- ggplot(grouped_bar_df, 
                        aes(x = country, 
-                           y = life_exp, 
+                           y = lifeExp, 
                            fill = as.factor(year))) +
-  geom_col(position = "dodge")
+  geom_bar(stat="identity", position="dodge")
 
 grouped_bars
 ```
@@ -1307,7 +1382,7 @@ grouped_bars
 ```{r, fig.height = 4}
 hist_plot <- gapminder_df %>% 
   filter(year == 2007) %>% 
-  ggplot(aes(x = life_exp)) +
+  ggplot(aes(x = lifeExp)) +
   geom_histogram(binwidth = 5, color = "white") #<<
 
 hist_plot
@@ -1339,7 +1414,7 @@ ggsave("life_exp_2007.png", hist_plot,
 --
 
 ```{r, out.width= "600px"}
-knitr::include_graphics("static-img/life_exp_2007.png")
+knitr::include_graphics("life_exp_2007.png")
 ```
 
 ---
@@ -1399,10 +1474,10 @@ Built in themes
 
 .pull-right[
 New packages
-* `bbc/bbplot`
+* `bbplot`
   * `bbc_style()`
   
-* `UrbanInstitute/urbnthemes`
+* `urbnthemes()`
   * `theme_urbn_print()`
   
 * `ggthemes`
@@ -1419,8 +1494,8 @@ New packages
 
 ```{r,  fig.height = 4}
 gapminder_df %>%
-  filter(country %in% c("China", "United States")) %>% 
-  ggplot(aes(x = year, y = life_exp, colour = country)) +
+  filter(country == "China" | country == "United States") %>% 
+  ggplot(aes(x = year, y = lifeExp, colour = country)) +
   geom_line(size = 1) +
   theme_grey() #<<
 ```
@@ -1432,8 +1507,8 @@ gapminder_df %>%
 
 ```{r,  fig.height = 4}
 gapminder_df %>%
-  filter(country %in% c("China", "United States")) %>% 
-  ggplot(aes(x = year, y = life_exp, colour = country)) +
+  filter(country == "China" | country == "United States") %>% 
+  ggplot(aes(x = year, y = lifeExp, colour = country)) +
   geom_line(size = 1) +
   theme_bw() #<<
 ```
@@ -1445,9 +1520,9 @@ gapminder_df %>%
 
 ```{r,  fig.height = 4}
 gapminder_df %>%
-  filter(country %in% c("China", "United States")) %>% 
-  ggplot(aes(x = year, y = life_exp, colour = country)) +
-  geom_line(size = 1)  +
+  filter(country == "China" | country == "United States") %>% 
+  ggplot(aes(x = year, y = lifeExp, colour = country)) +
+  geom_line(size = 1) +
   theme_minimal() #<<
 ```
 
@@ -1458,9 +1533,9 @@ gapminder_df %>%
 
 ```{r,  fig.height = 4}
 gapminder_df %>%
-  filter(country %in% c("China", "United States")) %>% 
-  ggplot(aes(x = year, y = life_exp, colour = country)) +
-  geom_line(size = 1)  +
+  filter(country == "China" | country == "United States") %>% 
+  ggplot(aes(x = year, y = lifeExp, colour = country)) +
+  geom_line(size = 1) +
   theme_classic() #<<
 ```
 
@@ -1471,9 +1546,9 @@ gapminder_df %>%
 
 ```{r,  fig.height = 4}
 gapminder_df %>%
-  filter(country %in% c("China", "United States")) %>% 
-  ggplot(aes(x = year, y = life_exp, colour = country)) +
-  geom_line(size = 1)  +
+  filter(country == "China" | country == "United States") %>% 
+  ggplot(aes(x = year, y = lifeExp, colour = country)) +
+  geom_line(size = 1) +
   ggthemes::theme_economist_white() #<<
 ```
 
@@ -1484,8 +1559,8 @@ gapminder_df %>%
 
 ```{r,  fig.height = 4}
 gapminder_df %>%
-  filter(country %in% c("China", "United States")) %>% 
-  ggplot(aes(x = year, y = life_exp, colour = country)) +
+  filter(country == "China" | country == "United States") %>% 
+  ggplot(aes(x = year, y = lifeExp, colour = country)) +
   geom_line(size = 1) +
   ggthemes::theme_few() #<<
 ```
@@ -1497,11 +1572,11 @@ gapminder_df %>%
 
 ```{r,  fig.height = 4}
 gapminder_df %>%
-  filter(country %in% c("China", "United States")) %>% 
-  ggplot(aes(x = year, y = life_exp, colour = country)) +
+  filter(country == "China" | country == "United States") %>% 
+  ggplot(aes(x = year, y = lifeExp, colour = country)) +
   geom_line(size = 1) +  
-  geom_hline(yintercept = 0, size = 1, colour = "#333333") +
-  ggthemes::theme_fivethirtyeight() #<<
+  geom_hline(yintercept = 0, size = 1, colour="#333333") +
+  bbplot::bbc_style() #<<
 ```
 
 
@@ -1512,8 +1587,8 @@ gapminder_df %>%
 
 ```{r,  fig.height = 4}
 gapminder_df %>%
-  filter(country %in% c("China", "United States")) %>% 
-  ggplot(aes(x = year, y = life_exp, colour = country)) +
+  filter(country == "China" | country == "United States") %>% 
+  ggplot(aes(x = year, y = lifeExp, colour = country)) +
   geom_line(size = 1) +  
   geom_hline(yintercept = 0, size = 1, colour="#333333") +
   theme_minimal() + #<<
