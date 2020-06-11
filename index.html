@@ -597,9 +597,7 @@ untidy_df %&gt;%
 ```
 
 
-
 ---
-
 # Tidy the data
 
 
@@ -647,9 +645,10 @@ Read in data with `readr`, `haven`, `readxl`
 
 ---
 
-### `dplyr`
 
 .pull-left[
+### `dplyr`
+
 ### 6 Main verbs
 * `filter()`
 * `arrange()`
@@ -681,7 +680,7 @@ Read in data with `readr`, `haven`, `readxl`
 
 ---
 
-# Meet the penguins
+#### Meet the penguins
 
 .center[ ![](https://allisonhorst.github.io/palmerpenguins/man/figures/lter_penguins.png) ]
 
@@ -1594,16 +1593,16 @@ slice_sample(penguins, n = 10) # random selection
 ## # A tibble: 10 x 7
 ##    species island culmen_length_mm culmen_depth_mm flipper_length_… body_mass_g
 ##    &lt;chr&gt;   &lt;chr&gt;             &lt;dbl&gt;           &lt;dbl&gt;            &lt;dbl&gt;       &lt;dbl&gt;
-##  1 Adelie  Biscoe             39.7            18.9              184        3550
-##  2 Adelie  Biscoe             37.7            16                183        3075
-##  3 Chinst… Dream              58              17.8              181        3700
-##  4 Gentoo  Biscoe             49.8            16.8              230        5700
-##  5 Chinst… Dream              51.3            18.2              197        3750
-##  6 Adelie  Biscoe             37.6            17                185        3600
-##  7 Chinst… Dream              48.5            17.5              191        3400
-##  8 Adelie  Dream              36              18.5              186        3100
-##  9 Adelie  Dream              41.1            18.1              205        4300
-## 10 Chinst… Dream              47.5            16.8              199        3900
+##  1 Gentoo  Biscoe             47.6            14.5              215        5400
+##  2 Adelie  Dream              35.6            17.5              191        3175
+##  3 Adelie  Biscoe             38.8            17.2              180        3800
+##  4 Gentoo  Biscoe             45              15.4              220        5050
+##  5 Adelie  Biscoe             41.1            18.2              192        4050
+##  6 Adelie  Dream              36.6            18.4              184        3475
+##  7 Adelie  Dream              36              17.8              195        3450
+##  8 Gentoo  Biscoe             46.3            15.8              215        5050
+##  9 Gentoo  Biscoe             45.1            14.5              215        5000
+## 10 Gentoo  Biscoe             54.3            15.7              231        5650
 ## # … with 1 more variable: sex &lt;chr&gt;
 ```
 ]
@@ -2334,7 +2333,6 @@ untidy_df
 ## 5 &gt; 60          75000       72000     75000       72000     75000       72000
 ```
 
-
 ---
 
 # Tidy the data
@@ -2365,8 +2363,10 @@ untidy_df %&gt;%
 ```
 
 
-# Tidy the data
+
 ---
+
+# Tidy the data
 
 
 ```r
@@ -2549,19 +2549,11 @@ ggplot(data = &lt;DATA&gt;, mapping = aes(&lt;MAPPINGS&gt;)) +
 
 
 ```r
-ggplot(penguins, 
-       aes(x = culmen_length_mm, 
-           y = culmen_depth_mm, 
-           color = species)) +
+ggplot(penguins, aes(x = culmen_length_mm, y = culmen_depth_mm, color = species)) +
   geom_point()
 ```
 
 --
-
-
-```
-## Warning: Removed 2 rows containing missing values (geom_point).
-```
 
 ![](intro-to-tidyverse_files/figure-html/unnamed-chunk-87-1.png)&lt;!-- --&gt;
 

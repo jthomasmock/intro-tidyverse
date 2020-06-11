@@ -528,9 +528,7 @@ untidy_df %>%
 ```
 
 
-
 ---
-
 # Tidy the data
 
 ```{r, highlight.output = c(4, 9)}
@@ -560,9 +558,10 @@ Read in data with `readr`, `haven`, `readxl`
 
 ---
 
-### `dplyr`
 
 .pull-left[
+### `dplyr`
+
 ### 6 Main verbs
 * `filter()`
 * `arrange()`
@@ -596,7 +595,7 @@ knitr::include_graphics("static-img/hex-dplyr.png")
 
 ---
 
-# Meet the penguins
+#### Meet the penguins
 
 .center[ ![](https://allisonhorst.github.io/palmerpenguins/man/figures/lter_penguins.png) ]
 
@@ -1070,7 +1069,6 @@ The goal of tidyr is to help you create tidy data. Tidy data is data where:
 untidy_df
 ```
 
-
 ---
 
 # Tidy the data
@@ -1083,8 +1081,10 @@ untidy_df %>%
 ```
 
 
-# Tidy the data
+
 ---
+
+# Tidy the data
 
 ```{r, highlight.output = c(4, 9)}
 untidy_df %>% 
@@ -1199,17 +1199,14 @@ ggplot(data = <DATA>, mapping = aes(<MAPPINGS>)) +
 
 --
 
-```{r, fig.width = 4, fig.height = 3, dpi = 600, eval = FALSE, warning = FALSE}
-ggplot(penguins, 
-       aes(x = culmen_length_mm, 
-           y = culmen_depth_mm, 
-           color = species)) +
+```{r, fig.width = 3, fig.height = 2, eval = FALSE, warning = FALSE}
+ggplot(penguins, aes(x = culmen_length_mm, y = culmen_depth_mm, color = species)) +
   geom_point()
 ```
 
 --
 
-```{r, fig.width = 5, fig.height = 3, dpi = 600, echo = FALSE}
+```{r, echo = FALSE, fig.height = 5, warning = FALSE}
 ggplot(penguins, aes(x = culmen_length_mm, y = culmen_depth_mm, color = species)) +
   geom_point()
 ```
