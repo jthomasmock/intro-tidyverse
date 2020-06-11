@@ -10,6 +10,7 @@ output:
       highlightStyle: github
       highlightLines: TRUE
       countIncrementalSlides: FALSE
+      ratio: '16:9'
 ---
 
 ```{css, include = FALSE, eval = TRUE}
