@@ -1,0 +1,7 @@
+install.packages('tidyverse')
+install.packages('xaringan')
+install.packages('palmerpenguins')
+install.packages('gapminder')
+install.packages('ggthemes')
+install.packages('remotes')
+remotes::install_github('bbc/bbplot')
