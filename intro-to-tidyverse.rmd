@@ -13,6 +13,15 @@ output:
       ratio: '16:9'
 ---
 
+```{r setup, include = FALSE}
+library(tidyverse)
+library(palmerpenguins)
+library(bbplot)
+
+knitr::opts_chunk$set(eval = TRUE)
+```
+
+
 ```{css, include = FALSE, eval = TRUE}
 /* Extra CSS */
 .hljs-github .hjls {
@@ -118,20 +127,22 @@ class: center, middle, inverse
 
 ---
 
-# RStudio Diagnostics
+### RStudio Diagnostics
 
-The script editor highlights syntax errors
+The script editor highlights syntax errors  
 
 ![](static-img/rstudio-diagnostic.png)  
 
 --
 
-Hover over the cross to see the problem
+Hover over the cross to see the problem  
+
 ![](static-img/rstudio-diagnostic-tip.png)  
 
 --
 
-RStudio also warns about potential problems
+RStudio also warns about potential problems  
+
 ![](static-img/rstudio-diagnostic-warn.png)  
   
   
@@ -383,7 +394,7 @@ data <- tibble(
   )
 
 data <- bind_rows(data, data) %>% 
-  bind_rows(data) %>% 
+  bind_rows(data) %>%  
   bind_rows(data)
 
 ```
@@ -602,7 +613,7 @@ knitr::include_graphics("static-img/hex-dplyr.png")
 
 ---
 
-.center[ ![](https://allisonhorst.github.io/palmerpenguins/man/figures/culmen_depth.png) ]
+.center[ ![](https://allisonhorst.github.io/palmerpenguins/reference/figures/culmen_depth.png) ]
 
 ---
 
@@ -996,7 +1007,7 @@ penguins %>%
 
 ```{r, highlight.output = c(3, 4)}
 penguins %>% 
-  mutate(across(c(species, island), factor)) %>% #<<
+  mutate(across(c(species, island), as.character)) %>% #<<
   select(species, island) %>% 
   glimpse()
 ```

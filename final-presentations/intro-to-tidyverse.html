@@ -1,0 +1,3145 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Intro to the Tidyverse</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Thomas Mock" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Intro to the Tidyverse
+### Thomas Mock
+### RStudio, Inc.
+### updated: 2020-09-08
+
+---
+
+
+
+
+
+
+
+# Today's Agenda
+
+- RStudio
+  - Writing code
+  - File manipulation
+  - Package control
+
+--
+
+- R coding basics
+  - Math
+  - Assignment
+  - Functions
+  - Load and install packages
+
+--
+
+- `Tidyverse`
+  - Read data in with `readr`
+  - Tidy data with`tidyr`
+  - Transform data with `dplyr`
+  - Plot data with `ggplot2`
+  
+
+
+---
+
+# RStudio
+
+RStudio is an IDE (integrated development environment)  
+
+- A place to write  
+  - Console
+  - R Scripts
+  - R Markdown
+  - Code Completion
+  - Debugging
+  
+--
+
+- A place to open *things*  
+  - File and path exploration
+  - Open plots, data, .R/.Rmd file
+  
+--
+
+- A place for projects  
+  - Self-contained structure
+  - Consistent/easy pathing
+  - Keep relevant files/code together with output
+  
+  
+
+---
+
+class: center, middle, inverse
+
+# `RStudio Basics`
+
+---
+
+![](static-img/rstudio-editor.png)  
+
+---
+
+![](static-img/R-file.png)
+
+---
+
+![](static-img/rmd-file.png)
+
+---
+
+### RStudio Diagnostics
+
+The script editor highlights syntax errors  
+
+![](static-img/rstudio-diagnostic.png)  
+
+--
+
+Hover over the cross to see the problem  
+
+![](static-img/rstudio-diagnostic-tip.png)  
+
+--
+
+RStudio also warns about potential problems  
+
+![](static-img/rstudio-diagnostic-warn.png)  
+  
+  
+
+---
+
+
+# Everyone makes mistakes!
+
+Errors are *ok*, it happens to everyone!
+
+
+```r
+my_variable &lt;- x * 3.14
+
+my_variab1e
+```
+
+
+
+
+```
+## Warning: # Error: object 'my_variab1e' not found
+```
+
+--
+
+
+```r
+my_variable
+```
+
+```
+## [1] 31.4
+```
+
+
+--
+
+* R is essentially the most aggressive spell-checker of all time!
+
+--
+
+* Focus on what the error says and if you don't understand it, Googling can often help!
+
+---
+
+class: center, middle, inverse
+
+# R Code Basics
+
+---
+
+# R Code Basics
+
+Assignment
+
+.pull-left[
+
+```r
+x &lt;- 3 * 4
+x
+```
+
+```
+## [1] 12
+```
+
+
+
+
+
+```r
+y &lt;- 5
+y * x
+```
+
+```
+## [1] 60
+```
+
+]
+
+--
+
+.pull-right[
+
+```r
+tmp_df &lt;- data.frame(
+  col_1 = c(1, 2, 3), 
+  col_2 = c("a", "b", "c")
+  )
+
+tmp_df
+```
+
+```
+##   col_1 col_2
+## 1     1     a
+## 2     2     b
+## 3     3     c
+```
+
+
+]
+  
+  
+
+
+---
+
+# Functions
+
+A function is essentially shorthand to call specific code
+
+
+
+
+
+```r
+function_name(arg1, arg2, arg3)
+```
+  
+--
+
+
+```r
+seq(from, to, by, 
+    length.out, along.with)
+```
+
+
+--
+
+
+```r
+seq(from = 10, to = 100, by = 10)  
+```
+
+```
+##  [1]  10  20  30  40  50  60  70  80  90 100
+```
+
+--
+
+
+```r
+seq(10, 100, 10)  
+```
+
+```
+##  [1]  10  20  30  40  50  60  70  80  90 100
+```
+
+--
+
+
+```r
+result_out &lt;- seq(10, 100, length.out = 5)  
+
+result_out
+```
+
+```
+## [1]  10.0  32.5  55.0  77.5 100.0
+```
+
+
+---
+
+# The `%&gt;%` `==` and then
+
+Rather than multiple assignment or nesting functions
+
+
+```r
+did_something &lt;- do_something(data)
+
+did_another_thing &lt;- do_another_thing(did_something)
+
+final_thing &lt;- do_last_thing(did_another_thing)
+```
+
+--
+
+
+```r
+final_thing &lt;- do_last_thing(
+  do_another_thing(
+    do_something(
+      data
+      )
+    )
+  )
+```
+
+
+--
+
+
+```r
+final_thing &lt;- data %&gt;% 
+      do_something() %&gt;% 
+      do_another_thing() %&gt;% 
+      do_last_thing()
+```
+
+
+---
+
+# The Pipe `%&gt;%`
+
+ 
+
+```r
+data %&gt;% 
+  do_something(.) %&gt;% 
+  do_another_thing(.) %&gt;% 
+  do_last_thing(.)
+```
+
+--
+
+`do_something(data)` is equivalent to:  
+
+--
+
+* `data %&gt;% do_something(data = .)`  
+
+--
+
+* `data %&gt;% do_something(.)`  
+
+--
+
+* `data %&gt;% do_something()`  
+
+---
+
+
+```r
+data_in &lt;- seq(10, 100, by = 10)
+
+result_out &lt;- mean(data_in)
+
+result_out
+```
+
+```
+## [1] 55
+```
+
+
+--
+
+
+```r
+mean(seq(10,100, by = 10))
+```
+
+```
+## [1] 55
+```
+
+--
+
+
+
+```r
+seq(10, 100, by = 10) %&gt;%
+  mean()
+```
+
+```
+## [1] 55
+```
+
+--
+
+
+```r
+mean_output &lt;- seq(10, 100, by = 10) %&gt;%
+  mean()
+
+mean_output
+```
+
+```
+## [1] 55
+```
+
+
+
+
+---
+
+## About the penguins
+
+
+
+
+
+```r
+penguins &lt;- palmerpenguins::penguins 
+
+penguins %&gt;% 
+  glimpse()
+```
+
+```
+## Rows: 344
+## Columns: 8
+## $ species           &lt;fct&gt; Adelie, Adelie, Adelie, Adelie, Adelie, Adelie, Ade…
+## $ island            &lt;fct&gt; Torgersen, Torgersen, Torgersen, Torgersen, Torgers…
+## $ bill_length_mm    &lt;dbl&gt; 39.1, 39.5, 40.3, NA, 36.7, 39.3, 38.9, 39.2, 34.1,…
+## $ bill_depth_mm     &lt;dbl&gt; 18.7, 17.4, 18.0, NA, 19.3, 20.6, 17.8, 19.6, 18.1,…
+## $ flipper_length_mm &lt;int&gt; 181, 186, 195, NA, 193, 190, 181, 195, 193, 190, 18…
+## $ body_mass_g       &lt;int&gt; 3750, 3800, 3250, NA, 3450, 3650, 3625, 4675, 3475,…
+## $ sex               &lt;fct&gt; male, female, female, NA, female, male, female, mal…
+## $ year              &lt;int&gt; 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2007, 200…
+```
+
+---
+
+# More Complex Example
+
+
+```r
+penguins %&gt;% 
+  filter(species == "Adelie" &amp; !is.na(sex)) %&gt;%                   
+  group_by(sex, island) %&gt;%                                 
+  summarize(mean = mean(body_mass_g, na.rm = TRUE)) 
+```
+
+--
+
+
+```
+## `summarise()` regrouping output by 'sex' (override with `.groups` argument)
+```
+
+```
+## # A tibble: 6 x 3
+## # Groups:   sex [2]
+##   sex    island     mean
+##   &lt;fct&gt;  &lt;fct&gt;     &lt;dbl&gt;
+## 1 female Biscoe    3369.
+## 2 female Dream     3344.
+## 3 female Torgersen 3396.
+## 4 male   Biscoe    4050 
+## 5 male   Dream     4046.
+## 6 male   Torgersen 4035.
+```
+
+
+---
+
+class: center, middle
+
+background-image: url("static-img/tidyverse-default.png")
+
+
+---
+
+# `Tidyverse`
+An opinionated collection of R packages for data science.   
+&lt;br&gt;
+  
+--
+
+All packages share an underlying design philosophy, grammar, and data structures  
+
+--
+
+* Core packages - `readr`, `tidyr`, `dplyr`, `ggplot2`
+
+--
+
+![](static-img/tidy1.png)
+
+---
+
+# `Tidyverse`
+
+`Tidyverse` is an R package, as such you need to do two things to be able to use it
+* `install.packages("tidyverse")`
+  * This downloads and installs the `tidyverse`
+
+--
+  
+* `library(tidyverse)`
+  * This loads and gives you access to the `tidyverse` package
+
+---
+
+# `tidyverse` Core Principles
+
+* Built around `data` - usually as a `data.frame` or `tibble`
+* Built around `tidy` data
+  * Each `variable` in its own `column`
+  * Each `observation` or `case` in its own `row`
+  * Each type of observational units forms a table
+
+
+
+
+
+
+
+--
+
+![](static-img/tidy-1.png)
+
+---
+
+# Untidy data
+
+
+```r
+untidy_df
+```
+
+```
+## # A tibble: 5 x 7
+*##   age_group male_2016 female_2016 male_2017 female_2017 male_2018 female_2018
+##   &lt;chr&gt;         &lt;dbl&gt;       &lt;dbl&gt;     &lt;dbl&gt;       &lt;dbl&gt;     &lt;dbl&gt;       &lt;dbl&gt;
+## 1 &lt; 18          22000       20000     22000       20000     22000       20000
+## 2 18-30         36000       35000     36000       35000     36000       35000
+## 3 31-50         50000       40000     50000       40000     50000       40000
+## 4 51-60         62000       60000     62000       60000     62000       60000
+## 5 &gt; 60          75000       72000     75000       72000     75000       72000
+```
+
+
+---
+
+# Tidy data
+
+
+```r
+tidy_df
+```
+
+```
+## # A tibble: 30 x 4
+##    age_group gender year  income
+##    &lt;chr&gt;     &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt;
+*##  1 &lt; 18      male   2016   22000
+##  2 18-30     male   2016   36000
+##  3 31-50     male   2016   50000
+##  4 51-60     male   2016   62000
+##  5 &gt; 60      male   2016   75000
+*##  6 &lt; 18      female 2016   20000
+##  7 18-30     female 2016   35000
+##  8 31-50     female 2016   40000
+##  9 51-60     female 2016   60000
+## 10 &gt; 60      female 2016   72000
+## # … with 20 more rows
+```
+
+---
+
+# Tidy the data
+
+
+```r
+untidy_df %&gt;% 
+  pivot_longer(cols = male_2016:female_2018, 
+               names_to = "gender_year",
+               values_to = "income") %&gt;% 
+* separate(gender_year, into = c("gender", "year"))
+```
+
+```
+## # A tibble: 30 x 4
+##    age_group gender year  income
+##    &lt;chr&gt;     &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt;
+*##  1 &lt; 18      male   2016   22000
+##  2 &lt; 18      female 2016   20000
+##  3 &lt; 18      male   2017   22000
+##  4 &lt; 18      female 2017   20000
+##  5 &lt; 18      male   2018   22000
+*##  6 &lt; 18      female 2018   20000
+##  7 18-30     male   2016   36000
+##  8 18-30     female 2016   35000
+##  9 18-30     male   2017   36000
+## 10 18-30     female 2017   35000
+## # … with 20 more rows
+```
+
+
+---
+# Tidy the data
+
+
+```r
+untidy_df %&gt;% 
+  pivot_longer( 
+*   cols = male_2016:female_2018,
+*   names_to = c("gender", "year"),
+*   names_pattern = "(.*)_(.*)",
+*   values_to = "income"
+  )
+```
+
+```
+## # A tibble: 30 x 4
+##    age_group gender year  income
+##    &lt;chr&gt;     &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt;
+*##  1 &lt; 18      male   2016   22000
+##  2 &lt; 18      female 2016   20000
+##  3 &lt; 18      male   2017   22000
+##  4 &lt; 18      female 2017   20000
+##  5 &lt; 18      male   2018   22000
+*##  6 &lt; 18      female 2018   20000
+##  7 18-30     male   2016   36000
+##  8 18-30     female 2016   35000
+##  9 18-30     male   2017   36000
+## 10 18-30     female 2017   35000
+## # … with 20 more rows
+```
+
+---
+
+# Read data in
+
+Read in data with `readr`, `haven`, `readxl`
+
+### `readr`
+* `read_csv()`, `read_tsv()`, `read_delim()`
+
+### `haven`
+* `read_sas()`, `read_spss()`, `read_stata()`, `read_dta()`
+
+### `readxl`
+* `read_xls()`, `read_xlsx()`, `read_excel()`
+
+---
+
+
+.pull-left[
+### `dplyr`
+
+### 6 Main verbs
+* `filter()`
+* `arrange()`
+* `select()`
+* `mutate()`
+* `group_by()`
+* `summarise()`
+
+### Simple use
+* `pull()`
+* `n()`/`count()`
+* `glimpse()`
+]
+
+--
+
+.pull-right[
+### Advanced iterations
+* `across()`
+* `rowwise()`
+
+### More info
+* [`dplyr.tidyverse.org`](https://dplyr.tidyverse.org/)
+* [`R for Data Science`](https://r4ds.had.co.nz/transform.html)  
+
+&lt;img src="static-img/hex-dplyr.png" width="40%" /&gt;
+
+]
+
+---
+
+#### Meet the penguins
+
+.center[ ![](https://allisonhorst.github.io/palmerpenguins/man/figures/lter_penguins.png) ]
+
+
+---
+
+.center[ ![](https://allisonhorst.github.io/palmerpenguins/reference/figures/culmen_depth.png) ]
+
+---
+
+# penguins dataset
+
+`data.frame` vs `tibble`
+
+
+
+```r
+penguin_df &lt;- palmerpenguins::penguins %&gt;% as.data.frame()
+class(penguin_df)
+```
+
+```
+## [1] "data.frame"
+```
+
+--
+
+
+
+```r
+penguins &lt;- as_tibble(penguin_df)
+
+class(penguins)
+```
+
+```
+## [1] "tbl_df"     "tbl"        "data.frame"
+```
+
+
+---
+
+# penguins dataset
+
+`data.frame` vs `tibble`
+
+
+```r
+penguin_df
+```
+
+```
+*##       species    island bill_length_mm bill_depth_mm flipper_length_mm
+*## 1      Adelie Torgersen           39.1          18.7               181
+*## 2      Adelie Torgersen           39.5          17.4               186
+## 3      Adelie Torgersen           40.3          18.0               195
+## 4      Adelie Torgersen             NA            NA                NA
+## 5      Adelie Torgersen           36.7          19.3               193
+## 6      Adelie Torgersen           39.3          20.6               190
+## 7      Adelie Torgersen           38.9          17.8               181
+## 8      Adelie Torgersen           39.2          19.6               195
+## 9      Adelie Torgersen           34.1          18.1               193
+## 10     Adelie Torgersen           42.0          20.2               190
+## 11     Adelie Torgersen           37.8          17.1               186
+## 12     Adelie Torgersen           37.8          17.3               180
+## 13     Adelie Torgersen           41.1          17.6               182
+## 14     Adelie Torgersen           38.6          21.2               191
+## 15     Adelie Torgersen           34.6          21.1               198
+## 16     Adelie Torgersen           36.6          17.8               185
+## 17     Adelie Torgersen           38.7          19.0               195
+## 18     Adelie Torgersen           42.5          20.7               197
+## 19     Adelie Torgersen           34.4          18.4               184
+## 20     Adelie Torgersen           46.0          21.5               194
+## 21     Adelie    Biscoe           37.8          18.3               174
+## 22     Adelie    Biscoe           37.7          18.7               180
+## 23     Adelie    Biscoe           35.9          19.2               189
+## 24     Adelie    Biscoe           38.2          18.1               185
+## 25     Adelie    Biscoe           38.8          17.2               180
+## 26     Adelie    Biscoe           35.3          18.9               187
+## 27     Adelie    Biscoe           40.6          18.6               183
+## 28     Adelie    Biscoe           40.5          17.9               187
+## 29     Adelie    Biscoe           37.9          18.6               172
+## 30     Adelie    Biscoe           40.5          18.9               180
+## 31     Adelie     Dream           39.5          16.7               178
+## 32     Adelie     Dream           37.2          18.1               178
+## 33     Adelie     Dream           39.5          17.8               188
+## 34     Adelie     Dream           40.9          18.9               184
+## 35     Adelie     Dream           36.4          17.0               195
+## 36     Adelie     Dream           39.2          21.1               196
+## 37     Adelie     Dream           38.8          20.0               190
+## 38     Adelie     Dream           42.2          18.5               180
+## 39     Adelie     Dream           37.6          19.3               181
+## 40     Adelie     Dream           39.8          19.1               184
+## 41     Adelie     Dream           36.5          18.0               182
+## 42     Adelie     Dream           40.8          18.4               195
+## 43     Adelie     Dream           36.0          18.5               186
+## 44     Adelie     Dream           44.1          19.7               196
+## 45     Adelie     Dream           37.0          16.9               185
+## 46     Adelie     Dream           39.6          18.8               190
+## 47     Adelie     Dream           41.1          19.0               182
+## 48     Adelie     Dream           37.5          18.9               179
+## 49     Adelie     Dream           36.0          17.9               190
+## 50     Adelie     Dream           42.3          21.2               191
+## 51     Adelie    Biscoe           39.6          17.7               186
+## 52     Adelie    Biscoe           40.1          18.9               188
+## 53     Adelie    Biscoe           35.0          17.9               190
+## 54     Adelie    Biscoe           42.0          19.5               200
+## 55     Adelie    Biscoe           34.5          18.1               187
+## 56     Adelie    Biscoe           41.4          18.6               191
+## 57     Adelie    Biscoe           39.0          17.5               186
+## 58     Adelie    Biscoe           40.6          18.8               193
+## 59     Adelie    Biscoe           36.5          16.6               181
+## 60     Adelie    Biscoe           37.6          19.1               194
+## 61     Adelie    Biscoe           35.7          16.9               185
+## 62     Adelie    Biscoe           41.3          21.1               195
+## 63     Adelie    Biscoe           37.6          17.0               185
+## 64     Adelie    Biscoe           41.1          18.2               192
+## 65     Adelie    Biscoe           36.4          17.1               184
+## 66     Adelie    Biscoe           41.6          18.0               192
+## 67     Adelie    Biscoe           35.5          16.2               195
+## 68     Adelie    Biscoe           41.1          19.1               188
+## 69     Adelie Torgersen           35.9          16.6               190
+## 70     Adelie Torgersen           41.8          19.4               198
+## 71     Adelie Torgersen           33.5          19.0               190
+## 72     Adelie Torgersen           39.7          18.4               190
+## 73     Adelie Torgersen           39.6          17.2               196
+## 74     Adelie Torgersen           45.8          18.9               197
+## 75     Adelie Torgersen           35.5          17.5               190
+## 76     Adelie Torgersen           42.8          18.5               195
+## 77     Adelie Torgersen           40.9          16.8               191
+## 78     Adelie Torgersen           37.2          19.4               184
+## 79     Adelie Torgersen           36.2          16.1               187
+## 80     Adelie Torgersen           42.1          19.1               195
+## 81     Adelie Torgersen           34.6          17.2               189
+## 82     Adelie Torgersen           42.9          17.6               196
+## 83     Adelie Torgersen           36.7          18.8               187
+## 84     Adelie Torgersen           35.1          19.4               193
+## 85     Adelie     Dream           37.3          17.8               191
+## 86     Adelie     Dream           41.3          20.3               194
+## 87     Adelie     Dream           36.3          19.5               190
+## 88     Adelie     Dream           36.9          18.6               189
+## 89     Adelie     Dream           38.3          19.2               189
+## 90     Adelie     Dream           38.9          18.8               190
+## 91     Adelie     Dream           35.7          18.0               202
+## 92     Adelie     Dream           41.1          18.1               205
+## 93     Adelie     Dream           34.0          17.1               185
+## 94     Adelie     Dream           39.6          18.1               186
+## 95     Adelie     Dream           36.2          17.3               187
+## 96     Adelie     Dream           40.8          18.9               208
+## 97     Adelie     Dream           38.1          18.6               190
+## 98     Adelie     Dream           40.3          18.5               196
+## 99     Adelie     Dream           33.1          16.1               178
+## 100    Adelie     Dream           43.2          18.5               192
+## 101    Adelie    Biscoe           35.0          17.9               192
+## 102    Adelie    Biscoe           41.0          20.0               203
+## 103    Adelie    Biscoe           37.7          16.0               183
+## 104    Adelie    Biscoe           37.8          20.0               190
+## 105    Adelie    Biscoe           37.9          18.6               193
+## 106    Adelie    Biscoe           39.7          18.9               184
+## 107    Adelie    Biscoe           38.6          17.2               199
+## 108    Adelie    Biscoe           38.2          20.0               190
+## 109    Adelie    Biscoe           38.1          17.0               181
+## 110    Adelie    Biscoe           43.2          19.0               197
+## 111    Adelie    Biscoe           38.1          16.5               198
+## 112    Adelie    Biscoe           45.6          20.3               191
+## 113    Adelie    Biscoe           39.7          17.7               193
+## 114    Adelie    Biscoe           42.2          19.5               197
+## 115    Adelie    Biscoe           39.6          20.7               191
+## 116    Adelie    Biscoe           42.7          18.3               196
+## 117    Adelie Torgersen           38.6          17.0               188
+## 118    Adelie Torgersen           37.3          20.5               199
+## 119    Adelie Torgersen           35.7          17.0               189
+## 120    Adelie Torgersen           41.1          18.6               189
+## 121    Adelie Torgersen           36.2          17.2               187
+## 122    Adelie Torgersen           37.7          19.8               198
+## 123    Adelie Torgersen           40.2          17.0               176
+## 124    Adelie Torgersen           41.4          18.5               202
+## 125    Adelie Torgersen           35.2          15.9               186
+## 126    Adelie Torgersen           40.6          19.0               199
+## 127    Adelie Torgersen           38.8          17.6               191
+## 128    Adelie Torgersen           41.5          18.3               195
+## 129    Adelie Torgersen           39.0          17.1               191
+## 130    Adelie Torgersen           44.1          18.0               210
+## 131    Adelie Torgersen           38.5          17.9               190
+## 132    Adelie Torgersen           43.1          19.2               197
+## 133    Adelie     Dream           36.8          18.5               193
+## 134    Adelie     Dream           37.5          18.5               199
+## 135    Adelie     Dream           38.1          17.6               187
+## 136    Adelie     Dream           41.1          17.5               190
+## 137    Adelie     Dream           35.6          17.5               191
+## 138    Adelie     Dream           40.2          20.1               200
+## 139    Adelie     Dream           37.0          16.5               185
+## 140    Adelie     Dream           39.7          17.9               193
+## 141    Adelie     Dream           40.2          17.1               193
+## 142    Adelie     Dream           40.6          17.2               187
+## 143    Adelie     Dream           32.1          15.5               188
+## 144    Adelie     Dream           40.7          17.0               190
+## 145    Adelie     Dream           37.3          16.8               192
+## 146    Adelie     Dream           39.0          18.7               185
+## 147    Adelie     Dream           39.2          18.6               190
+## 148    Adelie     Dream           36.6          18.4               184
+## 149    Adelie     Dream           36.0          17.8               195
+## 150    Adelie     Dream           37.8          18.1               193
+## 151    Adelie     Dream           36.0          17.1               187
+## 152    Adelie     Dream           41.5          18.5               201
+## 153    Gentoo    Biscoe           46.1          13.2               211
+## 154    Gentoo    Biscoe           50.0          16.3               230
+## 155    Gentoo    Biscoe           48.7          14.1               210
+## 156    Gentoo    Biscoe           50.0          15.2               218
+## 157    Gentoo    Biscoe           47.6          14.5               215
+## 158    Gentoo    Biscoe           46.5          13.5               210
+## 159    Gentoo    Biscoe           45.4          14.6               211
+## 160    Gentoo    Biscoe           46.7          15.3               219
+## 161    Gentoo    Biscoe           43.3          13.4               209
+## 162    Gentoo    Biscoe           46.8          15.4               215
+## 163    Gentoo    Biscoe           40.9          13.7               214
+## 164    Gentoo    Biscoe           49.0          16.1               216
+## 165    Gentoo    Biscoe           45.5          13.7               214
+## 166    Gentoo    Biscoe           48.4          14.6               213
+## 167    Gentoo    Biscoe           45.8          14.6               210
+## 168    Gentoo    Biscoe           49.3          15.7               217
+## 169    Gentoo    Biscoe           42.0          13.5               210
+## 170    Gentoo    Biscoe           49.2          15.2               221
+## 171    Gentoo    Biscoe           46.2          14.5               209
+## 172    Gentoo    Biscoe           48.7          15.1               222
+## 173    Gentoo    Biscoe           50.2          14.3               218
+## 174    Gentoo    Biscoe           45.1          14.5               215
+## 175    Gentoo    Biscoe           46.5          14.5               213
+## 176    Gentoo    Biscoe           46.3          15.8               215
+## 177    Gentoo    Biscoe           42.9          13.1               215
+## 178    Gentoo    Biscoe           46.1          15.1               215
+## 179    Gentoo    Biscoe           44.5          14.3               216
+## 180    Gentoo    Biscoe           47.8          15.0               215
+## 181    Gentoo    Biscoe           48.2          14.3               210
+## 182    Gentoo    Biscoe           50.0          15.3               220
+## 183    Gentoo    Biscoe           47.3          15.3               222
+## 184    Gentoo    Biscoe           42.8          14.2               209
+## 185    Gentoo    Biscoe           45.1          14.5               207
+## 186    Gentoo    Biscoe           59.6          17.0               230
+## 187    Gentoo    Biscoe           49.1          14.8               220
+## 188    Gentoo    Biscoe           48.4          16.3               220
+## 189    Gentoo    Biscoe           42.6          13.7               213
+## 190    Gentoo    Biscoe           44.4          17.3               219
+## 191    Gentoo    Biscoe           44.0          13.6               208
+## 192    Gentoo    Biscoe           48.7          15.7               208
+## 193    Gentoo    Biscoe           42.7          13.7               208
+## 194    Gentoo    Biscoe           49.6          16.0               225
+## 195    Gentoo    Biscoe           45.3          13.7               210
+## 196    Gentoo    Biscoe           49.6          15.0               216
+## 197    Gentoo    Biscoe           50.5          15.9               222
+## 198    Gentoo    Biscoe           43.6          13.9               217
+## 199    Gentoo    Biscoe           45.5          13.9               210
+## 200    Gentoo    Biscoe           50.5          15.9               225
+## 201    Gentoo    Biscoe           44.9          13.3               213
+## 202    Gentoo    Biscoe           45.2          15.8               215
+## 203    Gentoo    Biscoe           46.6          14.2               210
+## 204    Gentoo    Biscoe           48.5          14.1               220
+## 205    Gentoo    Biscoe           45.1          14.4               210
+## 206    Gentoo    Biscoe           50.1          15.0               225
+## 207    Gentoo    Biscoe           46.5          14.4               217
+## 208    Gentoo    Biscoe           45.0          15.4               220
+## 209    Gentoo    Biscoe           43.8          13.9               208
+## 210    Gentoo    Biscoe           45.5          15.0               220
+## 211    Gentoo    Biscoe           43.2          14.5               208
+## 212    Gentoo    Biscoe           50.4          15.3               224
+## 213    Gentoo    Biscoe           45.3          13.8               208
+## 214    Gentoo    Biscoe           46.2          14.9               221
+## 215    Gentoo    Biscoe           45.7          13.9               214
+## 216    Gentoo    Biscoe           54.3          15.7               231
+## 217    Gentoo    Biscoe           45.8          14.2               219
+## 218    Gentoo    Biscoe           49.8          16.8               230
+## 219    Gentoo    Biscoe           46.2          14.4               214
+## 220    Gentoo    Biscoe           49.5          16.2               229
+## 221    Gentoo    Biscoe           43.5          14.2               220
+## 222    Gentoo    Biscoe           50.7          15.0               223
+## 223    Gentoo    Biscoe           47.7          15.0               216
+## 224    Gentoo    Biscoe           46.4          15.6               221
+## 225    Gentoo    Biscoe           48.2          15.6               221
+## 226    Gentoo    Biscoe           46.5          14.8               217
+## 227    Gentoo    Biscoe           46.4          15.0               216
+## 228    Gentoo    Biscoe           48.6          16.0               230
+## 229    Gentoo    Biscoe           47.5          14.2               209
+## 230    Gentoo    Biscoe           51.1          16.3               220
+## 231    Gentoo    Biscoe           45.2          13.8               215
+## 232    Gentoo    Biscoe           45.2          16.4               223
+## 233    Gentoo    Biscoe           49.1          14.5               212
+## 234    Gentoo    Biscoe           52.5          15.6               221
+## 235    Gentoo    Biscoe           47.4          14.6               212
+## 236    Gentoo    Biscoe           50.0          15.9               224
+## 237    Gentoo    Biscoe           44.9          13.8               212
+## 238    Gentoo    Biscoe           50.8          17.3               228
+## 239    Gentoo    Biscoe           43.4          14.4               218
+## 240    Gentoo    Biscoe           51.3          14.2               218
+## 241    Gentoo    Biscoe           47.5          14.0               212
+## 242    Gentoo    Biscoe           52.1          17.0               230
+## 243    Gentoo    Biscoe           47.5          15.0               218
+## 244    Gentoo    Biscoe           52.2          17.1               228
+## 245    Gentoo    Biscoe           45.5          14.5               212
+## 246    Gentoo    Biscoe           49.5          16.1               224
+## 247    Gentoo    Biscoe           44.5          14.7               214
+## 248    Gentoo    Biscoe           50.8          15.7               226
+## 249    Gentoo    Biscoe           49.4          15.8               216
+## 250    Gentoo    Biscoe           46.9          14.6               222
+## 251    Gentoo    Biscoe           48.4          14.4               203
+## 252    Gentoo    Biscoe           51.1          16.5               225
+## 253    Gentoo    Biscoe           48.5          15.0               219
+## 254    Gentoo    Biscoe           55.9          17.0               228
+## 255    Gentoo    Biscoe           47.2          15.5               215
+## 256    Gentoo    Biscoe           49.1          15.0               228
+## 257    Gentoo    Biscoe           47.3          13.8               216
+## 258    Gentoo    Biscoe           46.8          16.1               215
+## 259    Gentoo    Biscoe           41.7          14.7               210
+## 260    Gentoo    Biscoe           53.4          15.8               219
+## 261    Gentoo    Biscoe           43.3          14.0               208
+## 262    Gentoo    Biscoe           48.1          15.1               209
+## 263    Gentoo    Biscoe           50.5          15.2               216
+## 264    Gentoo    Biscoe           49.8          15.9               229
+## 265    Gentoo    Biscoe           43.5          15.2               213
+## 266    Gentoo    Biscoe           51.5          16.3               230
+## 267    Gentoo    Biscoe           46.2          14.1               217
+## 268    Gentoo    Biscoe           55.1          16.0               230
+## 269    Gentoo    Biscoe           44.5          15.7               217
+## 270    Gentoo    Biscoe           48.8          16.2               222
+## 271    Gentoo    Biscoe           47.2          13.7               214
+## 272    Gentoo    Biscoe             NA            NA                NA
+## 273    Gentoo    Biscoe           46.8          14.3               215
+## 274    Gentoo    Biscoe           50.4          15.7               222
+## 275    Gentoo    Biscoe           45.2          14.8               212
+## 276    Gentoo    Biscoe           49.9          16.1               213
+## 277 Chinstrap     Dream           46.5          17.9               192
+## 278 Chinstrap     Dream           50.0          19.5               196
+## 279 Chinstrap     Dream           51.3          19.2               193
+## 280 Chinstrap     Dream           45.4          18.7               188
+## 281 Chinstrap     Dream           52.7          19.8               197
+## 282 Chinstrap     Dream           45.2          17.8               198
+## 283 Chinstrap     Dream           46.1          18.2               178
+## 284 Chinstrap     Dream           51.3          18.2               197
+## 285 Chinstrap     Dream           46.0          18.9               195
+## 286 Chinstrap     Dream           51.3          19.9               198
+## 287 Chinstrap     Dream           46.6          17.8               193
+## 288 Chinstrap     Dream           51.7          20.3               194
+## 289 Chinstrap     Dream           47.0          17.3               185
+## 290 Chinstrap     Dream           52.0          18.1               201
+## 291 Chinstrap     Dream           45.9          17.1               190
+## 292 Chinstrap     Dream           50.5          19.6               201
+## 293 Chinstrap     Dream           50.3          20.0               197
+## 294 Chinstrap     Dream           58.0          17.8               181
+## 295 Chinstrap     Dream           46.4          18.6               190
+## 296 Chinstrap     Dream           49.2          18.2               195
+## 297 Chinstrap     Dream           42.4          17.3               181
+## 298 Chinstrap     Dream           48.5          17.5               191
+## 299 Chinstrap     Dream           43.2          16.6               187
+## 300 Chinstrap     Dream           50.6          19.4               193
+## 301 Chinstrap     Dream           46.7          17.9               195
+## 302 Chinstrap     Dream           52.0          19.0               197
+## 303 Chinstrap     Dream           50.5          18.4               200
+## 304 Chinstrap     Dream           49.5          19.0               200
+## 305 Chinstrap     Dream           46.4          17.8               191
+## 306 Chinstrap     Dream           52.8          20.0               205
+## 307 Chinstrap     Dream           40.9          16.6               187
+## 308 Chinstrap     Dream           54.2          20.8               201
+## 309 Chinstrap     Dream           42.5          16.7               187
+## 310 Chinstrap     Dream           51.0          18.8               203
+## 311 Chinstrap     Dream           49.7          18.6               195
+## 312 Chinstrap     Dream           47.5          16.8               199
+## 313 Chinstrap     Dream           47.6          18.3               195
+## 314 Chinstrap     Dream           52.0          20.7               210
+## 315 Chinstrap     Dream           46.9          16.6               192
+## 316 Chinstrap     Dream           53.5          19.9               205
+## 317 Chinstrap     Dream           49.0          19.5               210
+## 318 Chinstrap     Dream           46.2          17.5               187
+## 319 Chinstrap     Dream           50.9          19.1               196
+## 320 Chinstrap     Dream           45.5          17.0               196
+## 321 Chinstrap     Dream           50.9          17.9               196
+## 322 Chinstrap     Dream           50.8          18.5               201
+## 323 Chinstrap     Dream           50.1          17.9               190
+## 324 Chinstrap     Dream           49.0          19.6               212
+## 325 Chinstrap     Dream           51.5          18.7               187
+## 326 Chinstrap     Dream           49.8          17.3               198
+## 327 Chinstrap     Dream           48.1          16.4               199
+## 328 Chinstrap     Dream           51.4          19.0               201
+## 329 Chinstrap     Dream           45.7          17.3               193
+## 330 Chinstrap     Dream           50.7          19.7               203
+## 331 Chinstrap     Dream           42.5          17.3               187
+## 332 Chinstrap     Dream           52.2          18.8               197
+## 333 Chinstrap     Dream           45.2          16.6               191
+## 334 Chinstrap     Dream           49.3          19.9               203
+## 335 Chinstrap     Dream           50.2          18.8               202
+## 336 Chinstrap     Dream           45.6          19.4               194
+## 337 Chinstrap     Dream           51.9          19.5               206
+## 338 Chinstrap     Dream           46.8          16.5               189
+## 339 Chinstrap     Dream           45.7          17.0               195
+## 340 Chinstrap     Dream           55.8          19.8               207
+## 341 Chinstrap     Dream           43.5          18.1               202
+## 342 Chinstrap     Dream           49.6          18.2               193
+## 343 Chinstrap     Dream           50.8          19.0               210
+## 344 Chinstrap     Dream           50.2          18.7               198
+##     body_mass_g    sex year
+## 1          3750   male 2007
+## 2          3800 female 2007
+## 3          3250 female 2007
+## 4            NA   &lt;NA&gt; 2007
+## 5          3450 female 2007
+## 6          3650   male 2007
+## 7          3625 female 2007
+## 8          4675   male 2007
+## 9          3475   &lt;NA&gt; 2007
+## 10         4250   &lt;NA&gt; 2007
+## 11         3300   &lt;NA&gt; 2007
+## 12         3700   &lt;NA&gt; 2007
+## 13         3200 female 2007
+## 14         3800   male 2007
+## 15         4400   male 2007
+## 16         3700 female 2007
+## 17         3450 female 2007
+## 18         4500   male 2007
+## 19         3325 female 2007
+## 20         4200   male 2007
+## 21         3400 female 2007
+## 22         3600   male 2007
+## 23         3800 female 2007
+## 24         3950   male 2007
+## 25         3800   male 2007
+## 26         3800 female 2007
+## 27         3550   male 2007
+## 28         3200 female 2007
+## 29         3150 female 2007
+## 30         3950   male 2007
+## 31         3250 female 2007
+## 32         3900   male 2007
+## 33         3300 female 2007
+## 34         3900   male 2007
+## 35         3325 female 2007
+## 36         4150   male 2007
+## 37         3950   male 2007
+## 38         3550 female 2007
+## 39         3300 female 2007
+## 40         4650   male 2007
+## 41         3150 female 2007
+## 42         3900   male 2007
+## 43         3100 female 2007
+## 44         4400   male 2007
+## 45         3000 female 2007
+## 46         4600   male 2007
+## 47         3425   male 2007
+## 48         2975   &lt;NA&gt; 2007
+## 49         3450 female 2007
+## 50         4150   male 2007
+## 51         3500 female 2008
+## 52         4300   male 2008
+## 53         3450 female 2008
+## 54         4050   male 2008
+## 55         2900 female 2008
+## 56         3700   male 2008
+## 57         3550 female 2008
+## 58         3800   male 2008
+## 59         2850 female 2008
+## 60         3750   male 2008
+## 61         3150 female 2008
+## 62         4400   male 2008
+## 63         3600 female 2008
+## 64         4050   male 2008
+## 65         2850 female 2008
+## 66         3950   male 2008
+## 67         3350 female 2008
+## 68         4100   male 2008
+## 69         3050 female 2008
+## 70         4450   male 2008
+## 71         3600 female 2008
+## 72         3900   male 2008
+## 73         3550 female 2008
+## 74         4150   male 2008
+## 75         3700 female 2008
+## 76         4250   male 2008
+## 77         3700 female 2008
+## 78         3900   male 2008
+## 79         3550 female 2008
+## 80         4000   male 2008
+## 81         3200 female 2008
+## 82         4700   male 2008
+## 83         3800 female 2008
+## 84         4200   male 2008
+## 85         3350 female 2008
+## 86         3550   male 2008
+## 87         3800   male 2008
+## 88         3500 female 2008
+## 89         3950   male 2008
+## 90         3600 female 2008
+## 91         3550 female 2008
+## 92         4300   male 2008
+## 93         3400 female 2008
+## 94         4450   male 2008
+## 95         3300 female 2008
+## 96         4300   male 2008
+## 97         3700 female 2008
+## 98         4350   male 2008
+## 99         2900 female 2008
+## 100        4100   male 2008
+## 101        3725 female 2009
+## 102        4725   male 2009
+## 103        3075 female 2009
+## 104        4250   male 2009
+## 105        2925 female 2009
+## 106        3550   male 2009
+## 107        3750 female 2009
+## 108        3900   male 2009
+## 109        3175 female 2009
+## 110        4775   male 2009
+## 111        3825 female 2009
+## 112        4600   male 2009
+## 113        3200 female 2009
+## 114        4275   male 2009
+## 115        3900 female 2009
+## 116        4075   male 2009
+## 117        2900 female 2009
+## 118        3775   male 2009
+## 119        3350 female 2009
+## 120        3325   male 2009
+## 121        3150 female 2009
+## 122        3500   male 2009
+## 123        3450 female 2009
+## 124        3875   male 2009
+## 125        3050 female 2009
+## 126        4000   male 2009
+## 127        3275 female 2009
+## 128        4300   male 2009
+## 129        3050 female 2009
+## 130        4000   male 2009
+## 131        3325 female 2009
+## 132        3500   male 2009
+## 133        3500 female 2009
+## 134        4475   male 2009
+## 135        3425 female 2009
+## 136        3900   male 2009
+## 137        3175 female 2009
+## 138        3975   male 2009
+## 139        3400 female 2009
+## 140        4250   male 2009
+## 141        3400 female 2009
+## 142        3475   male 2009
+## 143        3050 female 2009
+## 144        3725   male 2009
+## 145        3000 female 2009
+## 146        3650   male 2009
+## 147        4250   male 2009
+## 148        3475 female 2009
+## 149        3450 female 2009
+## 150        3750   male 2009
+## 151        3700 female 2009
+## 152        4000   male 2009
+## 153        4500 female 2007
+## 154        5700   male 2007
+## 155        4450 female 2007
+## 156        5700   male 2007
+## 157        5400   male 2007
+## 158        4550 female 2007
+## 159        4800 female 2007
+## 160        5200   male 2007
+## 161        4400 female 2007
+## 162        5150   male 2007
+## 163        4650 female 2007
+## 164        5550   male 2007
+## 165        4650 female 2007
+## 166        5850   male 2007
+## 167        4200 female 2007
+## 168        5850   male 2007
+## 169        4150 female 2007
+## 170        6300   male 2007
+## 171        4800 female 2007
+## 172        5350   male 2007
+## 173        5700   male 2007
+## 174        5000 female 2007
+## 175        4400 female 2007
+## 176        5050   male 2007
+## 177        5000 female 2007
+## 178        5100   male 2007
+## 179        4100   &lt;NA&gt; 2007
+## 180        5650   male 2007
+## 181        4600 female 2007
+## 182        5550   male 2007
+## 183        5250   male 2007
+## 184        4700 female 2007
+## 185        5050 female 2007
+## 186        6050   male 2007
+## 187        5150 female 2008
+## 188        5400   male 2008
+## 189        4950 female 2008
+## 190        5250   male 2008
+## 191        4350 female 2008
+## 192        5350   male 2008
+## 193        3950 female 2008
+## 194        5700   male 2008
+## 195        4300 female 2008
+## 196        4750   male 2008
+## 197        5550   male 2008
+## 198        4900 female 2008
+## 199        4200 female 2008
+## 200        5400   male 2008
+## 201        5100 female 2008
+## 202        5300   male 2008
+## 203        4850 female 2008
+## 204        5300   male 2008
+## 205        4400 female 2008
+## 206        5000   male 2008
+## 207        4900 female 2008
+## 208        5050   male 2008
+## 209        4300 female 2008
+## 210        5000   male 2008
+## 211        4450 female 2008
+## 212        5550   male 2008
+## 213        4200 female 2008
+## 214        5300   male 2008
+## 215        4400 female 2008
+## 216        5650   male 2008
+## 217        4700 female 2008
+## 218        5700   male 2008
+## 219        4650   &lt;NA&gt; 2008
+## 220        5800   male 2008
+## 221        4700 female 2008
+## 222        5550   male 2008
+## 223        4750 female 2008
+## 224        5000   male 2008
+## 225        5100   male 2008
+## 226        5200 female 2008
+## 227        4700 female 2008
+## 228        5800   male 2008
+## 229        4600 female 2008
+## 230        6000   male 2008
+## 231        4750 female 2008
+## 232        5950   male 2008
+## 233        4625 female 2009
+## 234        5450   male 2009
+## 235        4725 female 2009
+## 236        5350   male 2009
+## 237        4750 female 2009
+## 238        5600   male 2009
+## 239        4600 female 2009
+## 240        5300   male 2009
+## 241        4875 female 2009
+## 242        5550   male 2009
+## 243        4950 female 2009
+## 244        5400   male 2009
+## 245        4750 female 2009
+## 246        5650   male 2009
+## 247        4850 female 2009
+## 248        5200   male 2009
+## 249        4925   male 2009
+## 250        4875 female 2009
+## 251        4625 female 2009
+## 252        5250   male 2009
+## 253        4850 female 2009
+## 254        5600   male 2009
+## 255        4975 female 2009
+## 256        5500   male 2009
+## 257        4725   &lt;NA&gt; 2009
+## 258        5500   male 2009
+## 259        4700 female 2009
+## 260        5500   male 2009
+## 261        4575 female 2009
+## 262        5500   male 2009
+## 263        5000 female 2009
+## 264        5950   male 2009
+## 265        4650 female 2009
+## 266        5500   male 2009
+## 267        4375 female 2009
+## 268        5850   male 2009
+## 269        4875   &lt;NA&gt; 2009
+## 270        6000   male 2009
+## 271        4925 female 2009
+## 272          NA   &lt;NA&gt; 2009
+## 273        4850 female 2009
+## 274        5750   male 2009
+## 275        5200 female 2009
+## 276        5400   male 2009
+## 277        3500 female 2007
+## 278        3900   male 2007
+## 279        3650   male 2007
+## 280        3525 female 2007
+## 281        3725   male 2007
+## 282        3950 female 2007
+## 283        3250 female 2007
+## 284        3750   male 2007
+## 285        4150 female 2007
+## 286        3700   male 2007
+## 287        3800 female 2007
+## 288        3775   male 2007
+## 289        3700 female 2007
+## 290        4050   male 2007
+## 291        3575 female 2007
+## 292        4050   male 2007
+## 293        3300   male 2007
+## 294        3700 female 2007
+## 295        3450 female 2007
+## 296        4400   male 2007
+## 297        3600 female 2007
+## 298        3400   male 2007
+## 299        2900 female 2007
+## 300        3800   male 2007
+## 301        3300 female 2007
+## 302        4150   male 2007
+## 303        3400 female 2008
+## 304        3800   male 2008
+## 305        3700 female 2008
+## 306        4550   male 2008
+## 307        3200 female 2008
+## 308        4300   male 2008
+## 309        3350 female 2008
+## 310        4100   male 2008
+## 311        3600   male 2008
+## 312        3900 female 2008
+## 313        3850 female 2008
+## 314        4800   male 2008
+## 315        2700 female 2008
+## 316        4500   male 2008
+## 317        3950   male 2008
+## 318        3650 female 2008
+## 319        3550   male 2008
+## 320        3500 female 2008
+## 321        3675 female 2009
+## 322        4450   male 2009
+## 323        3400 female 2009
+## 324        4300   male 2009
+## 325        3250   male 2009
+## 326        3675 female 2009
+## 327        3325 female 2009
+## 328        3950   male 2009
+## 329        3600 female 2009
+## 330        4050   male 2009
+## 331        3350 female 2009
+## 332        3450   male 2009
+## 333        3250 female 2009
+## 334        4050   male 2009
+## 335        3800   male 2009
+## 336        3525 female 2009
+## 337        3950   male 2009
+## 338        3650 female 2009
+## 339        3650 female 2009
+## 340        4000   male 2009
+## 341        3400 female 2009
+## 342        3775   male 2009
+## 343        4100   male 2009
+## 344        3775 female 2009
+```
+
+
+---
+
+# penguins dataset
+
+
+```r
+penguins &lt;- as_tibble(penguin_df)
+```
+
+
+
+```r
+penguins
+```
+
+```
+*## # A tibble: 344 x 8
+*##    species island bill_length_mm bill_depth_mm flipper_length_… body_mass_g
+*##    &lt;fct&gt;   &lt;fct&gt;           &lt;dbl&gt;         &lt;dbl&gt;            &lt;int&gt;       &lt;int&gt;
+##  1 Adelie  Torge…           39.1          18.7              181        3750
+##  2 Adelie  Torge…           39.5          17.4              186        3800
+##  3 Adelie  Torge…           40.3          18                195        3250
+##  4 Adelie  Torge…           NA            NA                 NA          NA
+##  5 Adelie  Torge…           36.7          19.3              193        3450
+##  6 Adelie  Torge…           39.3          20.6              190        3650
+##  7 Adelie  Torge…           38.9          17.8              181        3625
+##  8 Adelie  Torge…           39.2          19.6              195        4675
+##  9 Adelie  Torge…           34.1          18.1              193        3475
+## 10 Adelie  Torge…           42            20.2              190        4250
+## # … with 334 more rows, and 2 more variables: sex &lt;fct&gt;, year &lt;int&gt;
+```
+
+
+---
+
+# penguins dataset
+
+
+```r
+head(penguins, 5)
+```
+
+```
+## # A tibble: 5 x 8
+##   species island bill_length_mm bill_depth_mm flipper_length_… body_mass_g sex  
+##   &lt;fct&gt;   &lt;fct&gt;           &lt;dbl&gt;         &lt;dbl&gt;            &lt;int&gt;       &lt;int&gt; &lt;fct&gt;
+## 1 Adelie  Torge…           39.1          18.7              181        3750 male 
+## 2 Adelie  Torge…           39.5          17.4              186        3800 fema…
+## 3 Adelie  Torge…           40.3          18                195        3250 fema…
+## 4 Adelie  Torge…           NA            NA                 NA          NA &lt;NA&gt; 
+## 5 Adelie  Torge…           36.7          19.3              193        3450 fema…
+## # … with 1 more variable: year &lt;int&gt;
+```
+
+--
+
+
+```r
+tail(penguins, 5)
+```
+
+```
+## # A tibble: 5 x 8
+##   species island bill_length_mm bill_depth_mm flipper_length_… body_mass_g sex  
+##   &lt;fct&gt;   &lt;fct&gt;           &lt;dbl&gt;         &lt;dbl&gt;            &lt;int&gt;       &lt;int&gt; &lt;fct&gt;
+## 1 Chinst… Dream            55.8          19.8              207        4000 male 
+## 2 Chinst… Dream            43.5          18.1              202        3400 fema…
+## 3 Chinst… Dream            49.6          18.2              193        3775 male 
+## 4 Chinst… Dream            50.8          19                210        4100 male 
+## 5 Chinst… Dream            50.2          18.7              198        3775 fema…
+## # … with 1 more variable: year &lt;int&gt;
+```
+
+---
+
+### [`dplyr::slice()`](https://dplyr.tidyverse.org/reference/slice.html)
+
+
+
+```r
+slice(penguins, 1:3)
+```
+
+```
+## # A tibble: 3 x 8
+##   species island bill_length_mm bill_depth_mm flipper_length_… body_mass_g sex  
+##   &lt;fct&gt;   &lt;fct&gt;           &lt;dbl&gt;         &lt;dbl&gt;            &lt;int&gt;       &lt;int&gt; &lt;fct&gt;
+*## 1 Adelie  Torge…           39.1          18.7              181        3750 male 
+## 2 Adelie  Torge…           39.5          17.4              186        3800 fema…
+*## 3 Adelie  Torge…           40.3          18                195        3250 fema…
+## # … with 1 more variable: year &lt;int&gt;
+```
+
+--
+
+
+```r
+slice(penguins, 1, 3, 5)
+```
+
+```
+## # A tibble: 3 x 8
+##   species island bill_length_mm bill_depth_mm flipper_length_… body_mass_g sex  
+##   &lt;fct&gt;   &lt;fct&gt;           &lt;dbl&gt;         &lt;dbl&gt;            &lt;int&gt;       &lt;int&gt; &lt;fct&gt;
+*## 1 Adelie  Torge…           39.1          18.7              181        3750 male 
+*## 2 Adelie  Torge…           40.3          18                195        3250 fema…
+## 3 Adelie  Torge…           36.7          19.3              193        3450 fema…
+## # … with 1 more variable: year &lt;int&gt;
+```
+
+---
+
+#### [`dplyr::slice_min()`](https://dplyr.tidyverse.org/reference/slice.html) &amp; [`dplyr::slice_max()`](https://dplyr.tidyverse.org/reference/slice.html)
+
+
+
+```r
+# bottom 3 beak lengths
+slice_min(penguins, order_by = bill_length_mm, n = 3)
+```
+
+```
+## # A tibble: 3 x 8
+##   species island bill_length_mm bill_depth_mm flipper_length_… body_mass_g sex  
+*##   &lt;fct&gt;   &lt;fct&gt;           &lt;dbl&gt;         &lt;dbl&gt;            &lt;int&gt;       &lt;int&gt; &lt;fct&gt;
+*## 1 Adelie  Dream            32.1          15.5              188        3050 fema…
+*## 2 Adelie  Dream            33.1          16.1              178        2900 fema…
+## 3 Adelie  Torge…           33.5          19                190        3600 fema…
+## # … with 1 more variable: year &lt;int&gt;
+```
+
+
+--
+
+
+
+```r
+# top 3 beak lengths
+slice_max(penguins, order_by = bill_length_mm, n = 3)
+```
+
+```
+## # A tibble: 3 x 8
+##   species island bill_length_mm bill_depth_mm flipper_length_… body_mass_g sex  
+*##   &lt;fct&gt;   &lt;fct&gt;           &lt;dbl&gt;         &lt;dbl&gt;            &lt;int&gt;       &lt;int&gt; &lt;fct&gt;
+*## 1 Gentoo  Biscoe           59.6          17                230        6050 male 
+*## 2 Chinst… Dream            58            17.8              181        3700 fema…
+## 3 Gentoo  Biscoe           55.9          17                228        5600 male 
+## # … with 1 more variable: year &lt;int&gt;
+```
+
+
+
+---
+
+### [`dplyr::slice_sample()`](https://dplyr.tidyverse.org/reference/slice.html)
+
+
+
+```r
+slice_sample(penguins, n = 10) # random selection
+```
+
+```
+## # A tibble: 10 x 8
+##    species island bill_length_mm bill_depth_mm flipper_length_… body_mass_g
+##    &lt;fct&gt;   &lt;fct&gt;           &lt;dbl&gt;         &lt;dbl&gt;            &lt;int&gt;       &lt;int&gt;
+##  1 Adelie  Torge…           38.6          21.2              191        3800
+##  2 Adelie  Biscoe           39.7          17.7              193        3200
+##  3 Chinst… Dream            50.9          19.1              196        3550
+##  4 Adelie  Dream            41.5          18.5              201        4000
+##  5 Adelie  Biscoe           43.2          19                197        4775
+##  6 Adelie  Torge…           38.7          19                195        3450
+##  7 Adelie  Dream            40.3          18.5              196        4350
+##  8 Gentoo  Biscoe           52.2          17.1              228        5400
+##  9 Adelie  Dream            39            18.7              185        3650
+## 10 Chinst… Dream            53.5          19.9              205        4500
+## # … with 2 more variables: sex &lt;fct&gt;, year &lt;int&gt;
+```
+
+
+---
+
+### [`tibble::glimpse()`](https://tibble.tidyverse.org/reference/glimpse.html)
+
+
+```r
+glimpse(penguins)
+```
+
+```
+*## Rows: 344
+*## Columns: 8
+## $ species           &lt;fct&gt; Adelie, Adelie, Adelie, Adelie, Adelie, Adelie, Ade…
+## $ island            &lt;fct&gt; Torgersen, Torgersen, Torgersen, Torgersen, Torgers…
+## $ bill_length_mm    &lt;dbl&gt; 39.1, 39.5, 40.3, NA, 36.7, 39.3, 38.9, 39.2, 34.1,…
+## $ bill_depth_mm     &lt;dbl&gt; 18.7, 17.4, 18.0, NA, 19.3, 20.6, 17.8, 19.6, 18.1,…
+## $ flipper_length_mm &lt;int&gt; 181, 186, 195, NA, 193, 190, 181, 195, 193, 190, 18…
+## $ body_mass_g       &lt;int&gt; 3750, 3800, 3250, NA, 3450, 3650, 3625, 4675, 3475,…
+## $ sex               &lt;fct&gt; male, female, female, NA, female, male, female, mal…
+## $ year              &lt;int&gt; 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2007, 200…
+```
+
+---
+
+### Quick Pause for `Logic`
+
+
+Logical operators in R. `?base::Logic` - for additional details
+
+|  Operator|  Description| `TRUE` | `FALSE` |
+|:-------- |:---------- | :---------:| :----------: |
+| `&lt;` |  Less than | `3 &lt; 5` | `100 &lt; 1` |
+| `&lt;=` |  Less than or equal to | `2 &lt;= 2`| `4 &lt;= 2` |
+| `&gt;` | Greater than | `5 &gt; 3` | `1 &gt; 100` |
+| `&gt;=` | Greater than or equal to | `25 &gt;= 25.1` | `12 &gt;= 100` |
+| `==` | Exactly equal to | `"cat" == "cat"` | `"cat" == "dog"` |
+| `!=` | NOT equal to | `5 != 3` | `as.character(5) != "5"` |
+|`x %in% y`| Returns TRUE for x that are present in y| `3 %in% c(1, 2, 3)` | `3 %in% c(4:9)` |
+| `!(x %in% y)` | Returns TRUE for NOT present in y | `!(3 %in% c(4:9))` | `!("cat" %in% c("dog", "cat", "rat"))` |
+| `x` &amp;#x7c; `y` | x OR y | `5 == 3` &amp;#x7c; `3 != 2` | `"cat" == "dog"` &amp;#x7c; `3 != 3` |
+| `x &amp; y`| x AND y | `3 == 3 &amp; "dog" == "dog"` | `5 == 3 &amp; 3 != 2` |
+
+
+---
+
+### [`dplyr::filter()`](https://dplyr.tidyverse.org/reference/filter.html)
+
+Returns rows where the logical argument is `TRUE`
+
+
+
+```r
+# sex EQUAL to MALE
+filter(penguins, species == "Adelie") 
+```
+
+```
+## # A tibble: 152 x 8
+##    species island bill_length_mm bill_depth_mm flipper_length_… body_mass_g
+##    &lt;fct&gt;   &lt;fct&gt;           &lt;dbl&gt;         &lt;dbl&gt;            &lt;int&gt;       &lt;int&gt;
+##  1 Adelie  Torge…           39.1          18.7              181        3750
+##  2 Adelie  Torge…           39.5          17.4              186        3800
+##  3 Adelie  Torge…           40.3          18                195        3250
+##  4 Adelie  Torge…           NA            NA                 NA          NA
+##  5 Adelie  Torge…           36.7          19.3              193        3450
+##  6 Adelie  Torge…           39.3          20.6              190        3650
+##  7 Adelie  Torge…           38.9          17.8              181        3625
+##  8 Adelie  Torge…           39.2          19.6              195        4675
+##  9 Adelie  Torge…           34.1          18.1              193        3475
+## 10 Adelie  Torge…           42            20.2              190        4250
+## # … with 142 more rows, and 2 more variables: sex &lt;fct&gt;, year &lt;int&gt;
+```
+
+
+---
+
+### [`dplyr::filter()`](https://dplyr.tidyverse.org/reference/filter.html)
+
+
+
+```r
+penguins %&gt;% 
+  # species matching Adelie or Gentoo
+  filter(species %in% c("Adelie", "Gentoo")) 
+```
+
+```
+## # A tibble: 276 x 8
+##    species island bill_length_mm bill_depth_mm flipper_length_… body_mass_g
+##    &lt;fct&gt;   &lt;fct&gt;           &lt;dbl&gt;         &lt;dbl&gt;            &lt;int&gt;       &lt;int&gt;
+##  1 Adelie  Torge…           39.1          18.7              181        3750
+##  2 Adelie  Torge…           39.5          17.4              186        3800
+##  3 Adelie  Torge…           40.3          18                195        3250
+##  4 Adelie  Torge…           NA            NA                 NA          NA
+##  5 Adelie  Torge…           36.7          19.3              193        3450
+##  6 Adelie  Torge…           39.3          20.6              190        3650
+##  7 Adelie  Torge…           38.9          17.8              181        3625
+##  8 Adelie  Torge…           39.2          19.6              195        4675
+##  9 Adelie  Torge…           34.1          18.1              193        3475
+## 10 Adelie  Torge…           42            20.2              190        4250
+## # … with 266 more rows, and 2 more variables: sex &lt;fct&gt;, year &lt;int&gt;
+```
+
+---
+
+### `dplyr::filter()`
+
+
+```r
+penguins %&gt;% 
+  # species EQUAL to Chinstrap and bill lenth greater than 53
+  filter(species != "Chinstrap" &amp; bill_length_mm &gt;= 53)
+```
+
+```
+## # A tibble: 5 x 8
+##   species island bill_length_mm bill_depth_mm flipper_length_… body_mass_g sex  
+##   &lt;fct&gt;   &lt;fct&gt;           &lt;dbl&gt;         &lt;dbl&gt;            &lt;int&gt;       &lt;int&gt; &lt;fct&gt;
+## 1 Gentoo  Biscoe           59.6          17                230        6050 male 
+## 2 Gentoo  Biscoe           54.3          15.7              231        5650 male 
+## 3 Gentoo  Biscoe           55.9          17                228        5600 male 
+## 4 Gentoo  Biscoe           53.4          15.8              219        5500 male 
+## 5 Gentoo  Biscoe           55.1          16                230        5850 male 
+## # … with 1 more variable: year &lt;int&gt;
+```
+
+
+---
+
+### [`dplyr::arrange()`](https://dplyr.tidyverse.org/reference/arrange.html)
+
+`arrange` defaults to smallest to largest
+
+
+```r
+penguins %&gt;% 
+  arrange(bill_length_mm)
+```
+
+```
+## # A tibble: 344 x 8
+##    species island bill_length_mm bill_depth_mm flipper_length_… body_mass_g
+##    &lt;fct&gt;   &lt;fct&gt;           &lt;dbl&gt;         &lt;dbl&gt;            &lt;int&gt;       &lt;int&gt;
+*##  1 Adelie  Dream            32.1          15.5              188        3050
+##  2 Adelie  Dream            33.1          16.1              178        2900
+##  3 Adelie  Torge…           33.5          19                190        3600
+##  4 Adelie  Dream            34            17.1              185        3400
+##  5 Adelie  Torge…           34.1          18.1              193        3475
+##  6 Adelie  Torge…           34.4          18.4              184        3325
+##  7 Adelie  Biscoe           34.5          18.1              187        2900
+##  8 Adelie  Torge…           34.6          21.1              198        4400
+##  9 Adelie  Torge…           34.6          17.2              189        3200
+## 10 Adelie  Biscoe           35            17.9              190        3450
+## # … with 334 more rows, and 2 more variables: sex &lt;fct&gt;, year &lt;int&gt;
+```
+
+---
+
+### `dplyr::arrange()`
+
+`desc` means descending order, ie largest to smallest
+
+
+```r
+penguins %&gt;% 
+  arrange(desc(bill_length_mm))
+```
+
+```
+## # A tibble: 344 x 8
+##    species island bill_length_mm bill_depth_mm flipper_length_… body_mass_g
+##    &lt;fct&gt;   &lt;fct&gt;           &lt;dbl&gt;         &lt;dbl&gt;            &lt;int&gt;       &lt;int&gt;
+*##  1 Gentoo  Biscoe           59.6          17                230        6050
+##  2 Chinst… Dream            58            17.8              181        3700
+##  3 Gentoo  Biscoe           55.9          17                228        5600
+##  4 Chinst… Dream            55.8          19.8              207        4000
+##  5 Gentoo  Biscoe           55.1          16                230        5850
+##  6 Gentoo  Biscoe           54.3          15.7              231        5650
+##  7 Chinst… Dream            54.2          20.8              201        4300
+##  8 Chinst… Dream            53.5          19.9              205        4500
+##  9 Gentoo  Biscoe           53.4          15.8              219        5500
+## 10 Chinst… Dream            52.8          20                205        4550
+## # … with 334 more rows, and 2 more variables: sex &lt;fct&gt;, year &lt;int&gt;
+```
+
+---
+
+### [`dplyr::arrange()`](https://dplyr.tidyverse.org/reference/arrange.html)
+
+
+```r
+penguins %&gt;% 
+  arrange(desc(flipper_length_mm), desc(bill_length_mm))
+```
+
+```
+## # A tibble: 344 x 8
+##    species island bill_length_mm bill_depth_mm flipper_length_… body_mass_g
+##    &lt;fct&gt;   &lt;fct&gt;           &lt;dbl&gt;         &lt;dbl&gt;            &lt;int&gt;       &lt;int&gt;
+*##  1 Gentoo  Biscoe           54.3          15.7              231        5650
+##  2 Gentoo  Biscoe           59.6          17                230        6050
+##  3 Gentoo  Biscoe           55.1          16                230        5850
+##  4 Gentoo  Biscoe           52.1          17                230        5550
+##  5 Gentoo  Biscoe           51.5          16.3              230        5500
+##  6 Gentoo  Biscoe           50            16.3              230        5700
+##  7 Gentoo  Biscoe           49.8          16.8              230        5700
+##  8 Gentoo  Biscoe           48.6          16                230        5800
+##  9 Gentoo  Biscoe           49.8          15.9              229        5950
+## 10 Gentoo  Biscoe           49.5          16.2              229        5800
+## # … with 334 more rows, and 2 more variables: sex &lt;fct&gt;, year &lt;int&gt;
+```
+
+  
+---
+
+### [`dplyr::select()`](https://dplyr.tidyverse.org/reference/select.html)
+
+
+```r
+penguins %&gt;% 
+* select(species, sex) %&gt;%
+  glimpse()
+```
+
+```
+## Rows: 344
+## Columns: 2
+*## $ species &lt;fct&gt; Adelie, Adelie, Adelie, Adelie, Adelie, Adelie, Adelie, Adeli…
+*## $ sex     &lt;fct&gt; male, female, female, NA, female, male, female, male, NA, NA,…
+```
+
+
+---
+
+### [`dplyr::select()`](https://dplyr.tidyverse.org/reference/select.html)
+
+
+```r
+penguins %&gt;% 
+* select(species, sex, island, body_mass_g) %&gt;%
+  glimpse()
+```
+
+```
+## Rows: 344
+## Columns: 4
+*## $ species     &lt;fct&gt; Adelie, Adelie, Adelie, Adelie, Adelie, Adelie, Adelie, A…
+*## $ sex         &lt;fct&gt; male, female, female, NA, female, male, female, male, NA,…
+*## $ island      &lt;fct&gt; Torgersen, Torgersen, Torgersen, Torgersen, Torgersen, To…
+*## $ body_mass_g &lt;int&gt; 3750, 3800, 3250, NA, 3450, 3650, 3625, 4675, 3475, 4250,…
+```
+
+
+--
+
+
+```r
+penguins %&gt;% 
+  select(species, sex, island, body_mass_g) %&gt;% 
+* select(-island) %&gt;%
+  glimpse()
+```
+
+```
+## Rows: 344
+## Columns: 3
+*## $ species     &lt;fct&gt; Adelie, Adelie, Adelie, Adelie, Adelie, Adelie, Adelie, A…
+*## $ sex         &lt;fct&gt; male, female, female, NA, female, male, female, male, NA,…
+*## $ body_mass_g &lt;int&gt; 3750, 3800, 3250, NA, 3450, 3650, 3625, 4675, 3475, 4250,…
+```
+
+---
+
+### [`dplyr::select()`](https://dplyr.tidyverse.org/reference/select.html)
+
+
+```r
+penguins %&gt;% 
+* select(sex, everything()) %&gt;%
+  glimpse()
+```
+
+```
+## Rows: 344
+## Columns: 8
+## $ sex               &lt;fct&gt; male, female, female, NA, female, male, female, mal…
+## $ species           &lt;fct&gt; Adelie, Adelie, Adelie, Adelie, Adelie, Adelie, Ade…
+## $ island            &lt;fct&gt; Torgersen, Torgersen, Torgersen, Torgersen, Torgers…
+## $ bill_length_mm    &lt;dbl&gt; 39.1, 39.5, 40.3, NA, 36.7, 39.3, 38.9, 39.2, 34.1,…
+## $ bill_depth_mm     &lt;dbl&gt; 18.7, 17.4, 18.0, NA, 19.3, 20.6, 17.8, 19.6, 18.1,…
+## $ flipper_length_mm &lt;int&gt; 181, 186, 195, NA, 193, 190, 181, 195, 193, 190, 18…
+## $ body_mass_g       &lt;int&gt; 3750, 3800, 3250, NA, 3450, 3650, 3625, 4675, 3475,…
+## $ year              &lt;int&gt; 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2007, 200…
+```
+
+---
+
+### [`dplyr::select()`](https://dplyr.tidyverse.org/reference/select.html)
+
+
+```r
+penguins %&gt;% 
+* select(starts_with("bill"), contains("flip")) %&gt;%
+  glimpse()
+```
+
+```
+## Rows: 344
+## Columns: 3
+## $ bill_length_mm    &lt;dbl&gt; 39.1, 39.5, 40.3, NA, 36.7, 39.3, 38.9, 39.2, 34.1,…
+## $ bill_depth_mm     &lt;dbl&gt; 18.7, 17.4, 18.0, NA, 19.3, 20.6, 17.8, 19.6, 18.1,…
+## $ flipper_length_mm &lt;int&gt; 181, 186, 195, NA, 193, 190, 181, 195, 193, 190, 18…
+```
+
+---
+
+### [`dplyr::mutate()`](https://dplyr.tidyverse.org/reference/mutate.html)
+
+
+```r
+penguins %&gt;% 
+  select(species) %&gt;% 
+  glimpse()
+```
+
+```
+## Rows: 344
+## Columns: 1
+*## $ species &lt;fct&gt; Adelie, Adelie, Adelie, Adelie, Adelie, Adelie, Adelie, Adeli…
+```
+
+
+
+```r
+penguins %&gt;% 
+* mutate(species = factor(species,
+*                     levels = c("Adelie", "Chinstrap", "Gentoo"),
+*                     labels = c("AD", "CS", "GT"))) %&gt;%
+  select(species) %&gt;% 
+  glimpse()
+```
+
+```
+## Rows: 344
+## Columns: 1
+*## $ species &lt;fct&gt; AD, AD, AD, AD, AD, AD, AD, AD, AD, AD, AD, AD, AD, AD, AD, A…
+```
+
+---
+
+### [`dplyr::mutate()`](https://dplyr.tidyverse.org/reference/mutate.html)
+
+
+```r
+penguins %&gt;% 
+* mutate(body_mass_kg = body_mass_g / 1000,
+*        body_mass = body_mass_kg * 1000) %&gt;%
+  select(body_mass_kg, body_mass_g, body_mass) %&gt;%
+  head(10)
+```
+
+```
+## # A tibble: 10 x 3
+##    body_mass_kg body_mass_g body_mass
+##           &lt;dbl&gt;       &lt;int&gt;     &lt;dbl&gt;
+*##  1         3.75        3750      3750
+##  2         3.8         3800      3800
+##  3         3.25        3250      3250
+##  4        NA             NA        NA
+##  5         3.45        3450      3450
+##  6         3.65        3650      3650
+##  7         3.62        3625      3625
+##  8         4.68        4675      4675
+##  9         3.48        3475      3475
+## 10         4.25        4250      4250
+```
+
+
+---
+
+### [`dplyr::group_by()`](https://dplyr.tidyverse.org/reference/group_by.html)
+
+
+```r
+penguins %&gt;% 
+  group_by(species)
+```
+
+```
+## # A tibble: 344 x 8
+*## # Groups:   species [3]
+##    species island bill_length_mm bill_depth_mm flipper_length_… body_mass_g
+##    &lt;fct&gt;   &lt;fct&gt;           &lt;dbl&gt;         &lt;dbl&gt;            &lt;int&gt;       &lt;int&gt;
+##  1 Adelie  Torge…           39.1          18.7              181        3750
+##  2 Adelie  Torge…           39.5          17.4              186        3800
+##  3 Adelie  Torge…           40.3          18                195        3250
+##  4 Adelie  Torge…           NA            NA                 NA          NA
+##  5 Adelie  Torge…           36.7          19.3              193        3450
+##  6 Adelie  Torge…           39.3          20.6              190        3650
+##  7 Adelie  Torge…           38.9          17.8              181        3625
+##  8 Adelie  Torge…           39.2          19.6              195        4675
+##  9 Adelie  Torge…           34.1          18.1              193        3475
+## 10 Adelie  Torge…           42            20.2              190        4250
+## # … with 334 more rows, and 2 more variables: sex &lt;fct&gt;, year &lt;int&gt;
+```
+
+---
+
+### [`dplyr::group_by()`](https://dplyr.tidyverse.org/reference/group_by.html)
+
+
+```r
+penguins %&gt;% 
+* group_by(species) %&gt;%
+  slice(1)
+```
+
+```
+## # A tibble: 3 x 8
+## # Groups:   species [3]
+##   species island bill_length_mm bill_depth_mm flipper_length_… body_mass_g sex  
+##   &lt;fct&gt;   &lt;fct&gt;           &lt;dbl&gt;         &lt;dbl&gt;            &lt;int&gt;       &lt;int&gt; &lt;fct&gt;
+*## 1 Adelie  Torge…           39.1          18.7              181        3750 male 
+*## 2 Chinst… Dream            46.5          17.9              192        3500 fema…
+*## 3 Gentoo  Biscoe           46.1          13.2              211        4500 fema…
+## # … with 1 more variable: year &lt;int&gt;
+```
+
+
+---
+
+### [`dplyr::group_by()`](https://dplyr.tidyverse.org/reference/group_by.html)
+
+
+```r
+penguins %&gt;% 
+* group_by(species) %&gt;%
+  slice_max(bill_length_mm, n = 1)
+```
+
+```
+## # A tibble: 3 x 8
+## # Groups:   species [3]
+##   species island bill_length_mm bill_depth_mm flipper_length_… body_mass_g sex  
+##   &lt;fct&gt;   &lt;fct&gt;           &lt;dbl&gt;         &lt;dbl&gt;            &lt;int&gt;       &lt;int&gt; &lt;fct&gt;
+## 1 Adelie  Torge…           46            21.5              194        4200 male 
+## 2 Chinst… Dream            58            17.8              181        3700 fema…
+## 3 Gentoo  Biscoe           59.6          17                230        6050 male 
+## # … with 1 more variable: year &lt;int&gt;
+```
+
+
+---
+
+### [`dplyr::group_by()`](https://dplyr.tidyverse.org/reference/group_by.html)
+
+
+```r
+penguins %&gt;% 
+* group_by(species) %&gt;%
+  arrange(desc(bill_length_mm)) %&gt;% 
+  slice(1)
+```
+
+```
+## # A tibble: 3 x 8
+## # Groups:   species [3]
+##   species island bill_length_mm bill_depth_mm flipper_length_… body_mass_g sex  
+##   &lt;fct&gt;   &lt;fct&gt;           &lt;dbl&gt;         &lt;dbl&gt;            &lt;int&gt;       &lt;int&gt; &lt;fct&gt;
+## 1 Adelie  Torge…           46            21.5              194        4200 male 
+## 2 Chinst… Dream            58            17.8              181        3700 fema…
+## 3 Gentoo  Biscoe           59.6          17                230        6050 male 
+## # … with 1 more variable: year &lt;int&gt;
+```
+
+---
+
+### [`dplyr::group_by()`](https://dplyr.tidyverse.org/reference/group_by.html)
+
+
+```r
+penguins %&gt;% 
+* group_by(species, island) %&gt;%
+  count()
+```
+
+```
+## # A tibble: 5 x 3
+*## # Groups:   species, island [5]
+##   species   island        n
+##   &lt;fct&gt;     &lt;fct&gt;     &lt;int&gt;
+## 1 Adelie    Biscoe       44
+## 2 Adelie    Dream        56
+## 3 Adelie    Torgersen    52
+## 4 Chinstrap Dream        68
+## 5 Gentoo    Biscoe      124
+```
+
+
+---
+
+### [`dplyr::summarize()`](https://dplyr.tidyverse.org/reference/summarise.html)
+
+
+```r
+penguins %&gt;% 
+  summarize(mean = mean(body_mass_g))
+```
+
+```
+## # A tibble: 1 x 1
+##    mean
+##   &lt;dbl&gt;
+## 1    NA
+```
+
+--
+
+
+```r
+penguins %&gt;% 
+* summarize(mean = mean(body_mass_g, na.rm = TRUE))
+```
+
+```
+*## # A tibble: 1 x 1
+*##    mean
+##   &lt;dbl&gt;
+## 1 4202.
+```
+
+---
+
+### [`dplyr::summarize()`](https://dplyr.tidyverse.org/reference/summarise.html)
+
+
+```r
+penguins %&gt;% 
+  summarize(median(body_mass_g, na.rm = TRUE))
+```
+
+```
+## # A tibble: 1 x 1
+*##   `median(body_mass_g, na.rm = TRUE)`
+##                                 &lt;dbl&gt;
+## 1                                4050
+```
+
+--
+
+
+```r
+penguins %&gt;% 
+  summarize(median_mass= median(body_mass_g, na.rm = TRUE))
+```
+
+```
+## # A tibble: 1 x 1
+*##   median_mass
+##         &lt;dbl&gt;
+## 1        4050
+```
+
+
+---
+
+
+### [`dplyr::summarize()`](https://dplyr.tidyverse.org/reference/summarise.html)
+
+
+```r
+penguins %&gt;% 
+  group_by(species) %&gt;% 
+* summarize(mean_mass = mean(body_mass_g, na.rm = TRUE),
+*           sd_mass = sd(body_mass_g, na.rm = TRUE),
+*           n = n())
+```
+
+```
+## `summarise()` ungrouping output (override with `.groups` argument)
+```
+
+```
+## # A tibble: 3 x 4
+##   species   mean_mass sd_mass     n
+##   &lt;fct&gt;         &lt;dbl&gt;   &lt;dbl&gt; &lt;int&gt;
+## 1 Adelie        3701.    459.   152
+## 2 Chinstrap     3733.    384.    68
+## 3 Gentoo        5076.    504.   124
+```
+
+---
+
+### [`dplyr::mutate() + across()`](https://dplyr.tidyverse.org/reference/across.html)
+
+
+```r
+penguins %&gt;% 
+* mutate(across(c(species, island), as.character)) %&gt;%
+  select(species, island) %&gt;% 
+  glimpse()
+```
+
+```
+## Rows: 344
+## Columns: 2
+*## $ species &lt;chr&gt; "Adelie", "Adelie", "Adelie", "Adelie", "Adelie", "Adelie", "…
+*## $ island  &lt;chr&gt; "Torgersen", "Torgersen", "Torgersen", "Torgersen", "Torgerse…
+```
+
+--
+
+
+```r
+penguins %&gt;% 
+  select(species, island) %&gt;% 
+  glimpse()
+```
+
+```
+## Rows: 344
+## Columns: 2
+*## $ species &lt;fct&gt; Adelie, Adelie, Adelie, Adelie, Adelie, Adelie, Adelie, Adeli…
+*## $ island  &lt;fct&gt; Torgersen, Torgersen, Torgersen, Torgersen, Torgersen, Torger…
+```
+
+---
+
+### [`dplyr::summarize() + across`](https://dplyr.tidyverse.org/reference/across.html)
+
+
+```r
+penguins %&gt;% 
+  group_by(species) %&gt;% 
+  summarize(
+*   across(c(body_mass_g, bill_length_mm), mean, na.rm = TRUE),
+*   n = n()
+    ) 
+```
+
+```
+## `summarise()` ungrouping output (override with `.groups` argument)
+```
+
+```
+## # A tibble: 3 x 4
+*##   species   body_mass_g bill_length_mm     n
+##   &lt;fct&gt;           &lt;dbl&gt;          &lt;dbl&gt; &lt;int&gt;
+## 1 Adelie          3701.           38.8   152
+## 2 Chinstrap       3733.           48.8    68
+## 3 Gentoo          5076.           47.5   124
+```
+
+---
+
+### [`dplyr::summarize() + across`](https://dplyr.tidyverse.org/reference/across.html)
+
+
+```r
+penguins %&gt;% 
+  group_by(species) %&gt;% 
+  summarize(
+    across(c(body_mass_g, bill_length_mm, bill_depth_mm), 
+           list(
+*            mean = ~mean(.x, na.rm = TRUE),
+*            sd = ~sd(.x, na.rm = TRUE))
+           ), 
+*   n = n()
+    ) 
+```
+
+```
+## `summarise()` ungrouping output (override with `.groups` argument)
+```
+
+```
+## # A tibble: 3 x 8
+*##   species body_mass_g_mean body_mass_g_sd bill_length_mm_… bill_length_mm_…
+##   &lt;fct&gt;              &lt;dbl&gt;          &lt;dbl&gt;            &lt;dbl&gt;            &lt;dbl&gt;
+## 1 Adelie             3701.           459.             38.8             2.66
+## 2 Chinst…            3733.           384.             48.8             3.34
+## 3 Gentoo             5076.           504.             47.5             3.08
+## # … with 3 more variables: bill_depth_mm_mean &lt;dbl&gt;, bill_depth_mm_sd &lt;dbl&gt;,
+## #   n &lt;int&gt;
+```
+
+---
+
+# [`tidyr`](https://tidyr.tidyverse.org/)
+The goal of tidyr is to help you create tidy data. Tidy data is data where:
+
+* Each variable is in a column.
+* Each observation is a row.
+* Each value is a cell.
+
+--
+
+
+### Make Taller and Make Wider
+* `pivot_longer()` - "lengthens" data, increasing the number of rows and decreasing the number of columns.
+* `pivot_wider()` - "widens" data, increases the number of columns and decreasing the number of rows.
+
+--
+
+### Separate and unite columns
+* `separate()` - Separate one column into multiple columns.
+* `unite()` - Unite multiple columns into one.
+
+---
+
+# Tidy the data
+
+
+```r
+untidy_df
+```
+
+```
+## # A tibble: 5 x 7
+*##   age_group male_2016 female_2016 male_2017 female_2017 male_2018 female_2018
+##   &lt;chr&gt;         &lt;dbl&gt;       &lt;dbl&gt;     &lt;dbl&gt;       &lt;dbl&gt;     &lt;dbl&gt;       &lt;dbl&gt;
+## 1 &lt; 18          22000       20000     22000       20000     22000       20000
+## 2 18-30         36000       35000     36000       35000     36000       35000
+## 3 31-50         50000       40000     50000       40000     50000       40000
+## 4 51-60         62000       60000     62000       60000     62000       60000
+## 5 &gt; 60          75000       72000     75000       72000     75000       72000
+```
+
+---
+
+# Tidy the data
+
+
+```r
+untidy_df %&gt;% 
+* pivot_longer(cols = male_2016:female_2018,
+*              names_to = "gender_year",
+*              values_to = "income")
+```
+
+```
+## # A tibble: 30 x 3
+##    age_group gender_year income
+##    &lt;chr&gt;     &lt;chr&gt;        &lt;dbl&gt;
+*##  1 &lt; 18      male_2016    22000
+##  2 &lt; 18      female_2016  20000
+##  3 &lt; 18      male_2017    22000
+##  4 &lt; 18      female_2017  20000
+##  5 &lt; 18      male_2018    22000
+*##  6 &lt; 18      female_2018  20000
+##  7 18-30     male_2016    36000
+##  8 18-30     female_2016  35000
+##  9 18-30     male_2017    36000
+## 10 18-30     female_2017  35000
+## # … with 20 more rows
+```
+
+
+
+---
+
+# Tidy the data
+
+
+```r
+untidy_df %&gt;% 
+  pivot_longer(cols = male_2016:female_2018, 
+               names_to = "gender_year",
+               values_to = "income")  %&gt;% 
+* separate(gender_year, into = c("gender", "year"))
+```
+
+```
+## # A tibble: 30 x 4
+##    age_group gender year  income
+##    &lt;chr&gt;     &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt;
+*##  1 &lt; 18      male   2016   22000
+##  2 &lt; 18      female 2016   20000
+##  3 &lt; 18      male   2017   22000
+##  4 &lt; 18      female 2017   20000
+##  5 &lt; 18      male   2018   22000
+*##  6 &lt; 18      female 2018   20000
+##  7 18-30     male   2016   36000
+##  8 18-30     female 2016   35000
+##  9 18-30     male   2017   36000
+## 10 18-30     female 2017   35000
+## # … with 20 more rows
+```
+
+---
+
+# Tidy the data
+
+
+```r
+untidy_df %&gt;% 
+  pivot_longer( 
+*   cols = male_2016:female_2018,
+*   names_to = c("gender", "year"),
+*   names_pattern = "(.*)_(.*)",
+*   values_to = "income"
+  )
+```
+
+```
+## # A tibble: 30 x 4
+##    age_group gender year  income
+##    &lt;chr&gt;     &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt;
+*##  1 &lt; 18      male   2016   22000
+##  2 &lt; 18      female 2016   20000
+##  3 &lt; 18      male   2017   22000
+##  4 &lt; 18      female 2017   20000
+##  5 &lt; 18      male   2018   22000
+*##  6 &lt; 18      female 2018   20000
+##  7 18-30     male   2016   36000
+##  8 18-30     female 2016   35000
+##  9 18-30     male   2017   36000
+## 10 18-30     female 2017   35000
+## # … with 20 more rows
+```
+
+
+---
+
+# Untidy the data
+
+
+```r
+tidy_df %&gt;% 
+* unite("gender_year", c("gender", "year"), sep = "_")
+```
+
+--
+
+
+```
+## # A tibble: 30 x 3
+*##    age_group gender_year income
+##    &lt;chr&gt;     &lt;chr&gt;        &lt;dbl&gt;
+*##  1 &lt; 18      male_2016    22000
+##  2 18-30     male_2016    36000
+##  3 31-50     male_2016    50000
+##  4 51-60     male_2016    62000
+##  5 &gt; 60      male_2016    75000
+##  6 &lt; 18      female_2016  20000
+##  7 18-30     female_2016  35000
+##  8 31-50     female_2016  40000
+##  9 51-60     female_2016  60000
+## 10 &gt; 60      female_2016  72000
+## # … with 20 more rows
+```
+
+---
+
+# Untidy the data
+
+```r
+tidy_df %&gt;% 
+  unite("gender_year", c("gender", "year"), sep = "_") %&gt;% 
+* pivot_wider(names_from = gender_year, values_from = income)
+```
+
+--
+
+
+```
+## # A tibble: 5 x 7
+*##   age_group male_2016 female_2016 male_2017 female_2017 male_2018 female_2018
+##   &lt;chr&gt;         &lt;dbl&gt;       &lt;dbl&gt;     &lt;dbl&gt;       &lt;dbl&gt;     &lt;dbl&gt;       &lt;dbl&gt;
+## 1 &lt; 18          22000       20000     22000       20000     22000       20000
+## 2 18-30         36000       35000     36000       35000     36000       35000
+## 3 31-50         50000       40000     50000       40000     50000       40000
+## 4 51-60         62000       60000     62000       60000     62000       60000
+## 5 &gt; 60          75000       72000     75000       72000     75000       72000
+```
+
+---
+
+# Untidy the data
+
+
+```r
+tidy_df %&gt;% 
+* pivot_wider(names_from = c(gender, year), values_from = income)
+```
+
+--
+
+
+```
+## # A tibble: 5 x 7
+*##   age_group male_2016 female_2016 male_2017 female_2017 male_2018 female_2018
+##   &lt;chr&gt;         &lt;dbl&gt;       &lt;dbl&gt;     &lt;dbl&gt;       &lt;dbl&gt;     &lt;dbl&gt;       &lt;dbl&gt;
+## 1 &lt; 18          22000       20000     22000       20000     22000       20000
+## 2 18-30         36000       35000     36000       35000     36000       35000
+## 3 31-50         50000       40000     50000       40000     50000       40000
+## 4 51-60         62000       60000     62000       60000     62000       60000
+## 5 &gt; 60          75000       72000     75000       72000     75000       72000
+```
+
+
+---
+
+# `ggplot2`
+
+### 3 Core parts
+.pull-left[
+* `ggplot` - builds base layer
+
+* `geom_` is the shape
+  * `geom_point()`
+  * `geom_line()`
+  * `geom_bar()`
+  * `geom_boxplot()`
+  * `geom_?()`
+]
+
+--
+
+.pull-right[
+  
+* `aes` is the mappings/relationships
+  * Horizontal Dimensions (x)
+  * Vertical Dimensions (y)
+  * Color
+  * Shape
+  * Size
+  * Transparency
+  * Relationships
+]
+
+---
+
+
+
+```r
+ggplot(data = &lt;DATA&gt;, mapping = aes(&lt;MAPPINGS&gt;)) + 
+  &lt;GEOM_FUNCTION&gt;()
+```
+
+--
+
+
+```r
+ggplot(penguins, aes(x = bill_length_mm, y = bill_depth_mm, color = species)) +
+  geom_point()
+```
+
+--
+
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-87-1.png)&lt;!-- --&gt;
+
+---
+
+Supply the data, tell `ggplot2` the aesthetic mappings, and then add layers of `plots` via `geom_`
+
+--
+
+.pull-left[
+* `geom_point()` - Points
+* `geom_dotplot()` - Dot plot
+* `geom_hline()` - Horizontal reference line
+* `geom_vline()` - Vertical reference line
+* `geom_boxplot()` - A box and whisker plot
+* `geom_density()` - Smoothed density estimates
+* `geom_errorbarh()` - Horizontal error bars
+* `geom_hex()` - Hexagonal heatmap of 2d bin counts
+* `geom_jitter()` - Jittered points
+* `geom_linerange()` - Vertical interval line
+* `geom_pointrange()` - Vertical point line
+* `geom_line()` - Connect observations line
+
+]
+
+.pull-right[
+
+* `geom_step()` - Connect observations via step lines
+* `geom_polygon()` - Polygons
+* `geom_segment()` - Line segment
+* `geom_ribbon()` - Ribbon plot
+* `geom_area()` - Area plot
+* `geom_rug()` - Rug plots in the margins
+* `geom_smooth()` - Smoothed conditional means
+* `geom_label()` - Label points with text
+* `geom_text()` - Add text
+* `geom_violin()` - Violin plot
+* `geom_sf()` - Visual sf objects
+* `geom_map()` - Plot map
+* `geom_qq_line()` - A quantile-quantile plot
+* `geom_histogram()` - Histogram plot
+
+]
+
+---
+
+# `ggplot2`
+
+### [Gapminder dataset](https://cran.r-project.org/web/packages/gapminder/index.html)
+
+Excerpt from the Gapminder data. For each of 142 countries, the data provides values for life expectancy, GDP per capita, and population, every five years, from 1952 to 2007.
+
+
+```r
+gapminder_df &lt;- gapminder::gapminder
+
+glimpse(gapminder_df)
+```
+
+```
+## Rows: 1,704
+## Columns: 6
+## $ country   &lt;fct&gt; Afghanistan, Afghanistan, Afghanistan, Afghanistan, Afghani…
+## $ continent &lt;fct&gt; Asia, Asia, Asia, Asia, Asia, Asia, Asia, Asia, Asia, Asia,…
+## $ year      &lt;int&gt; 1952, 1957, 1962, 1967, 1972, 1977, 1982, 1987, 1992, 1997,…
+## $ lifeExp   &lt;dbl&gt; 28.801, 30.332, 31.997, 34.020, 36.088, 38.438, 39.854, 40.…
+## $ pop       &lt;int&gt; 8425333, 9240934, 10267083, 11537966, 13079460, 14880372, 1…
+## $ gdpPercap &lt;dbl&gt; 779.4453, 820.8530, 853.1007, 836.1971, 739.9811, 786.1134,…
+```
+
+---
+
+### `ggplot2`
+
+
+```r
+gapminder_df %&gt;% 
+  filter(country == "Malawi") %&gt;% 
+* ggplot(aes(x = year, y = lifeExp)) +
+* geom_line(colour = "#1380A1", size = 1)
+```
+
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-89-1.png)&lt;!-- --&gt;
+
+---
+
+###`ggplot2`
+
+
+```r
+gapminder_df %&gt;% 
+  filter(country == "Malawi") %&gt;% 
+  ggplot(aes(x = year, y = lifeExp)) +
+  geom_line(colour = "#1380A1", size = 1) +
+* geom_point(size = 2)
+```
+
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-90-1.png)&lt;!-- --&gt;
+
+---
+
+### `ggplot2`
+
+
+```r
+gapminder_df %&gt;%
+* filter(country == "China" | country == "United States") %&gt;%
+  ggplot(aes(x = year, y = lifeExp, colour = country)) +
+  geom_line(size = 1)
+```
+
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-91-1.png)&lt;!-- --&gt;
+
+
+---
+
+### `ggplot2`
+
+
+```r
+gapminder_df %&gt;%
+  filter(country == "China" | country == "United States") %&gt;% 
+  ggplot(aes(x = year, y = lifeExp, colour = country, 
+*            size = pop)) +
+  geom_point() +  
+  theme_minimal() + 
+  theme(panel.grid.major.x = element_blank(), 
+        panel.grid.minor.x = element_blank()) 
+```
+
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-92-1.png)&lt;!-- --&gt;
+
+
+---
+
+# `ggplot2`
+
+
+```r
+bar_df &lt;- gapminder_df %&gt;%
+  filter(year == 2007 &amp; continent == "Africa") %&gt;%
+  arrange(desc(lifeExp)) %&gt;%
+  head(5)
+
+(bars &lt;- ggplot(bar_df, aes(x = country, y = lifeExp)) +
+  geom_bar(stat = "identity"))
+```
+
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-93-1.png)&lt;!-- --&gt;
+
+---
+
+### `ggplot2`
+
+
+```r
+bar_df &lt;- gapminder_df %&gt;%
+  filter(year == 2007 &amp; continent == "Africa") %&gt;%
+  arrange(desc(lifeExp)) %&gt;%
+  head(5)
+
+(bars &lt;- ggplot(bar_df, aes(x = country, y = lifeExp)) +
+* geom_col())
+```
+
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-94-1.png)&lt;!-- --&gt;
+
+---
+
+### `ggplot2`
+
+
+
+
+```r
+grouped_bars &lt;- ggplot(grouped_bar_df, 
+                       aes(x = country, 
+                           y = lifeExp, 
+                           fill = as.factor(year))) +
+  geom_bar(stat="identity", position="dodge")
+
+grouped_bars
+```
+
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-96-1.png)&lt;!-- --&gt;
+
+---
+
+### ggplot2
+
+
+```r
+hist_plot &lt;- gapminder_df %&gt;% 
+  filter(year == 2007) %&gt;% 
+  ggplot(aes(x = lifeExp)) +
+* geom_histogram(binwidth = 5, color = "white")
+
+hist_plot
+```
+
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-97-1.png)&lt;!-- --&gt;
+
+---
+
+
+### ggplot2
+
+
+```r
+hist_plot +
+  labs(x = "Life Expectancy (Years)",
+       y = "Count",
+       title = "Life expectancy",
+       subtitle = "Year = 2007",
+       caption = "Source: Gapminder")
+```
+
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-98-1.png)&lt;!-- --&gt;
+
+---
+
+### ggplot2
+
+
+```r
+ggsave("life_exp_2007.png", hist_plot, 
+       height = 4, width = 6, units = "in", dpi = 450)
+```
+
+--
+
+
+```r
+knitr::include_graphics("life_exp_2007.png")
+```
+
+&lt;img src="life_exp_2007.png" width="600px" /&gt;
+
+---
+
+### ggplot2
+
+Unlimited customization via theme! 
+
+```r
+theme(line, rect, text, title, aspect.ratio, axis.title, axis.title.x,
+  axis.title.x.top, axis.title.x.bottom, axis.title.y, axis.title.y.left,
+  axis.title.y.right, axis.text, axis.text.x, axis.text.x.top,
+  axis.text.x.bottom, axis.text.y, axis.text.y.left, axis.text.y.right,
+  axis.ticks, axis.ticks.x, axis.ticks.x.top, axis.ticks.x.bottom,
+  axis.ticks.y, axis.ticks.y.left, axis.ticks.y.right, axis.ticks.length,
+  axis.ticks.length.x, axis.ticks.length.x.top, axis.ticks.length.x.bottom,
+  axis.ticks.length.y, axis.ticks.length.y.left, axis.ticks.length.y.right,
+  axis.line, axis.line.x, axis.line.x.top, axis.line.x.bottom, axis.line.y,
+  axis.line.y.left, axis.line.y.right, legend.background, legend.margin,
+  legend.spacing, legend.spacing.x, legend.spacing.y, legend.key,
+  legend.key.size, legend.key.height, legend.key.width, legend.text,
+  legend.text.align, legend.title, legend.title.align, legend.position,
+  legend.direction, legend.justification, legend.box, legend.box.just,
+  legend.box.margin, legend.box.background, legend.box.spacing,
+  panel.background, panel.border, panel.spacing, panel.spacing.x,
+  panel.spacing.y, panel.grid, panel.grid.major, panel.grid.minor,
+  panel.grid.major.x, panel.grid.major.y, panel.grid.minor.x,
+  panel.grid.minor.y, panel.ontop, plot.background, plot.title,
+  plot.subtitle, plot.caption, plot.tag, plot.tag.position, plot.margin,
+  strip.background, strip.background.x, strip.background.y,
+  strip.placement, strip.text, strip.text.x, strip.text.y,
+  strip.switch.pad.grid, strip.switch.pad.wrap, ..., complete = FALSE,
+  validate = TRUE)
+
+```
+
+
+---
+
+### `ggplot2`
+
+.pull-left[
+
+Saved themes apply multiple theme elements all at once
+* Saves writing
+* Reproducibility
+
+Built in themes
+* `theme_grey()` # default
+* `theme_bw()`
+* `theme_minimal()`
+* `theme_classic()`
+]
+
+
+--
+
+.pull-right[
+New packages
+* `bbplot`
+  * `bbc_style()`
+  
+* `urbnthemes()`
+  * `theme_urbn_print()`
+  
+* `ggthemes`
+  * `theme_few()`
+  * `theme_excel()`
+  * `theme_economist()`
+  
+* Build your own package/theme!
+]
+
+---
+
+### `ggplot2`
+
+
+```r
+gapminder_df %&gt;%
+  filter(country == "China" | country == "United States") %&gt;% 
+  ggplot(aes(x = year, y = lifeExp, colour = country)) +
+  geom_line(size = 1) +
+* theme_grey()
+```
+
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-101-1.png)&lt;!-- --&gt;
+
+
+---
+
+### `ggplot2`
+
+
+```r
+gapminder_df %&gt;%
+  filter(country == "China" | country == "United States") %&gt;% 
+  ggplot(aes(x = year, y = lifeExp, colour = country)) +
+  geom_line(size = 1) +
+* theme_bw()
+```
+
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-102-1.png)&lt;!-- --&gt;
+
+
+---
+
+### `ggplot2`
+
+
+```r
+gapminder_df %&gt;%
+  filter(country == "China" | country == "United States") %&gt;% 
+  ggplot(aes(x = year, y = lifeExp, colour = country)) +
+  geom_line(size = 1) +
+* theme_minimal()
+```
+
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-103-1.png)&lt;!-- --&gt;
+
+
+---
+
+### `ggplot2`
+
+
+```r
+gapminder_df %&gt;%
+  filter(country == "China" | country == "United States") %&gt;% 
+  ggplot(aes(x = year, y = lifeExp, colour = country)) +
+  geom_line(size = 1) +
+* theme_classic()
+```
+
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-104-1.png)&lt;!-- --&gt;
+
+
+---
+
+### `ggplot2`
+
+
+```r
+gapminder_df %&gt;%
+  filter(country == "China" | country == "United States") %&gt;% 
+  ggplot(aes(x = year, y = lifeExp, colour = country)) +
+  geom_line(size = 1) +
+* ggthemes::theme_economist_white()
+```
+
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-105-1.png)&lt;!-- --&gt;
+
+
+---
+
+### `ggplot2`
+
+
+```r
+gapminder_df %&gt;%
+  filter(country == "China" | country == "United States") %&gt;% 
+  ggplot(aes(x = year, y = lifeExp, colour = country)) +
+  geom_line(size = 1) +
+* ggthemes::theme_few()
+```
+
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-106-1.png)&lt;!-- --&gt;
+
+
+---
+
+### `ggplot2`
+
+
+```r
+gapminder_df %&gt;%
+  filter(country == "China" | country == "United States") %&gt;% 
+  ggplot(aes(x = year, y = lifeExp, colour = country)) +
+  geom_line(size = 1) +  
+  geom_hline(yintercept = 0, size = 1, colour="#333333") +
+* bbplot::bbc_style()
+```
+
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-107-1.png)&lt;!-- --&gt;
+
+
+
+---
+
+### `ggplot2`
+
+
+```r
+gapminder_df %&gt;%
+  filter(country == "China" | country == "United States") %&gt;% 
+  ggplot(aes(x = year, y = lifeExp, colour = country)) +
+  geom_line(size = 1) +  
+  geom_hline(yintercept = 0, size = 1, colour="#333333") +
+* theme_minimal() +
+* theme(panel.grid.major.x = element_blank(),
+*       panel.grid.minor.x = element_blank())
+```
+
+![](intro-to-tidyverse_files/figure-html/unnamed-chunk-108-1.png)&lt;!-- --&gt;
+
+---
+
+# Whirlwind of information!
+
+`tidyverse` focuses on `tidy` data
+- `Tidyverse`
+  - Read data in with `readr`
+  - Tidy data with `tidyr`
+  - Transform data with `dplyr`
+  - Plot data with `ggplot2`
+  
+--
+
+- Next Steps
+  * [R for Data Science book (free!)](https://r4ds.had.co.nz/)
+  * [RStudio Cloud Primers (free!)](https://rstudio.cloud/learn/primers)
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

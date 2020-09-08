@@ -1,0 +1,2001 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+  <head>
+    <title>Intro to RMarkdown</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Thomas Mock" />
+    <link href="intro-to-rmarkdown_files/remark-css/default.css" rel="stylesheet" />
+    <script src="intro-to-rmarkdown_files/htmlwidgets/htmlwidgets.js"></script>
+    <script src="intro-to-rmarkdown_files/jquery/jquery.min.js"></script>
+    <link href="intro-to-rmarkdown_files/datatables-css/datatables-crosstalk.css" rel="stylesheet" />
+    <script src="intro-to-rmarkdown_files/datatables-binding/datatables.js"></script>
+    <link href="intro-to-rmarkdown_files/dt-core/css/jquery.dataTables.min.css" rel="stylesheet" />
+    <link href="intro-to-rmarkdown_files/dt-core/css/jquery.dataTables.extra.css" rel="stylesheet" />
+    <script src="intro-to-rmarkdown_files/dt-core/js/jquery.dataTables.min.js"></script>
+    <link href="intro-to-rmarkdown_files/crosstalk/css/crosstalk.css" rel="stylesheet" />
+    <script src="intro-to-rmarkdown_files/crosstalk/js/crosstalk.min.js"></script>
+    <link rel="stylesheet" href="sfah.css" type="text/css" />
+    <link rel="stylesheet" href="css-fonts.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+
+
+
+
+name: xaringan-title
+class: left, middle
+background-image: url(static-img/wool.jpg)
+background-size: cover
+
+# Intro to `RMarkdown`
+
+### The Magic of "**knitting**"
+
+.large[Thomas Mock | 2019-08-29]
+
+&lt;img src="https://www.rstudio.com/wp-content/uploads/2017/05/rmarkdown.png" alt="Sharingan" width="300" /&gt;
+
+
+
+
+&lt;!-- this ends up being the title slide since seal = FALSE--&gt;
+
+---
+
+# Today's Agenda in `rmarkdown`
+
+### Basics of `rmarkdown`
+
+--
+
+### Output Formats
+
+--
+
+- Presentations
+  - `Xaringan`
+  - Powerpoint
+
+--
+
+- Websites
+  - `Bookdown`
+  - `Distill`
+
+--
+
+- Reports
+  - Parameterization
+  - `Flexdashboard`
+
+
+---
+
+class: right, middle
+![](https://raw.githubusercontent.com/allisonhorst/stats-illustrations/master/rstats-artwork/rmarkdown_wizards.png)&lt;!-- --&gt;
+
+---
+
+### `rmarkdown`
+
+- Starts as a notebook style interface
+  - Mixes `code` with **prose**
+  
+--
+
+- **Knits** to [dozens of different formats](https://rmarkdown.rstudio.com/formats.html)
+  - HTML
+  - PDF
+  - Handouts
+  - Books
+  - Reports
+  - Dashboards
+  - Interactive `shiny` apps
+  - Articles
+  - Websites
+
+---
+
+.pull-left[
+### `rmarkdown`
+
+- Starts as a notebook style interface
+  - Mixes `code` with **prose**
+
+- **Knits** to [dozens of different formats](https://rmarkdown.rstudio.com/formats.html)
+  - HTML
+  - PDF
+  - Handouts
+  - Books
+  - Reports
+  - dashboards
+  - Interactive `shiny` apps
+  - Articles
+  - Websites
+]
+
+
+.pull-right[
+
+### Example
+
+![](https://bookdown.org/yihui/rmarkdown/images/notebook-longrunning.png)
+]
+
+---
+
+.pull-left[
+Basic `html_document`
+
+![](static-img/basic-html.png)
+
+]
+
+.pull-right[
+Basic `pdf_document`
+![](static-img/basic-pdf.png)
+]
+
+---
+
+# Components of `rmarkdown`
+
+`YAML` Header
+
+
+```r
+---
+title: "My Title"
+author: "Thomas Mock"
+date: "2019-08-13"
+output: html_document
+---
+```
+
+---
+
+class: center, middle
+background-image: url(https://images.unsplash.com/photo-1510843572979-e4b9e790fdd7?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=1393&amp;q=80)
+
+.huge[Live Demo]
+
+
+---
+
+## Resources
+
+### [R Markdown Guide](https://rmarkdown.rstudio.com/lesson-1.html)
+### [R Markdown Book](https://bookdown.org/yihui/rmarkdown/)
+### [R Markdown Cheatsheet](https://www.rstudio.com/resources/cheatsheets/#rmarkdown)
+
+---
+
+class: left, top
+background-image: url(https://images.unsplash.com/photo-1535016120720-40c646be5580?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=1350&amp;q=80)
+
+.huge[Presentations]
+
+---
+
+# Knit to Powerpoint
+
+The basics start with output.
+
+
+```r
+---
+title: "My Presentation"
+output:
+  powerpoint_presentation
+---
+```
+
+--
+
+But you can also use a reference presentation for formatting
+
+
+```r
+---
+title: "My Presentation"
+output:
+  powerpoint_presentation:
+    reference_doc: my-styles.pptx
+---
+```
+
+--
+
+### [Example from `rmarkdown` book](https://bookdown.org/yihui/rmarkdown/powerpoint-presentation.html#ppt-templates)
+
+### [Example from RStudio Solutions](https://solutions.rstudio.com/tour/access_to_care/)
+
+---
+
+# Powerpoint Example
+
+.pull-left[
+
+```r
+---
+title: "Habits"
+author: John Doe
+date: March 22, 2005
+output: powerpoint_presentation
+---
+
+# In the morning
+
+## Getting up
+
+- Turn off alarm
+- Get out of bed
+
+## Breakfast
+
+- Eat eggs
+- Drink coffee
+
+# In the evening
+
+## Dinner
+
+- Eat spaghetti
+- Drink wine
+
+---
+```
+]
+
+--
+
+.pull-right[
+![](https://bookdown.org/yihui/rmarkdown/images/powerpoint.png)
+]
+
+---
+
+### But there is more to life than Powerpoint!
+
+--
+
+In fact, this is a presentation.
+
+--
+
+And THIS presentation was written in `R` code through an `rmarkdown` document.
+
+--
+
+The code for this presentation is *relatively* simple thanks to the `xaringan` package!
+
+&lt;img src="https://user-images.githubusercontent.com/163582/45438104-ea200600-b67b-11e8-80fa-d9f2a99a03b0.png" width="180" /&gt;
+
+---
+class: inverse
+
+# Code to generate previous slide
+
+
+
+
+```r
+---
+
+### But there is more to life than Powerpoint!
+
+--
+
+In fact, this is a presentation.
+
+--
+
+And THIS presentation was written in `R` code through an `rmarkdown` document.
+
+--
+
+The code for this presentation is *relatively* simple thanks to the `xaringan` package!
+
+&lt;img src="https://user-images.githubusercontent.com/163582/45438104-ea200600-b67b-11e8-80fa-d9f2a99a03b0.png" width="180" /&gt;
+
+---
+```
+
+---
+
+
+
+.pull-left[
+## `xaringan`
+- Technically, these slides are `HTML5`
+- But we write almost pure `RMarkdown`
+- `xaringan` does our conversion!
+- This concept is the power of `RMarkdown`
+  - Write R code -&gt; knit to ???
+  
+&lt;img src="https://user-images.githubusercontent.com/163582/45438104-ea200600-b67b-11e8-80fa-d9f2a99a03b0.png" width="250" /&gt;
+]
+
+--
+
+.pull-right[
+## Why write slides with code?
+- Quickly reproduce
+- Borrow and edit with code
+- Generate tables, plots, and words without copy pasting!
+- Stay close to the source (code)
+]
+
+### [`xaringan` guide](https://bookdown.org/yihui/rmarkdown/xaringan.html)
+
+---
+
+# Back to `mtcars`
+
+Because `rmarkdown` can execute `R` code, you can generate reports/outputs inside of a presentation
+
+--
+
+The `mtcars` dataset has 11 columns and 32 rows.
+
+--
+
+We can also create a table for example via `knitr::kable()`.
+
+--
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; mpg &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; cyl &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; disp &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; hp &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; drat &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; wt &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; qsec &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; vs &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; am &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; gear &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; carb &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Mazda RX4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 21.0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 160 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 110 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.90 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.620 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 16.46 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Mazda RX4 Wag &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 21.0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 160 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 110 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.90 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.875 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 17.02 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Datsun 710 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 22.8 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 108 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 93 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.85 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.320 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 18.61 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Hornet 4 Drive &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 21.4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 258 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 110 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.08 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.215 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 19.44 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Hornet Sportabout &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 18.7 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 360 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 175 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.15 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.440 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 17.02 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Valiant &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 18.1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 225 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 105 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.76 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.460 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 20.22 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+
+
+---
+class: inverse
+### Previous Slide
+
+
+```r
+---
+
+# Back to `mtcars`
+
+Because `rmarkdown` can execute `R` code, you can generate reports/outputs inside of a presentation
+
+--
+
+The `mtcars` dataset has `r ncol(mtcars)` columns and `r nrow(mtcars)` rows.
+
+--
+
+We can also create a table for example via `knitr::kable()`.
+
+--
+
+`r knitr::kable(head(mtcars), 'html')`
+
+---
+```
+
+---
+
+.left-column[
+### `DT` package
+
+
+```r
+library(DT)
+mtcars %&gt;% 
+  datatable()
+```
+
+### [`DT` Guide](https://rstudio.github.io/DT/)
+]
+
+--
+
+.right-column[
+<div id="htmlwidget-e0efc4da0ed9da609f3e" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-e0efc4da0ed9da609f3e">{"x":{"filter":"none","data":[["Mazda RX4","Mazda RX4 Wag","Datsun 710","Hornet 4 Drive","Hornet Sportabout","Valiant","Duster 360","Merc 240D","Merc 230","Merc 280","Merc 280C","Merc 450SE","Merc 450SL","Merc 450SLC","Cadillac Fleetwood","Lincoln Continental","Chrysler Imperial","Fiat 128","Honda Civic","Toyota Corolla","Toyota Corona","Dodge Challenger","AMC Javelin","Camaro Z28","Pontiac Firebird","Fiat X1-9","Porsche 914-2","Lotus Europa","Ford Pantera L","Ferrari Dino","Maserati Bora","Volvo 142E"],[21,21,22.8,21.4,18.7,18.1,14.3,24.4,22.8,19.2,17.8,16.4,17.3,15.2,10.4,10.4,14.7,32.4,30.4,33.9,21.5,15.5,15.2,13.3,19.2,27.3,26,30.4,15.8,19.7,15,21.4],[6,6,4,6,8,6,8,4,4,6,6,8,8,8,8,8,8,4,4,4,4,8,8,8,8,4,4,4,8,6,8,4],[160,160,108,258,360,225,360,146.7,140.8,167.6,167.6,275.8,275.8,275.8,472,460,440,78.7,75.7,71.1,120.1,318,304,350,400,79,120.3,95.1,351,145,301,121],[110,110,93,110,175,105,245,62,95,123,123,180,180,180,205,215,230,66,52,65,97,150,150,245,175,66,91,113,264,175,335,109],[3.9,3.9,3.85,3.08,3.15,2.76,3.21,3.69,3.92,3.92,3.92,3.07,3.07,3.07,2.93,3,3.23,4.08,4.93,4.22,3.7,2.76,3.15,3.73,3.08,4.08,4.43,3.77,4.22,3.62,3.54,4.11],[2.62,2.875,2.32,3.215,3.44,3.46,3.57,3.19,3.15,3.44,3.44,4.07,3.73,3.78,5.25,5.424,5.345,2.2,1.615,1.835,2.465,3.52,3.435,3.84,3.845,1.935,2.14,1.513,3.17,2.77,3.57,2.78],[16.46,17.02,18.61,19.44,17.02,20.22,15.84,20,22.9,18.3,18.9,17.4,17.6,18,17.98,17.82,17.42,19.47,18.52,19.9,20.01,16.87,17.3,15.41,17.05,18.9,16.7,16.9,14.5,15.5,14.6,18.6]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>mpg<\/th>\n      <th>cyl<\/th>\n      <th>disp<\/th>\n      <th>hp<\/th>\n      <th>drat<\/th>\n      <th>wt<\/th>\n      <th>qsec<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[1,2,3,4,5,6,7]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+]
+
+---
+
+.left-column[
+### `gt` package
+
+
+```r
+library(gt)
+head(mtcars) %&gt;% 
+  gt()
+```
+
+### [`gt` Guide](https://gt.rstudio.com/)
+]
+
+--
+
+.right-column[
+<style>html {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
+}
+
+#wytwbwwjqg .gt_table {
+  display: table;
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  background-color: #FFFFFF;
+  /* table.background.color */
+  width: auto;
+  /* table.width */
+  border-top-style: solid;
+  /* table.border.top.style */
+  border-top-width: 2px;
+  /* table.border.top.width */
+  border-top-color: #A8A8A8;
+  /* table.border.top.color */
+  border-bottom-style: solid;
+  /* table.border.bottom.style */
+  border-bottom-width: 2px;
+  /* table.border.bottom.width */
+  border-bottom-color: #A8A8A8;
+  /* table.border.bottom.color */
+}
+
+#wytwbwwjqg .gt_heading {
+  background-color: #FFFFFF;
+  /* heading.background.color */
+  border-bottom-color: #FFFFFF;
+}
+
+#wytwbwwjqg .gt_title {
+  color: #333333;
+  font-size: 125%;
+  /* heading.title.font.size */
+  padding-top: 4px;
+  /* heading.top.padding - not yet used */
+  padding-bottom: 4px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#wytwbwwjqg .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  /* heading.subtitle.font.size */
+  padding-top: 0;
+  padding-bottom: 4px;
+  /* heading.bottom.padding - not yet used */
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#wytwbwwjqg .gt_bottom_border {
+  border-bottom-style: solid;
+  /* heading.border.bottom.style */
+  border-bottom-width: 2px;
+  /* heading.border.bottom.width */
+  border-bottom-color: #D3D3D3;
+  /* heading.border.bottom.color */
+}
+
+#wytwbwwjqg .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#wytwbwwjqg .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  /* column_labels.background.color */
+  font-size: 16px;
+  /* column_labels.font.size */
+  font-weight: initial;
+  /* column_labels.font.weight */
+  vertical-align: middle;
+  padding: 5px;
+  margin: 10px;
+  overflow-x: hidden;
+}
+
+#wytwbwwjqg .gt_columns_top_border {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+}
+
+#wytwbwwjqg .gt_columns_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#wytwbwwjqg .gt_sep_right {
+  border-right: 5px solid #FFFFFF;
+}
+
+#wytwbwwjqg .gt_group_heading {
+  padding: 8px;
+  /* row_group.padding */
+  color: #333333;
+  background-color: #FFFFFF;
+  /* row_group.background.color */
+  font-size: 16px;
+  /* row_group.font.size */
+  font-weight: initial;
+  /* row_group.font.weight */
+  border-top-style: solid;
+  /* row_group.border.top.style */
+  border-top-width: 2px;
+  /* row_group.border.top.width */
+  border-top-color: #D3D3D3;
+  /* row_group.border.top.color */
+  border-bottom-style: solid;
+  /* row_group.border.bottom.style */
+  border-bottom-width: 2px;
+  /* row_group.border.bottom.width */
+  border-bottom-color: #D3D3D3;
+  /* row_group.border.bottom.color */
+  vertical-align: middle;
+}
+
+#wytwbwwjqg .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  /* row_group.background.color */
+  font-size: 16px;
+  /* row_group.font.size */
+  font-weight: initial;
+  /* row_group.font.weight */
+  border-top-style: solid;
+  /* row_group.border.top.style */
+  border-top-width: 2px;
+  /* row_group.border.top.width */
+  border-top-color: #D3D3D3;
+  /* row_group.border.top.color */
+  border-bottom-style: solid;
+  /* row_group.border.bottom.style */
+  border-bottom-width: 2px;
+  /* row_group.border.bottom.width */
+  border-bottom-color: #D3D3D3;
+  /* row_group.border.bottom.color */
+  vertical-align: middle;
+}
+
+#wytwbwwjqg .gt_striped {
+  background-color: #8080800D;
+}
+
+#wytwbwwjqg .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#wytwbwwjqg .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#wytwbwwjqg .gt_row {
+  padding: 8px;
+  /* row.padding */
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#wytwbwwjqg .gt_stub {
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 12px;
+}
+
+#wytwbwwjqg .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  /* summary_row.background.color */
+  padding: 8px;
+  /* summary_row.padding */
+  text-transform: inherit;
+  /* summary_row.text_transform */
+}
+
+#wytwbwwjqg .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  /* grand_summary_row.background.color */
+  padding: 8px;
+  /* grand_summary_row.padding */
+  text-transform: inherit;
+  /* grand_summary_row.text_transform */
+}
+
+#wytwbwwjqg .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+}
+
+#wytwbwwjqg .gt_first_grand_summary_row {
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#wytwbwwjqg .gt_table_body {
+  border-top-style: solid;
+  /* table_body.border.top.style */
+  border-top-width: 2px;
+  /* table_body.border.top.width */
+  border-top-color: #D3D3D3;
+  /* table_body.border.top.color */
+  border-bottom-style: solid;
+  /* table_body.border.bottom.style */
+  border-bottom-width: 2px;
+  /* table_body.border.bottom.width */
+  border-bottom-color: #D3D3D3;
+  /* table_body.border.bottom.color */
+}
+
+#wytwbwwjqg .gt_footnotes {
+  border-top-style: solid;
+  /* footnotes.border.top.style */
+  border-top-width: 2px;
+  /* footnotes.border.top.width */
+  border-top-color: #D3D3D3;
+  /* footnotes.border.top.color */
+}
+
+#wytwbwwjqg .gt_footnote {
+  font-size: 90%;
+  /* footnote.font.size */
+  margin: 0px;
+  padding: 4px;
+  /* footnote.padding */
+}
+
+#wytwbwwjqg .gt_sourcenotes {
+  border-top-style: solid;
+  /* sourcenotes.border.top.style */
+  border-top-width: 2px;
+  /* sourcenotes.border.top.width */
+  border-top-color: #D3D3D3;
+  /* sourcenotes.border.top.color */
+}
+
+#wytwbwwjqg .gt_sourcenote {
+  font-size: 90%;
+  /* sourcenote.font.size */
+  padding: 4px;
+  /* sourcenote.padding */
+}
+
+#wytwbwwjqg .gt_center {
+  text-align: center;
+}
+
+#wytwbwwjqg .gt_left {
+  text-align: left;
+}
+
+#wytwbwwjqg .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#wytwbwwjqg .gt_font_normal {
+  font-weight: normal;
+}
+
+#wytwbwwjqg .gt_font_bold {
+  font-weight: bold;
+}
+
+#wytwbwwjqg .gt_font_italic {
+  font-style: italic;
+}
+
+#wytwbwwjqg .gt_super {
+  font-size: 65%;
+}
+
+#wytwbwwjqg .gt_footnote_marks {
+  font-style: italic;
+  font-size: 65%;
+}
+</style>
+<div id="wytwbwwjqg" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;"><table class="gt_table">
+  
+  <tr>
+    <th class="gt_col_heading gt_columns_bottom_border gt_columns_top_border gt_center" rowspan="1" colspan="1">mpg</th>
+    <th class="gt_col_heading gt_columns_bottom_border gt_columns_top_border gt_center" rowspan="1" colspan="1">cyl</th>
+    <th class="gt_col_heading gt_columns_bottom_border gt_columns_top_border gt_center" rowspan="1" colspan="1">disp</th>
+    <th class="gt_col_heading gt_columns_bottom_border gt_columns_top_border gt_center" rowspan="1" colspan="1">hp</th>
+    <th class="gt_col_heading gt_columns_bottom_border gt_columns_top_border gt_center" rowspan="1" colspan="1">drat</th>
+    <th class="gt_col_heading gt_columns_bottom_border gt_columns_top_border gt_center" rowspan="1" colspan="1">wt</th>
+    <th class="gt_col_heading gt_columns_bottom_border gt_columns_top_border gt_center" rowspan="1" colspan="1">qsec</th>
+    <th class="gt_col_heading gt_columns_bottom_border gt_columns_top_border gt_center" rowspan="1" colspan="1">vs</th>
+    <th class="gt_col_heading gt_columns_bottom_border gt_columns_top_border gt_center" rowspan="1" colspan="1">am</th>
+    <th class="gt_col_heading gt_columns_bottom_border gt_columns_top_border gt_center" rowspan="1" colspan="1">gear</th>
+    <th class="gt_col_heading gt_columns_bottom_border gt_columns_top_border gt_center" rowspan="1" colspan="1">carb</th>
+  </tr>
+  <body class="gt_table_body">
+    <tr>
+      <td class="gt_row gt_right">21.0</td>
+      <td class="gt_row gt_right">6</td>
+      <td class="gt_row gt_right">160</td>
+      <td class="gt_row gt_right">110</td>
+      <td class="gt_row gt_right">3.90</td>
+      <td class="gt_row gt_right">2.620</td>
+      <td class="gt_row gt_right">16.46</td>
+      <td class="gt_row gt_right">0</td>
+      <td class="gt_row gt_right">1</td>
+      <td class="gt_row gt_right">4</td>
+      <td class="gt_row gt_right">4</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_right gt_striped">21.0</td>
+      <td class="gt_row gt_right gt_striped">6</td>
+      <td class="gt_row gt_right gt_striped">160</td>
+      <td class="gt_row gt_right gt_striped">110</td>
+      <td class="gt_row gt_right gt_striped">3.90</td>
+      <td class="gt_row gt_right gt_striped">2.875</td>
+      <td class="gt_row gt_right gt_striped">17.02</td>
+      <td class="gt_row gt_right gt_striped">0</td>
+      <td class="gt_row gt_right gt_striped">1</td>
+      <td class="gt_row gt_right gt_striped">4</td>
+      <td class="gt_row gt_right gt_striped">4</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_right">22.8</td>
+      <td class="gt_row gt_right">4</td>
+      <td class="gt_row gt_right">108</td>
+      <td class="gt_row gt_right">93</td>
+      <td class="gt_row gt_right">3.85</td>
+      <td class="gt_row gt_right">2.320</td>
+      <td class="gt_row gt_right">18.61</td>
+      <td class="gt_row gt_right">1</td>
+      <td class="gt_row gt_right">1</td>
+      <td class="gt_row gt_right">4</td>
+      <td class="gt_row gt_right">1</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_right gt_striped">21.4</td>
+      <td class="gt_row gt_right gt_striped">6</td>
+      <td class="gt_row gt_right gt_striped">258</td>
+      <td class="gt_row gt_right gt_striped">110</td>
+      <td class="gt_row gt_right gt_striped">3.08</td>
+      <td class="gt_row gt_right gt_striped">3.215</td>
+      <td class="gt_row gt_right gt_striped">19.44</td>
+      <td class="gt_row gt_right gt_striped">1</td>
+      <td class="gt_row gt_right gt_striped">0</td>
+      <td class="gt_row gt_right gt_striped">3</td>
+      <td class="gt_row gt_right gt_striped">1</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_right">18.7</td>
+      <td class="gt_row gt_right">8</td>
+      <td class="gt_row gt_right">360</td>
+      <td class="gt_row gt_right">175</td>
+      <td class="gt_row gt_right">3.15</td>
+      <td class="gt_row gt_right">3.440</td>
+      <td class="gt_row gt_right">17.02</td>
+      <td class="gt_row gt_right">0</td>
+      <td class="gt_row gt_right">0</td>
+      <td class="gt_row gt_right">3</td>
+      <td class="gt_row gt_right">2</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_right gt_striped">18.1</td>
+      <td class="gt_row gt_right gt_striped">6</td>
+      <td class="gt_row gt_right gt_striped">225</td>
+      <td class="gt_row gt_right gt_striped">105</td>
+      <td class="gt_row gt_right gt_striped">2.76</td>
+      <td class="gt_row gt_right gt_striped">3.460</td>
+      <td class="gt_row gt_right gt_striped">20.22</td>
+      <td class="gt_row gt_right gt_striped">1</td>
+      <td class="gt_row gt_right gt_striped">0</td>
+      <td class="gt_row gt_right gt_striped">3</td>
+      <td class="gt_row gt_right gt_striped">1</td>
+    </tr>
+  </body>
+  
+  
+</table></div>
+]
+
+---
+
+# `gt` does fancier tables too
+
+
+```
+## # A tibble: 6 x 6
+##   date        open  high   low close     volume
+##   &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;
+## 1 2010-06-14 1095  1106. 1089. 1090. 4425830000
+## 2 2010-06-11 1083. 1092. 1077. 1092. 4059280000
+## 3 2010-06-10 1059. 1088. 1059. 1087. 5144780000
+## 4 2010-06-09 1063. 1078. 1052. 1056. 5983200000
+## 5 2010-06-08 1051. 1063. 1042. 1062  6192750000
+## 6 2010-06-07 1066. 1071. 1050. 1050. 5467560000
+```
+
+---
+# `gt` does fancier tables too
+
+
+
+```r
+# Define the start and end dates for the data range
+start_date &lt;- "2010-06-07"
+end_date &lt;- "2010-06-14"
+
+# Create a gt table based on preprocessed
+# `sp500` table data
+sp500 %&gt;%
+  dplyr::filter(date &gt;= start_date &amp; date &lt;= end_date) %&gt;%
+  dplyr::select(-adj_close) %&gt;%
+  gt() %&gt;%
+  tab_header(
+    title = "S&amp;P 500",
+    subtitle = glue::glue("{start_date} to {end_date}")
+  ) %&gt;%
+  fmt_date(
+    columns = vars(date),
+    date_style = 3
+  ) %&gt;%
+  fmt_currency(
+    columns = vars(open, high, low, close),
+    currency = "USD"
+  ) %&gt;%
+  fmt_number(
+    columns = vars(volume),
+    suffixing = TRUE
+  )
+```
+
+
+---
+
+# `gt` does fancier tables too
+
+<style>html {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
+}
+
+#wbwcruwonn .gt_table {
+  display: table;
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  background-color: #FFFFFF;
+  /* table.background.color */
+  width: auto;
+  /* table.width */
+  border-top-style: solid;
+  /* table.border.top.style */
+  border-top-width: 2px;
+  /* table.border.top.width */
+  border-top-color: #A8A8A8;
+  /* table.border.top.color */
+  border-bottom-style: solid;
+  /* table.border.bottom.style */
+  border-bottom-width: 2px;
+  /* table.border.bottom.width */
+  border-bottom-color: #A8A8A8;
+  /* table.border.bottom.color */
+}
+
+#wbwcruwonn .gt_heading {
+  background-color: #FFFFFF;
+  /* heading.background.color */
+  border-bottom-color: #FFFFFF;
+}
+
+#wbwcruwonn .gt_title {
+  color: #333333;
+  font-size: 125%;
+  /* heading.title.font.size */
+  padding-top: 4px;
+  /* heading.top.padding - not yet used */
+  padding-bottom: 4px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#wbwcruwonn .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  /* heading.subtitle.font.size */
+  padding-top: 0;
+  padding-bottom: 4px;
+  /* heading.bottom.padding - not yet used */
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#wbwcruwonn .gt_bottom_border {
+  border-bottom-style: solid;
+  /* heading.border.bottom.style */
+  border-bottom-width: 2px;
+  /* heading.border.bottom.width */
+  border-bottom-color: #D3D3D3;
+  /* heading.border.bottom.color */
+}
+
+#wbwcruwonn .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#wbwcruwonn .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  /* column_labels.background.color */
+  font-size: 16px;
+  /* column_labels.font.size */
+  font-weight: initial;
+  /* column_labels.font.weight */
+  vertical-align: middle;
+  padding: 5px;
+  margin: 10px;
+  overflow-x: hidden;
+}
+
+#wbwcruwonn .gt_columns_top_border {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+}
+
+#wbwcruwonn .gt_columns_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#wbwcruwonn .gt_sep_right {
+  border-right: 5px solid #FFFFFF;
+}
+
+#wbwcruwonn .gt_group_heading {
+  padding: 8px;
+  /* row_group.padding */
+  color: #333333;
+  background-color: #FFFFFF;
+  /* row_group.background.color */
+  font-size: 16px;
+  /* row_group.font.size */
+  font-weight: initial;
+  /* row_group.font.weight */
+  border-top-style: solid;
+  /* row_group.border.top.style */
+  border-top-width: 2px;
+  /* row_group.border.top.width */
+  border-top-color: #D3D3D3;
+  /* row_group.border.top.color */
+  border-bottom-style: solid;
+  /* row_group.border.bottom.style */
+  border-bottom-width: 2px;
+  /* row_group.border.bottom.width */
+  border-bottom-color: #D3D3D3;
+  /* row_group.border.bottom.color */
+  vertical-align: middle;
+}
+
+#wbwcruwonn .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  /* row_group.background.color */
+  font-size: 16px;
+  /* row_group.font.size */
+  font-weight: initial;
+  /* row_group.font.weight */
+  border-top-style: solid;
+  /* row_group.border.top.style */
+  border-top-width: 2px;
+  /* row_group.border.top.width */
+  border-top-color: #D3D3D3;
+  /* row_group.border.top.color */
+  border-bottom-style: solid;
+  /* row_group.border.bottom.style */
+  border-bottom-width: 2px;
+  /* row_group.border.bottom.width */
+  border-bottom-color: #D3D3D3;
+  /* row_group.border.bottom.color */
+  vertical-align: middle;
+}
+
+#wbwcruwonn .gt_striped {
+  background-color: #8080800D;
+}
+
+#wbwcruwonn .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#wbwcruwonn .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#wbwcruwonn .gt_row {
+  padding: 8px;
+  /* row.padding */
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#wbwcruwonn .gt_stub {
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 12px;
+}
+
+#wbwcruwonn .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  /* summary_row.background.color */
+  padding: 8px;
+  /* summary_row.padding */
+  text-transform: inherit;
+  /* summary_row.text_transform */
+}
+
+#wbwcruwonn .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  /* grand_summary_row.background.color */
+  padding: 8px;
+  /* grand_summary_row.padding */
+  text-transform: inherit;
+  /* grand_summary_row.text_transform */
+}
+
+#wbwcruwonn .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+}
+
+#wbwcruwonn .gt_first_grand_summary_row {
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#wbwcruwonn .gt_table_body {
+  border-top-style: solid;
+  /* table_body.border.top.style */
+  border-top-width: 2px;
+  /* table_body.border.top.width */
+  border-top-color: #D3D3D3;
+  /* table_body.border.top.color */
+  border-bottom-style: solid;
+  /* table_body.border.bottom.style */
+  border-bottom-width: 2px;
+  /* table_body.border.bottom.width */
+  border-bottom-color: #D3D3D3;
+  /* table_body.border.bottom.color */
+}
+
+#wbwcruwonn .gt_footnotes {
+  border-top-style: solid;
+  /* footnotes.border.top.style */
+  border-top-width: 2px;
+  /* footnotes.border.top.width */
+  border-top-color: #D3D3D3;
+  /* footnotes.border.top.color */
+}
+
+#wbwcruwonn .gt_footnote {
+  font-size: 90%;
+  /* footnote.font.size */
+  margin: 0px;
+  padding: 4px;
+  /* footnote.padding */
+}
+
+#wbwcruwonn .gt_sourcenotes {
+  border-top-style: solid;
+  /* sourcenotes.border.top.style */
+  border-top-width: 2px;
+  /* sourcenotes.border.top.width */
+  border-top-color: #D3D3D3;
+  /* sourcenotes.border.top.color */
+}
+
+#wbwcruwonn .gt_sourcenote {
+  font-size: 90%;
+  /* sourcenote.font.size */
+  padding: 4px;
+  /* sourcenote.padding */
+}
+
+#wbwcruwonn .gt_center {
+  text-align: center;
+}
+
+#wbwcruwonn .gt_left {
+  text-align: left;
+}
+
+#wbwcruwonn .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#wbwcruwonn .gt_font_normal {
+  font-weight: normal;
+}
+
+#wbwcruwonn .gt_font_bold {
+  font-weight: bold;
+}
+
+#wbwcruwonn .gt_font_italic {
+  font-style: italic;
+}
+
+#wbwcruwonn .gt_super {
+  font-size: 65%;
+}
+
+#wbwcruwonn .gt_footnote_marks {
+  font-style: italic;
+  font-size: 65%;
+}
+</style>
+<div id="wbwcruwonn" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;"><table class="gt_table">
+  <thead>
+    <tr>
+      <th colspan="6" class="gt_heading gt_title gt_font_normal gt_center" style>S&amp;P 500</th>
+    </tr>
+    <tr>
+      <th colspan="6" class="gt_heading gt_subtitle gt_font_normal gt_center gt_bottom_border" style>2010-06-07 to 2010-06-14</th>
+    </tr>
+  </thead>
+  <tr>
+    <th class="gt_col_heading gt_columns_bottom_border gt_columns_top_border gt_left" rowspan="1" colspan="1">date</th>
+    <th class="gt_col_heading gt_columns_bottom_border gt_columns_top_border gt_center" rowspan="1" colspan="1">open</th>
+    <th class="gt_col_heading gt_columns_bottom_border gt_columns_top_border gt_center" rowspan="1" colspan="1">high</th>
+    <th class="gt_col_heading gt_columns_bottom_border gt_columns_top_border gt_center" rowspan="1" colspan="1">low</th>
+    <th class="gt_col_heading gt_columns_bottom_border gt_columns_top_border gt_center" rowspan="1" colspan="1">close</th>
+    <th class="gt_col_heading gt_columns_bottom_border gt_columns_top_border gt_center" rowspan="1" colspan="1">volume</th>
+  </tr>
+  <body class="gt_table_body">
+    <tr>
+      <td class="gt_row gt_left">Mon, Jun 14, 2010</td>
+      <td class="gt_row gt_right">$1,095.00</td>
+      <td class="gt_row gt_right">$1,105.91</td>
+      <td class="gt_row gt_right">$1,089.03</td>
+      <td class="gt_row gt_right">$1,089.63</td>
+      <td class="gt_row gt_right">4.43B</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left gt_striped">Fri, Jun 11, 2010</td>
+      <td class="gt_row gt_right gt_striped">$1,082.65</td>
+      <td class="gt_row gt_right gt_striped">$1,092.25</td>
+      <td class="gt_row gt_right gt_striped">$1,077.12</td>
+      <td class="gt_row gt_right gt_striped">$1,091.60</td>
+      <td class="gt_row gt_right gt_striped">4.06B</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left">Thu, Jun 10, 2010</td>
+      <td class="gt_row gt_right">$1,058.77</td>
+      <td class="gt_row gt_right">$1,087.85</td>
+      <td class="gt_row gt_right">$1,058.77</td>
+      <td class="gt_row gt_right">$1,086.84</td>
+      <td class="gt_row gt_right">5.14B</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left gt_striped">Wed, Jun 9, 2010</td>
+      <td class="gt_row gt_right gt_striped">$1,062.75</td>
+      <td class="gt_row gt_right gt_striped">$1,077.74</td>
+      <td class="gt_row gt_right gt_striped">$1,052.25</td>
+      <td class="gt_row gt_right gt_striped">$1,055.69</td>
+      <td class="gt_row gt_right gt_striped">5.98B</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left">Tue, Jun 8, 2010</td>
+      <td class="gt_row gt_right">$1,050.81</td>
+      <td class="gt_row gt_right">$1,063.15</td>
+      <td class="gt_row gt_right">$1,042.17</td>
+      <td class="gt_row gt_right">$1,062.00</td>
+      <td class="gt_row gt_right">6.19B</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left gt_striped">Mon, Jun 7, 2010</td>
+      <td class="gt_row gt_right gt_striped">$1,065.84</td>
+      <td class="gt_row gt_right gt_striped">$1,071.36</td>
+      <td class="gt_row gt_right gt_striped">$1,049.86</td>
+      <td class="gt_row gt_right gt_striped">$1,050.47</td>
+      <td class="gt_row gt_right gt_striped">5.47B</td>
+    </tr>
+  </body>
+  
+  
+</table></div>
+
+---
+
+.pull-left[
+
+
+
+### Fuel report
+
+Fuel efficiency is declining with increased displacement
+- The larger engine displacement accounts for 72% of the decline in fuel efficiency
+
+<div id="htmlwidget-db13dd1aafc8dc8d8187" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-db13dd1aafc8dc8d8187">{"x":{"filter":"none","data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20"],["Mazda RX4","Mazda RX4 Wag","Hornet 4 Drive","Valiant","Duster 360","Merc 240D","Merc 230","Merc 280","Merc 280C","Cadillac Fleetwood","Lincoln Continental","Chrysler Imperial","Honda Civic","Camaro Z28","Porsche 914-2","Lotus Europa","Ford Pantera L","Ferrari Dino","Maserati Bora","Volvo 142E"],[160,160,258,225,360,146.7,140.8,167.6,167.6,472,460,440,75.7,350,120.3,95.1,351,145,301,121],[21,21,21.4,18.1,14.3,24.4,22.8,19.2,17.8,10.4,10.4,14.7,30.4,13.3,26,30.4,15.8,19.7,15,21.4]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>car<\/th>\n      <th>disp<\/th>\n      <th>mpg<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":6,"columnDefs":[{"className":"dt-right","targets":[2,3]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+
+]
+
+--
+
+.pull-right[
+
+
+### DISP vs MPG (R&lt;sup&gt;2&lt;/sup&gt;: 0.72)
+&lt;img src="intro-to-rmarkdown_files/figure-html/unnamed-chunk-16-1.png" width="504" /&gt;
+]
+
+---
+class: inverse
+### Previous Slide
+.pull-left[
+
+
+```r
+r_2 &lt;- lm(mpg~disp, mtcars) %&gt;% 
+  summary() %&gt;% 
+  .$r.squared %&gt;% 
+  round(2)
+
+Fuel efficiency is declining with increased displacement
+- The larger engine displacement accounts for `r r_2 * 100`% of the decline in fuel efficiency
+
+library(DT)
+mtcars %&gt;% 
+  rownames_to_column(var = "car") %&gt;% 
+  group_by(cyl) %&gt;% 
+  top_n(6) %&gt;% 
+  ungroup() %&gt;% 
+  select(car, disp, mpg) %&gt;%
+  datatable(
+    options = list(
+  pageLength = 6
+    )
+  )
+```
+
+]
+
+.pull-right[
+
+
+```r
+### DISP vs MPG (R&lt;sup&gt;2&lt;/sup&gt;: `r r_2`)
+
+mtcars %&gt;% 
+  ggplot(aes(x = disp, y = mpg)) +
+  geom_smooth(method = "lm", se = F, color = "red") +
+  geom_point(size = 3) +
+  ggthemes::theme_fivethirtyeight() +
+  labs(x = "\nDisplacement",
+       y = "Miles/Gallon\n") +
+  theme(axis.title = element_text(face = "bold", size = 20))
+```
+
+]
+
+---
+
+class: left, middle
+background-image: url(https://images.unsplash.com/photo-1468779036391-52341f60b55d?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=1521&amp;q=80)
+background-size: cover
+
+https://bookdown.org/yihui/bookdown/images/logo.png
+
+# `bookdown`
+
+&lt;img src="https://bookdown.org/yihui/bookdown/images/logo.png" alt="bookdown" width="200" /&gt;
+
+
+---
+
+
+.left-column[
+### `bookdown`
+Best resource is at the published `bookdown` [*bookdown*](https://bookdown.org/yihui/bookdown/). 😉
+&lt;br&gt;
+&lt;br&gt;
+
+
+&lt;img src="https://bookdown.org/yihui/bookdown/images/logo.png" alt="bookdown" width="200" /&gt;
+]
+
+.right-column[
+![](static-img/bookdown.png)
+]
+
+---
+
+### Use cases for writing books in `rmarkdown`
+
+- Writing books for external consumption
+  - Examples of many published books at the [`bookdown` website](https://bookdown.org/)
+
+--
+
+- Writing books for internal consumption
+  - Example of the `tidyverse` [style guide](https://style.tidyverse.org/)
+
+--
+
+- Alternative example of the [BBC R Graphics cookbook](https://bbc.github.io/rcookbook/)
+  - Created with `cosmo` theme of `rmarkdown` (not `bookdown`)
+  - Just has a table of contents (floating on left)
+  - See their [GitHub](https://github.com/bbc/rcookbook/blob/master/index.Rmd) for all code to create
+
+---
+
+.left-column[
+## `distill`
+
+[Website](https://rstudio.github.io/distill/)
+
+### Use Cases
+- Website
+- Blogs
+- Technical docs
+
+### Examples
+- [RStudio Environments](https://environments.rstudio.com/)
+- My [personal blog](https://themockup.netlify.com/)
+]
+
+.right-column[
+![](static-img/distill.png)
+]
+
+
+---
+
+class: center, top
+background-image: url(https://images.unsplash.com/photo-1485402073834-c95f3eac2fcd?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=1354&amp;q=80)
+
+.huge[Reports]
+
+---
+
+# Reports
+
+### Pain Point
+- Writing reports is:
+  - Manual 
+  - Tedious 
+  - Slow 🐢
+  
+--
+
+### Solution
+Paramaters in `rmarkdown`! 
+- Generate the *same* report BUT with *new data*
+- All the code is identical
+- The end result is according to the input data
+
+---
+
+### Situation: FAA data analyst
+- My boss asks for a report on how many animals were hit by planes in TX last year
+
+--
+
+  - Goal: Create a report for TX in 2018
+
+--
+
+  - Result: I get the data, create a graph, paste into doc and send along 😎
+
+--
+
+- My boss emails me later that day
+  - I need the report for 2015, 2016, and 2017 ASAP 😠
+
+--
+
+  - Goal: Create 3 new reports
+
+--
+
+  - Result: I go back and get the data again, create 3x graphs, paste into 3 new docs, and send along 😩
+  
+--
+
+### Alternative
+
+- Write a paramaterized `rmarkdown` report
+  - Write the code 1x
+  - Execute `n` times! 🤓
+  
+---
+
+class: center, top, inverse
+background-image: url(static-img/knit-report.jpg)
+
+.huge[Knit a Report]
+
+---
+
+
+.pull-left[
+### Render reports programatically
+
+
+```r
+rmarkdown::render("param-report-programmatic.rmd",
+                  params = list(
+                    states = "TX",
+                    years = "2018"
+                  ))
+```
+]
+
+--
+
+.pull-right[
+![](static-img/tx-2018-report.png)
+]
+
+---
+
+
+
+.pull-left[
+### custom render function
+
+```r
+render_impact_report &lt;- function(states, years){
+  rmarkdown::render(
+    "param-report-programmatic.rmd", 
+    params = list(
+      states = states,
+      years = years
+    ),
+    output_file = 
+      glue::glue("animal-impact-{states}-{years}.html")
+  )
+}
+```
+
+## one-off report
+
+
+```r
+render_impact_report(states = "TX", years = 2015)
+```
+]
+
+--
+
+.pull-right[
+### Need to tell `render` function
+- which file to use (`param-report-programmatic.rmd`)
+- what parameters (`params`)
+- output_file
+  - Using `glue()` function to generate meaningful file names
+  - `glue()` pastes in variables surrounded by `{}`
+  
+
+```r
+states &lt;- "TX"
+years &lt;- 2018
+
+glue::glue("animal-impact-{states}-{years}.html")
+```
+
+```
+## animal-impact-TX-2018.html
+```
+  
+]
+
+---
+
+### What about many reports?
+--
+ Say Hi to `purrr`
+
+--
+
+New `glue()` function
+
+```r
+output_state_yr &lt;- function(states, years){
+  glue::glue("The state is {states} and year is {years}")
+}
+
+output_state_yr("TX", 2019)
+```
+
+--
+
+
+```
+## The state is TX and year is 2019
+```
+
+--
+
+Apply `output_state_yr` across each of the states/years combos
+
+```r
+states &lt;- rep("TX", 3)
+years &lt;- 2016:2018
+
+purrr::pmap(.l = list(states, years), .f = output_state_yr)
+```
+
+--
+
+
+```
+## [[1]]
+## The state is TX and year is 2016
+## 
+## [[2]]
+## The state is TX and year is 2017
+## 
+## [[3]]
+## The state is TX and year is 2018
+```
+
+---
+
+### Back to our custom render function
+
+
+```r
+render_impact_report &lt;- function(states, years){
+  rmarkdown::render(
+    "param-report-programmatic.rmd", 
+    params = list(
+      states = states,
+      years = years
+    ),
+    output_file = 
+      glue::glue("animal-impact-{states}-{years}.html")
+  )
+}
+```
+
+
+--
+
+- We'll iterate across each combination of state + year
+- Each combo will generate a report with a custom file name based on the input!
+- This process scales from **1 report** to **100s of reports**
+
+
+---
+
+### Many Reports
+Need to specify what states and what years are of interest
+
+
+```r
+states &lt;- rep("TX", 4)
+years &lt;- 2015:2018
+
+states
+```
+
+```
+## [1] "TX" "TX" "TX" "TX"
+```
+
+```r
+years
+```
+
+```
+## [1] 2015 2016 2017 2018
+```
+
+--
+
+### Apply the function to each element of the vector
+We can use `purrr` to apply function across the years (for loop is also fine, I just find `purrr` more readable)
+
+
+```r
+purrr::pmap(.l = list(states, years), .f = render_impact_report)
+```
+
+
+---
+
+### Altogether now
+
+##### Write the function
+
+
+```r
+render_impact_report &lt;- function(states, years){
+  rmarkdown::render(
+    "param-report-programmatic.rmd", 
+    params = list(
+      states = states,
+      years = years
+    ),
+    output_file = 
+      glue::glue("animal-impact-{states}-{years}.html")
+  )
+}
+```
+
+--
+
+##### Then specify the paramater inputs
+
+
+```r
+states &lt;- rep("TX", 4)
+years &lt;- 2015:2018
+```
+
+--
+
+##### Then `knit`/`render` the 4x reports!
+
+
+```r
+purrr::pmap(.l = list(states, years), .f = render_impact_report)
+```
+
+---
+
+class: left, middle
+background-image: url(https://images.pexels.com/photos/590041/pexels-photo-590041.jpeg?auto=compress&amp;cs=tinysrgb&amp;dpr=2&amp;h=650&amp;w=940)
+
+.huge[Dashboards]
+
+---
+
+### Enter `flexdashboard`
+
+--
+
+If you can create a `ggplot` you can create a `flexdashboard`!
+
+--
+
+&lt;img src="static-img/flex-basic.png" width="50%" /&gt;
+
+--
+
+##### [`flexdashboard` Site](https://rmarkdown.rstudio.com/flexdashboard/index.html)
+
+---
+
+.pull-left[
+### Column-based
+
+```r
+---
+title: "Column Orientation"
+output: flexdashboard::flex_dashboard
+---
+    
+Column
+-------------------------------------
+    
+### Chart 1
+    
+   
+Column
+-------------------------------------
+   
+### Chart 2
+
+ 
+### Chart 3
+```
+
+]
+
+--
+
+.pull-right[
+### Column-output
+&lt;img src="static-img/flex-col.png" width="95%" /&gt;
+]
+
+
+---
+
+.pull-left[
+### Row-based
+
+```r
+---
+title: "Row Orientation"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+---
+    
+Row
+-------------------------------------
+    
+### Chart 1
+    
+
+   
+Row
+-------------------------------------
+    
+### Chart 2
+    
+
+    
+### Chart 3
+```
+
+]
+
+--
+
+.pull-right[
+### Row-output
+&lt;img src="static-img/flex-row.png" width="90%" /&gt;
+]
+
+---
+
+class: center, middle
+background-image: url(https://images.unsplash.com/photo-1510843572979-e4b9e790fdd7?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=1393&amp;q=80)
+
+.huge[Live Demo]
+
+---
+
+# Resources
+
+The best single source is [`R Markdown`: The Definitive Guide](https://bookdown.org/yihui/rmarkdown/), available online or in text
+- [`rmarkdown` website](https://rmarkdown.rstudio.com/)
+- [Paramaterized Reports](https://bookdown.org/yihui/rmarkdown/parameterized-reports.html)
+- [`xaringan` presentations](https://bookdown.org/yihui/rmarkdown/xaringan.html)
+- [Powerpoint Presentations](https://bookdown.org/yihui/rmarkdown/powerpoint-presentation.html)
+- [`flexdashboard`](https://rmarkdown.rstudio.com/flexdashboard/)
+- [`bookdown`](https://bookdown.org/)
+- [`distill`](https://rstudio.github.io/distill/)
+- [HTML Documents](https://bookdown.org/yihui/rmarkdown/html-document.html)
+
+### [Open RStudio Cloud](https://rstudio.cloud/spaces/21803/join?access_code=57Bia9nNqeqrEPNXOUDCapigwol3voqsyjeNXjUT)
+
+---
+
+class: left, middle
+background-image: url(https://images.unsplash.com/photo-1522292923399-bf8ddbd6e4e2?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=1300&amp;q=80)
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="https://platform.twitter.com/widgets.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();</script>
+
+<script>
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
