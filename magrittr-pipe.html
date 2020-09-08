@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>The magrittr pipe</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dave Hurst via Thomas Mock" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# The magrittr pipe
+### Dave Hurst via Thomas Mock
+### RStudio, Inc.
+### updated: 2020-09-08
+
+---
+
+
+
+
+
+
+# The Pipe `%&gt;%`
+
+![magrittr](magrittr_pipe.png)
+---
+
+
+```r
+library(tidyverse)
+```
+
+```
+## ── Attaching packages ───────────────────────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──
+```
+
+```
+## ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
+## ✓ tibble  3.0.3     ✓ dplyr   1.0.2
+## ✓ tidyr   1.1.1     ✓ stringr 1.4.0
+## ✓ readr   1.3.1     ✓ forcats 0.5.0
+```
+
+```
+## ── Conflicts ──────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()
+```
+
+```r
+library(dplyr)     #redundant
+library(magrittr)  #doubly redundant
+```
+
+```
+## 
+## Attaching package: 'magrittr'
+```
+
+```
+## The following object is masked from 'package:purrr':
+## 
+##     set_names
+```
+
+```
+## The following object is masked from 'package:tidyr':
+## 
+##     extract
+```
+
+---
+
+
+```r
+data %&gt;% 
+  do_something(.) %&gt;% 
+  do_another_thing(.) %&gt;% 
+  do_last_thing(.)
+```
+
+--
+
+`do_something(data)` is equivalent to:  
+
+--
+
+* `data %&gt;% do_something(data = .)`  
+
+--
+
+* `data %&gt;% do_something(.)`  
+
+--
+
+* `data %&gt;% do_something()`  
+
+---
+
+## About the penguins
+
+
+
+```r
+penguins &lt;- palmerpenguins::penguins 
+
+penguins %&gt;% 
+  glimpse()
+```
+
+```
+## Rows: 344
+## Columns: 8
+## $ species           &lt;fct&gt; Adelie, Adelie, Adelie, Adelie, Adelie, Adelie, Ade…
+## $ island            &lt;fct&gt; Torgersen, Torgersen, Torgersen, Torgersen, Torgers…
+## $ bill_length_mm    &lt;dbl&gt; 39.1, 39.5, 40.3, NA, 36.7, 39.3, 38.9, 39.2, 34.1,…
+## $ bill_depth_mm     &lt;dbl&gt; 18.7, 17.4, 18.0, NA, 19.3, 20.6, 17.8, 19.6, 18.1,…
+## $ flipper_length_mm &lt;int&gt; 181, 186, 195, NA, 193, 190, 181, 195, 193, 190, 18…
+## $ body_mass_g       &lt;int&gt; 3750, 3800, 3250, NA, 3450, 3650, 3625, 4675, 3475,…
+## $ sex               &lt;fct&gt; male, female, female, NA, female, male, female, mal…
+## $ year              &lt;int&gt; 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2007, 200…
+```
+---
+
+## More Complex Example
+
+
+```r
+penguins %&gt;% 
+  filter(species == "Adelie" &amp; !is.na(sex)) %&gt;%                   
+  group_by(sex, island) %&gt;%                                 
+  summarize(mean = mean(body_mass_g, na.rm = TRUE)) 
+```
+
+--
+
+
+```
+## `summarise()` regrouping output by 'sex' (override with `.groups` argument)
+```
+
+```
+## # A tibble: 6 x 3
+## # Groups:   sex [2]
+##   sex    island     mean
+##   &lt;fct&gt;  &lt;fct&gt;     &lt;dbl&gt;
+## 1 female Biscoe    3369.
+## 2 female Dream     3344.
+## 3 female Torgersen 3396.
+## 4 male   Biscoe    4050 
+## 5 male   Dream     4046.
+## 6 male   Torgersen 4035.
+```
+
+---
+
+## IRL example
+
+
+
+```r
+trailing_4q &lt;- tibbletime::rollify(sum, window = 4)
+
+trailing_12mo &lt;- sf_opps %&gt;% 
+    group_by(account_name, fiscal_year, fiscal_quarter) %&gt;% 
+    summarise(revenue = sum(total_price * is_won)) %&gt;% 
+    ungroup() %&gt;% 
+    complete(account_name, fiscal_year, fiscal_quarter, fill = list(revenue = 0)) %&gt;% 
+    arrange(account_name, fiscal_year, fiscal_quarter) %&gt;%  
+    group_by(account_name) %&gt;% 
+    mutate(t12 = trailing_4q(revenue)) %&gt;% 
+    filter(fiscal_year &gt;= 2019)
+```
+--
+
+|account_name | fiscal_year|fiscal_quarter | revenue|   t12|
+|:------------|-----------:|:--------------|-------:|-----:|
+|Acme         |        2019|Q1             |   10000| 10000|
+|Acme         |        2019|Q2             |       0| 10000|
+|Acme         |        2019|Q3             |       0| 10000|
+|Acme         |        2019|Q4             |   15000| 25000|
+|Acme         |        2020|Q1             |    5000| 20000|
+|Acme         |        2020|Q2             |    5000| 25000|
+|Acme         |        2020|Q3             |       0| 25000|
+|Acme         |        2020|Q4             |       0| 10000|
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

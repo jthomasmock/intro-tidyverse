@@ -687,7 +687,7 @@ slice(penguins, 1, 3, 5)
 
 ```{r,highlight.output = c(3:5)}
 # bottom 3 beak lengths
-slice_min(penguins, order_by = culmen_length_mm, n = 3)
+slice_min(penguins, order_by = bill_length_mm, n = 3)
 ```
 
 
@@ -696,7 +696,7 @@ slice_min(penguins, order_by = culmen_length_mm, n = 3)
 
 ```{r,highlight.output = c(3:5)}
 # top 3 beak lengths
-slice_max(penguins, order_by = culmen_length_mm, n = 3)
+slice_max(penguins, order_by = bill_length_mm, n = 3)
 ```
 
 
@@ -770,8 +770,8 @@ penguins %>%
 
 ```{r}
 penguins %>% 
-  # species EQUAL to Chinstrap and culmen lenth greater than 53
-  filter(species != "Chinstrap" & culmen_length_mm >= 53)
+  # species EQUAL to Chinstrap and bill lenth greater than 53
+  filter(species != "Chinstrap" & bill_length_mm >= 53)
 ```
 
 
@@ -783,7 +783,7 @@ penguins %>%
 
 ```{r, highlight.output = 4}
 penguins %>% 
-  arrange(culmen_length_mm)
+  arrange(bill_length_mm)
 ```
 
 ---
@@ -794,7 +794,7 @@ penguins %>%
 
 ```{r, highlight.output = 4}
 penguins %>% 
-  arrange(desc(culmen_length_mm))
+  arrange(desc(bill_length_mm))
 ```
 
 ---
@@ -803,7 +803,7 @@ penguins %>%
 
 ```{r, highlight.output = 4}
 penguins %>% 
-  arrange(desc(flipper_length_mm), desc(culmen_length_mm))
+  arrange(desc(flipper_length_mm), desc(bill_length_mm))
 ```
 
   
@@ -854,7 +854,7 @@ penguins %>%
 
 ```{r}
 penguins %>% 
-  select(starts_with("culmen"), contains("flip")) %>% #<<
+  select(starts_with("bill"), contains("flip")) %>% #<<
   glimpse()
 ```
 
@@ -918,7 +918,7 @@ penguins %>%
 ```{r}
 penguins %>% 
   group_by(species) %>% #<<
-  slice_max(culmen_length_mm, n = 1)
+  slice_max(bill_length_mm, n = 1)
 ```
 
 
@@ -929,7 +929,7 @@ penguins %>%
 ```{r}
 penguins %>% 
   group_by(species) %>% #<<
-  arrange(desc(culmen_length_mm)) %>% 
+  arrange(desc(bill_length_mm)) %>% 
   slice(1)
 ```
 
@@ -1017,7 +1017,7 @@ penguins %>%
 penguins %>% 
   group_by(species) %>% 
   summarize(
-    across(c(body_mass_g, culmen_length_mm), mean, na.rm = TRUE), #<<
+    across(c(body_mass_g, bill_length_mm), mean, na.rm = TRUE), #<<
     n = n() #<<
     ) 
 ```
@@ -1030,7 +1030,7 @@ penguins %>%
 penguins %>% 
   group_by(species) %>% 
   summarize(
-    across(c(body_mass_g, culmen_length_mm, culmen_depth_mm), 
+    across(c(body_mass_g, bill_length_mm, bill_depth_mm), 
            list(
              mean = ~mean(.x, na.rm = TRUE), #<<
              sd = ~sd(.x, na.rm = TRUE)) #<<
@@ -1200,14 +1200,14 @@ ggplot(data = <DATA>, mapping = aes(<MAPPINGS>)) +
 --
 
 ```{r, fig.width = 3, fig.height = 2, eval = FALSE, warning = FALSE}
-ggplot(penguins, aes(x = culmen_length_mm, y = culmen_depth_mm, color = species)) +
+ggplot(penguins, aes(x = bill_length_mm, y = bill_depth_mm, color = species)) +
   geom_point()
 ```
 
 --
 
 ```{r, echo = FALSE, fig.height = 5, warning = FALSE}
-ggplot(penguins, aes(x = culmen_length_mm, y = culmen_depth_mm, color = species)) +
+ggplot(penguins, aes(x = bill_length_mm, y = bill_depth_mm, color = species)) +
   geom_point()
 ```
 
